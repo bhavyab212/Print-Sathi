@@ -46,14 +46,14 @@ This is NOT a general-purpose print management suite. It is a focused shop helpe
 | Styling | Tailwind CSS + shadcn/ui | Fast, professional, solo-builder friendly |
 | State | React Context + TanStack Query | Right-sized — Context for UI, Query for server state |
 | Backend logic | Next.js API Routes | Keeps it simple for CRUD + queue |
-| Image processing | Python FastAPI (Koyeb) | OpenCV + Pillow + Rembg; always-on free tier |
+| Image processing | Python FastAPI (Render + uptime bot) | OpenCV + Pillow + Rembg; uptime bot prevents sleep |
 | PDF processing | pdf-lib in browser | No server cost, fast for layout tasks |
 | Database | Supabase (PostgreSQL + Realtime) | Auth + DB + Storage + Live queue in one |
 | File storage | Supabase Storage → Cloudflare R2 | 4-hour auto-delete; signed URLs |
 | Auth | Supabase Auth (email+password + email reset) | Shopkeeper + admin only |
 | Printing (Phase 1–2) | Browser print dialog | Zero setup, acceptable for MVP |
 | Printing (Phase 3+) | System-controlled agent (TBD) | Windows-compatible, silent |
-| Deployment | Vercel + Supabase + Koyeb | All free tier for pilot |
+| Deployment | Vercel + Supabase + Render | All free tier for pilot |
 
 ---
 
@@ -67,6 +67,20 @@ This is NOT a general-purpose print management suite. It is a focused shop helpe
 6. **Rate limiting** — 3–5 submissions per phone/hour, resets on job completion
 7. **FIFO queue default** — shopkeeper can drag-reorder; urgent jobs float to top
 8. **Usage tracked from day one** — billing added separately later
+
+---
+
+## Icon & Asset Libraries (Preferred)
+
+Use across all UI — no hard restriction, but prefer these:
+
+| Library | Use for |
+|---------|--------|
+| **Boxicons** | General UI icons (sidebar, buttons, actions) |
+| **LottieFiles** | Animated illustrations (loading, empty states, success) |
+| **LottieFlow** | Micro-interaction animations (transitions, hover) |
+| **Lord Icons** | Animated icons (feature cards, onboarding) |
+| **Iconsax** | Alternate icon set (where Boxicons lacks coverage) |
 
 ---
 
@@ -88,7 +102,7 @@ This is NOT a general-purpose print management suite. It is a focused shop helpe
 |---------|---------|-----------|
 | Vercel | Next.js frontend + API routes | 100GB bandwidth/month |
 | Supabase | DB + Auth + Storage + Realtime | 500MB DB, 1GB storage, 2 projects |
-| Koyeb | Python FastAPI (always-on) | 512MB RAM, 0.1 vCPU, always-on |
+| Render | Python FastAPI (kept alive via UptimeRobot) | 512MB RAM, 0.1 vCPU, free tier + uptime bot |
 | Cloudflare R2 | File storage (future) | 10GB free, zero egress |
 
 ---
