@@ -59,5 +59,23 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
+  // If user is logged in and visits /dashboard, check if they have a shop
+  // If not, redirect to onboarding (skip this check if already on /onboarding)
+  if (
+    user &&
+    request.nextUrl.pathname.startsWith("/dashboard") &&
+    !request.nextUrl.pathname.startsWith("/onboarding")
+  ) {
+    const { data: shops } = await supabase
+      .from("shops")
+      .select("id")
+      .eq("owner_id", user.id)
+      .limit(1);
+
+    if (!shops || shops.length === 0) {
+      return NextResponse.redirect(new URL("/onboarding", request.url));
+    }
+  }
+
   return response;
 }

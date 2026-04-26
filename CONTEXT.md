@@ -52,7 +52,7 @@ This is NOT a general-purpose print management suite. It is a focused shop helpe
 | File storage | Supabase Storage → Cloudflare R2 | 4-hour auto-delete; signed URLs |
 | Auth | Supabase Auth (email+password + email reset) | Shopkeeper + admin only |
 | Printing (Phase 1–2) | Browser print dialog | Zero setup, acceptable for MVP |
-| Printing (Phase 3+) | System-controlled agent (TBD) | Windows-compatible, silent |
+| Printing (Phase 3+) | PrintNode local agent | Windows-compatible, silent printing |
 | Deployment | Vercel + Supabase + Render | All free tier for pilot |
 
 ---
@@ -67,6 +67,10 @@ This is NOT a general-purpose print management suite. It is a focused shop helpe
 6. **Rate limiting** — 3–5 submissions per phone/hour, resets on job completion
 7. **FIFO queue default** — shopkeeper can drag-reorder; urgent jobs float to top
 8. **Usage tracked from day one** — billing added separately later
+9. **Job retention:** completed jobs auto-archive after 7 days OR manual clear
+10. **Duplicate file prevention:** same phone + file hash within 10 min → warn customer
+11. **File storage path convention:** `/{shop_id}/{job_id}/original.{ext}` and `preview.jpg`
+12. **Rate card:** flexible rows (item_type, label, price) — deliberate improvement over fixed columns for extensibility
 
 ---
 
