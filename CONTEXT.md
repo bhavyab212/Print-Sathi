@@ -40,30 +40,36 @@ This is NOT a general-purpose print management suite. It is a focused shop helpe
 
 ## Confirmed Tech Stack
 
-| Layer | Choice | Why |
-|-------|--------|-----|
-| Frontend | Next.js 14 (App Router) | SSR for QR page, API routes, single framework |
-| Styling | Tailwind CSS + shadcn/ui | Fast, professional, solo-builder friendly |
-| State | React Context + TanStack Query | Right-sized — Context for UI, Query for server state |
-| Backend logic | Next.js API Routes | Keeps it simple for CRUD + queue |
-| Image processing | Python FastAPI (Render + uptime bot) | OpenCV + Pillow + Rembg; uptime bot prevents sleep |
-| PDF processing | pdf-lib in browser | No server cost, fast for layout tasks |
-| Database | Supabase (PostgreSQL + Realtime) | Auth + DB + Storage + Live queue in one |
-| File storage | Supabase Storage → Cloudflare R2 | 4-hour auto-delete; signed URLs |
-| Auth | Supabase Auth (email+password + email reset) | Shopkeeper + admin only |
-| Printing (Phase 1–2) | Browser print dialog | Zero setup, acceptable for MVP |
-| Printing (Phase 3+) | PrintNode local agent | Windows-compatible, silent printing |
-| Deployment | Vercel + Supabase + Render | All free tier for pilot |
+| Component | Technology | Notes |
+| :--- | :--- | :--- |
+| **Frontend Web** | Next.js 14 (App Router), React, Tailwind, shadcn/ui | Customer-facing QR pages + shopkeeper backup portal |
+| **Desktop App** | Electron, React, Vite, Tailwind | Primary shopkeeper OS (Windows), auto-updater |
+| **Backend API** | Supabase (PostgreSQL + PostgREST) | Direct DB access with RLS from both Web and Desktop |
+| **Processing Service** | Python 3.12, FastAPI, rembg (u2net), OpenCV | Background removal and face cropping for passports |
+| **Database** | PostgreSQL (Supabase) | Multi-tenant schema with Realtime |
+| **Authentication** | Supabase Auth (Email/Password) | Shopkeepers only |
+| **File Storage** | Supabase Storage | 4-hour auto-delete policy |
+| **Hosting** | Vercel (Web), Render (Processing), GitHub Releases (Desktop) | Processing service kept alive via UptimeRobot |
+
+---
+
+## Desktop App Architecture
+
+The **Print Sathi Desktop App** is the heart of the operation:
+1. **Local Printing Engine:** Direct communication with connected thermal/laser printers (bypass browser dialogs).
+2. **Auto-Updater:** Silent background updates via `electron-updater` to ensure feature parity without shopkeeper intervention.
+3. **Queue Polling:** WebSocket connection to Supabase Realtime to push pending jobs to the UI immediately.
+4. **Local Cache:** Temporary storage of current job files to ensure print success even if internet connectivity fluctuates during the print command.
 
 ---
 
 ## Key Design Decisions (Non-Negotiable)
 
-1. **Shopkeeper always approves before printing** — no auto-print in v1
-2. **Multi-tenant from day one** — every DB row has `shop_id`; RLS enforced
-3. **4-hour file auto-delete** — privacy-first, no long-term document storage
-4. **Unique word job tokens** — short memorable words (FOX, SUN, OAK) per job
-5. **Customer QR page is fully public** — name + phone only, no login
+1. **Shopkeeper Primary Interface is Desktop:** The Windows app is the main tool. The web dashboard is a backup.
+2. **Shopkeeper Approves Everything:** Jobs submitted by customers via QR do not print automatically. They go to a pending queue for approval.
+3. **Multi-tenant by Design:** Everything in the database must filter by `shop_id`.
+4. **No Persisted Files:** Files must auto-delete after 4 hours. No exceptions.
+5. **Word Tokens over IDs:** Jobs are identified by 3-letter words (e.g., FOX, SUN, OAK) that reset daily per shop, never UUIDs or long numbers.
 6. **Rate limiting** — 3–5 submissions per phone/hour, resets on job completion
 7. **FIFO queue default** — shopkeeper can drag-reorder; urgent jobs float to top
 8. **Usage tracked from day one** — billing added separately later

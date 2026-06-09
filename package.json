@@ -1,0 +1,20 @@
+{
+  "name": "print-sathi",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "turbo run dev --filter=web",
+    "dev:desktop": "turbo run dev --filter=@print-sathi/desktop",
+    "dev:processing": "cd apps/processing && source .venv/bin/activate && uvicorn main:app --reload",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=web",
+    "build:desktop": "turbo run build --filter=@print-sathi/desktop",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.9.17"
+  }
+}
