@@ -1,12 +1,12 @@
 # Graph Report - Printo_  (2026-06-14)
 
 ## Corpus Check
-- 75 files · ~141,391 words
+- 77 files · ~145,500 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 470 nodes · 473 edges · 84 communities detected
-- Extraction: 82% EXTRACTED · 17% INFERRED · 1% AMBIGUOUS · INFERRED: 81 edges (avg confidence: 0.86)
+- 480 nodes · 482 edges · 85 communities detected
+- Extraction: 83% EXTRACTED · 17% INFERRED · 1% AMBIGUOUS · INFERRED: 81 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -33,17 +33,16 @@
 - [[_COMMUNITY_Community 20|Community 20]]
 - [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 23|Community 23]]
-- [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
 - [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
-- [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
 - [[_COMMUNITY_Community 32|Community 32]]
 - [[_COMMUNITY_Community 33|Community 33]]
-- [[_COMMUNITY_Community 38|Community 38]]
-- [[_COMMUNITY_Community 39|Community 39]]
+- [[_COMMUNITY_Community 34|Community 34]]
+- [[_COMMUNITY_Community 35|Community 35]]
 - [[_COMMUNITY_Community 40|Community 40]]
 - [[_COMMUNITY_Community 41|Community 41]]
 - [[_COMMUNITY_Community 42|Community 42]]
@@ -53,13 +52,13 @@
 - [[_COMMUNITY_Community 46|Community 46]]
 - [[_COMMUNITY_Community 47|Community 47]]
 - [[_COMMUNITY_Community 48|Community 48]]
-- [[_COMMUNITY_Community 52|Community 52]]
-- [[_COMMUNITY_Community 55|Community 55]]
-- [[_COMMUNITY_Community 56|Community 56]]
+- [[_COMMUNITY_Community 49|Community 49]]
+- [[_COMMUNITY_Community 50|Community 50]]
+- [[_COMMUNITY_Community 54|Community 54]]
 - [[_COMMUNITY_Community 57|Community 57]]
 - [[_COMMUNITY_Community 58|Community 58]]
+- [[_COMMUNITY_Community 59|Community 59]]
 - [[_COMMUNITY_Community 60|Community 60]]
-- [[_COMMUNITY_Community 61|Community 61]]
 - [[_COMMUNITY_Community 62|Community 62]]
 - [[_COMMUNITY_Community 63|Community 63]]
 - [[_COMMUNITY_Community 64|Community 64]]
@@ -67,9 +66,9 @@
 - [[_COMMUNITY_Community 66|Community 66]]
 - [[_COMMUNITY_Community 67|Community 67]]
 - [[_COMMUNITY_Community 68|Community 68]]
+- [[_COMMUNITY_Community 69|Community 69]]
 - [[_COMMUNITY_Community 70|Community 70]]
 - [[_COMMUNITY_Community 72|Community 72]]
-- [[_COMMUNITY_Community 73|Community 73]]
 - [[_COMMUNITY_Community 74|Community 74]]
 - [[_COMMUNITY_Community 75|Community 75]]
 - [[_COMMUNITY_Community 76|Community 76]]
@@ -94,6 +93,8 @@
 - [[_COMMUNITY_Community 95|Community 95]]
 - [[_COMMUNITY_Community 96|Community 96]]
 - [[_COMMUNITY_Community 97|Community 97]]
+- [[_COMMUNITY_Community 98|Community 98]]
+- [[_COMMUNITY_Community 99|Community 99]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Postgres Best Practices Compiled Rules` - 20 edges
@@ -145,20 +146,20 @@ Cohesion: 0.07
 Nodes (49): Use tsvector for Full-Text Search Rationale, Use tsvector for Full-Text Search, Index JSONB Columns for Efficient Querying Rationale, Index JSONB Columns for Efficient Querying, Postgres Best Practices Compiled Rules, Configure Idle Connection Timeouts Rationale, Configure Idle Connection Timeouts, Set Appropriate Connection Limits Rationale (+41 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.09
-Nodes (24): getCompressedBlob(), handleAcceptClick(), handleDownload(), copyImageToClipboard(), drawOutline(), getCompressedBlob(), handleAcceptClick(), handleDownload() (+16 more)
-
-### Community 2 - "Community 2"
 Cohesion: 0.07
 Nodes (35): BRIN Index Pattern for Large Time-Series, B-tree Index Pattern, Choose the Right Index Type for Your Data, GIN Index Pattern for JSONB/Arrays, Hash Index Pattern for Equality-Only, Rationale: Choosing Right Index Type for Query Patterns, Add Indexes on WHERE and JOIN Columns, Foreign Key Side Indexing (+27 more)
+
+### Community 2 - "Community 2"
+Cohesion: 0.1
+Nodes (21): copyImageToClipboard(), drawOutline(), getCompressedBlob(), handleAcceptClick(), handleDownload(), handleDownloadClick(), renderForeground(), set() (+13 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.08
 Nodes (26): Bigint Generated Always As Identity Primary Key, Choose Appropriate Data Types, Numeric Type for Exact Precision (numeric), Text Type Preference, Timezone-aware Timestamps (timestamptz), Use Lowercase Identifiers for Compatibility, Quoted Mixed-Case Identifier Antipattern, ORM CamelCase-to-snake_case Mapping (+18 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.13
-Nodes (10): copyImageToClipboard(), drawOutline(), getEditorCanvasPos(), handleEditorPointerDown(), handleEditorPointerMove(), handleReset(), renderForeground(), resetAdjustments() (+2 more)
+Cohesion: 0.12
+Nodes (13): copyImageToClipboard(), drawOutline(), getCompressedBlob(), getEditorCanvasPos(), handleAcceptClick(), handleDownload(), handleEditorPointerDown(), handleEditorPointerMove() (+5 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.14
@@ -229,60 +230,56 @@ Cohesion: 0.6
 Nodes (3): get_local_ip(), kill_process_group(), main()
 
 ### Community 23 - "Community 23"
+Cohesion: 0.5
+Nodes (2): addQuickQuantity(), updateQuantity()
+
+### Community 25 - "Community 25"
 Cohesion: 0.4
 Nodes (5): Desktop App Architecture, Rationale for Primary Desktop Interface, Rationale for 4-Hour File Auto-Delete, Supabase Backend, Phase D: Desktop App Migration
 
-### Community 24 - "Community 24"
+### Community 26 - "Community 26"
 Cohesion: 0.4
 Nodes (5): Semantic Cache Lookup & Update, Subagent Token and Computation Reduction Rationale, Graphify Knowledge Graph Construction Overview, Parallel AST & Semantic Subagents Flow, Concurrent Processing Speed Optimization Rationale
 
-### Community 25 - "Community 25"
+### Community 27 - "Community 27"
 Cohesion: 0.5
 Nodes (4): PrinterSettingsView configured printers, RateCardSettingsView pricing rates, SettingsView configuration panel, ShopSettingsView shopkeeper details
 
-### Community 26 - "Community 26"
+### Community 28 - "Community 28"
 Cohesion: 0.67
 Nodes (2): A4SheetPreview(), drawOutline()
 
-### Community 28 - "Community 28"
+### Community 30 - "Community 30"
 Cohesion: 0.5
 Nodes (4): Phase 0: Foundation Setup Complete, PG Constraints Rationale, RLS Policies Rationale, Supabase Backend and Migrations Setup
 
-### Community 29 - "Community 29"
+### Community 31 - "Community 31"
 Cohesion: 0.5
 Nodes (4): Batch Execution & Checkpoint Reporting, Checkpoint Architecture Review Rationale, Executing Plans Skill Overview, 5-Step Plan Execution Process
 
-### Community 30 - "Community 30"
+### Community 32 - "Community 32"
 Cohesion: 0.67
 Nodes (3): Next.js Request Middleware, updateSession, Shop Onboarding Flow
 
-### Community 31 - "Community 31"
+### Community 33 - "Community 33"
 Cohesion: 0.67
 Nodes (3): Next.js Best Practices Principles, Default to Server Components performance Rationale, React Server vs Client Components Decision Tree
 
-### Community 32 - "Community 32"
+### Community 34 - "Community 34"
 Cohesion: 0.67
 Nodes (3): Protected Routes Middleware Session Refresh, Middleware Token Validation & Cookie Guarding Rationale, Next.js Supabase Auth Integration Guidelines
 
-### Community 33 - "Community 33"
+### Community 35 - "Community 35"
 Cohesion: 1.0
 Nodes (2): electron-store Library, Desktop Supabase Client
 
-### Community 38 - "Community 38"
+### Community 40 - "Community 40"
 Cohesion: 1.0
 Nodes (2): Print Sathi Platform, Rationale for Human Approval before Printing
 
-### Community 39 - "Community 39"
-Cohesion: 1.0
-Nodes (2): Passport Photo Auto Generator Feature, Passport Photo Spec
-
-### Community 40 - "Community 40"
-Cohesion: 1.0
-Nodes (2): Smart QR Print Queue Feature, Smart QR Print Queue Spec
-
 ### Community 41 - "Community 41"
 Cohesion: 1.0
-Nodes (2): Fix & Print Document Feature, Fix & Print Document Spec
+Nodes (2): Smart QR Print Queue Feature, Smart QR Print Queue Spec
 
 ### Community 42 - "Community 42"
 Cohesion: 1.0
@@ -290,189 +287,197 @@ Nodes (2): Clean Scan PDF Feature, Clean Scan PDF Spec
 
 ### Community 43 - "Community 43"
 Cohesion: 1.0
-Nodes (2): Design Rule: Shopkeeper Manual Control, Manual Shopkeeper Review Rationale
+Nodes (2): Passport Photo Auto Generator Feature, Passport Photo Spec
 
 ### Community 44 - "Community 44"
 Cohesion: 1.0
-Nodes (2): Design Rule: Privacy-First Storage Lifecycle, 4-Hour Automatic Upload Deletion Rationale
+Nodes (2): Fix & Print Document Feature, Fix & Print Document Spec
 
 ### Community 45 - "Community 45"
 Cohesion: 1.0
-Nodes (2): Design Rule: Zero Customer Friction, Instant QR Upload without Registrations Rationale
+Nodes (2): Design Rule: Shopkeeper Manual Control, Manual Shopkeeper Review Rationale
 
 ### Community 46 - "Community 46"
 Cohesion: 1.0
-Nodes (2): Design Rule: Memorable 3-Letter Noun Tokens, Easy Counter Word Tokens Communication Rationale
+Nodes (2): Design Rule: Privacy-First Storage Lifecycle, 4-Hour Automatic Upload Deletion Rationale
 
 ### Community 47 - "Community 47"
 Cohesion: 1.0
-Nodes (2): Planned PDF Layout Arrangement Mechanism, Browser-side PDF-Lib Execution Rationale
+Nodes (2): Design Rule: Zero Customer Friction, Instant QR Upload without Registrations Rationale
 
 ### Community 48 - "Community 48"
 Cohesion: 1.0
+Nodes (2): Design Rule: Memorable 3-Letter Noun Tokens, Easy Counter Word Tokens Communication Rationale
+
+### Community 49 - "Community 49"
+Cohesion: 1.0
+Nodes (2): Planned PDF Layout Arrangement Mechanism, Browser-side PDF-Lib Execution Rationale
+
+### Community 50 - "Community 50"
+Cohesion: 1.0
 Nodes (2): Passport Photo Auto Generator, PrintShop Platform
 
-### Community 52 - "Community 52"
+### Community 54 - "Community 54"
 Cohesion: 1.0
 Nodes (1): electron API contextBridge
 
-### Community 55 - "Community 55"
+### Community 57 - "Community 57"
 Cohesion: 1.0
 Nodes (1): JobCard Component
 
-### Community 56 - "Community 56"
+### Community 58 - "Community 58"
 Cohesion: 1.0
 Nodes (1): cn
 
-### Community 57 - "Community 57"
+### Community 59 - "Community 59"
 Cohesion: 1.0
 Nodes (1): BillCalculatorView placeholder
 
-### Community 58 - "Community 58"
+### Community 60 - "Community 60"
 Cohesion: 1.0
 Nodes (1): FixPrintView placeholder
 
-### Community 60 - "Community 60"
+### Community 62 - "Community 62"
 Cohesion: 1.0
 Nodes (1): Next.js Configuration
 
-### Community 61 - "Community 61"
+### Community 63 - "Community 63"
 Cohesion: 1.0
 Nodes (1): PostCSS Configuration
 
-### Community 62 - "Community 62"
+### Community 64 - "Community 64"
 Cohesion: 1.0
 Nodes (1): TailwindCSS Configuration
 
-### Community 63 - "Community 63"
+### Community 65 - "Community 65"
 Cohesion: 1.0
 Nodes (1): Middleware Route Matcher Configuration
 
-### Community 64 - "Community 64"
+### Community 66 - "Community 66"
 Cohesion: 1.0
 Nodes (1): RootLayout web skeleton
 
-### Community 65 - "Community 65"
+### Community 67 - "Community 67"
 Cohesion: 1.0
 Nodes (1): Next.js API Web Health Check
 
-### Community 66 - "Community 66"
+### Community 68 - "Community 68"
 Cohesion: 1.0
 Nodes (1): DownloadPage for Windows
 
-### Community 67 - "Community 67"
+### Community 69 - "Community 69"
 Cohesion: 1.0
 Nodes (1): CustomerPage
 
-### Community 68 - "Community 68"
+### Community 70 - "Community 70"
 Cohesion: 1.0
 Nodes (1): metadata
 
-### Community 70 - "Community 70"
+### Community 72 - "Community 72"
 Cohesion: 1.0
 Nodes (1): StepNav
 
-### Community 72 - "Community 72"
+### Community 74 - "Community 74"
 Cohesion: 1.0
 Nodes (1): Accept a portrait photo, remove its background, detect the face,     and return
 
-### Community 73 - "Community 73"
+### Community 75 - "Community 75"
 Cohesion: 1.0
 Nodes (1): Accept an image, apply advanced portrait enhancements (skin softening,     studi
 
-### Community 74 - "Community 74"
+### Community 76 - "Community 76"
 Cohesion: 1.0
 Nodes (1): Export a passport photo as a portal-ready JPEG.      Default output: Passport Se
 
-### Community 75 - "Community 75"
+### Community 77 - "Community 77"
 Cohesion: 1.0
 Nodes (1): Commit Rules
 
-### Community 76 - "Community 76"
+### Community 78 - "Community 78"
 Cohesion: 1.0
 Nodes (1): Commit Types
 
-### Community 77 - "Community 77"
+### Community 79 - "Community 79"
 Cohesion: 1.0
 Nodes (1): Planned Commits
 
-### Community 78 - "Community 78"
+### Community 80 - "Community 80"
 Cohesion: 1.0
 Nodes (1): Commit History
 
-### Community 79 - "Community 79"
+### Community 81 - "Community 81"
 Cohesion: 1.0
 Nodes (1): Project Vision
 
-### Community 80 - "Community 80"
+### Community 82 - "Community 82"
 Cohesion: 1.0
 Nodes (1): Product Thesis
 
-### Community 81 - "Community 81"
+### Community 83 - "Community 83"
 Cohesion: 1.0
 Nodes (1): Core Product Promise
 
-### Community 82 - "Community 82"
+### Community 84 - "Community 84"
 Cohesion: 1.0
 Nodes (1): Hardware Bridge
 
-### Community 83 - "Community 83"
+### Community 85 - "Community 85"
 Cohesion: 1.0
 Nodes (1): Monetization Strategy
 
-### Community 84 - "Community 84"
+### Community 86 - "Community 86"
 Cohesion: 1.0
 Nodes (1): Phased Roadmap
 
-### Community 85 - "Community 85"
+### Community 87 - "Community 87"
 Cohesion: 1.0
 Nodes (1): Print Bill Calculator Spec
 
-### Community 86 - "Community 86"
+### Community 88 - "Community 88"
 Cohesion: 1.0
 Nodes (1): Core UX Principles
 
-### Community 87 - "Community 87"
+### Community 89 - "Community 89"
 Cohesion: 1.0
 Nodes (1): Job Data Structure
 
-### Community 88 - "Community 88"
+### Community 90 - "Community 90"
 Cohesion: 1.0
 Nodes (1): Non-Functional Requirements
 
-### Community 89 - "Community 89"
+### Community 91 - "Community 91"
 Cohesion: 1.0
 Nodes (1): Pricing and Business Model
 
-### Community 90 - "Community 90"
+### Community 92 - "Community 92"
 Cohesion: 1.0
 Nodes (1): What It Does
 
-### Community 91 - "Community 91"
+### Community 93 - "Community 93"
 Cohesion: 1.0
 Nodes (1): Getting Started
 
-### Community 92 - "Community 92"
+### Community 94 - "Community 94"
 Cohesion: 1.0
 Nodes (1): Python Packages
 
-### Community 93 - "Community 93"
+### Community 95 - "Community 95"
 Cohesion: 1.0
 Nodes (1): Web App Getting Started
 
-### Community 94 - "Community 94"
+### Community 96 - "Community 96"
 Cohesion: 1.0
 Nodes (1): Print Sathi Project Status Overview
 
-### Community 95 - "Community 95"
+### Community 97 - "Community 97"
 Cohesion: 1.0
 Nodes (1): DTP Shop
 
-### Community 96 - "Community 96"
+### Community 98 - "Community 98"
 Cohesion: 1.0
 Nodes (1): 35x45 mm Size
 
-### Community 97 - "Community 97"
+### Community 99 - "Community 99"
 Cohesion: 1.0
 Nodes (1): A4 Photo Layout
 
@@ -489,113 +494,115 @@ Nodes (1): A4 Photo Layout
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 17`** (7 nodes): `CustomModeFlow.tsx`, `handlePrint()`, `handleReset()`, `handleStepClick()`, `showToast()`, `startAnimation()`, `stopAnimation()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (4 nodes): `A4SheetPreview()`, `drawOutline()`, `A4SheetPreview.tsx`, `A4SheetPreview.tsx`
+- **Thin community `Community 23`** (5 nodes): `page.tsx`, `addQuickQuantity()`, `handlePrintReceipt()`, `handleSaveTransaction()`, `updateQuantity()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (2 nodes): `electron-store Library`, `Desktop Supabase Client`
+- **Thin community `Community 28`** (4 nodes): `A4SheetPreview()`, `drawOutline()`, `A4SheetPreview.tsx`, `A4SheetPreview.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (2 nodes): `Print Sathi Platform`, `Rationale for Human Approval before Printing`
+- **Thin community `Community 35`** (2 nodes): `electron-store Library`, `Desktop Supabase Client`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (2 nodes): `Passport Photo Auto Generator Feature`, `Passport Photo Spec`
+- **Thin community `Community 40`** (2 nodes): `Print Sathi Platform`, `Rationale for Human Approval before Printing`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (2 nodes): `Smart QR Print Queue Feature`, `Smart QR Print Queue Spec`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (2 nodes): `Fix & Print Document Feature`, `Fix & Print Document Spec`
+- **Thin community `Community 41`** (2 nodes): `Smart QR Print Queue Feature`, `Smart QR Print Queue Spec`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 42`** (2 nodes): `Clean Scan PDF Feature`, `Clean Scan PDF Spec`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (2 nodes): `Design Rule: Shopkeeper Manual Control`, `Manual Shopkeeper Review Rationale`
+- **Thin community `Community 43`** (2 nodes): `Passport Photo Auto Generator Feature`, `Passport Photo Spec`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (2 nodes): `Design Rule: Privacy-First Storage Lifecycle`, `4-Hour Automatic Upload Deletion Rationale`
+- **Thin community `Community 44`** (2 nodes): `Fix & Print Document Feature`, `Fix & Print Document Spec`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (2 nodes): `Design Rule: Zero Customer Friction`, `Instant QR Upload without Registrations Rationale`
+- **Thin community `Community 45`** (2 nodes): `Design Rule: Shopkeeper Manual Control`, `Manual Shopkeeper Review Rationale`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (2 nodes): `Design Rule: Memorable 3-Letter Noun Tokens`, `Easy Counter Word Tokens Communication Rationale`
+- **Thin community `Community 46`** (2 nodes): `Design Rule: Privacy-First Storage Lifecycle`, `4-Hour Automatic Upload Deletion Rationale`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (2 nodes): `Planned PDF Layout Arrangement Mechanism`, `Browser-side PDF-Lib Execution Rationale`
+- **Thin community `Community 47`** (2 nodes): `Design Rule: Zero Customer Friction`, `Instant QR Upload without Registrations Rationale`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (2 nodes): `Passport Photo Auto Generator`, `PrintShop Platform`
+- **Thin community `Community 48`** (2 nodes): `Design Rule: Memorable 3-Letter Noun Tokens`, `Easy Counter Word Tokens Communication Rationale`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (1 nodes): `electron API contextBridge`
+- **Thin community `Community 49`** (2 nodes): `Planned PDF Layout Arrangement Mechanism`, `Browser-side PDF-Lib Execution Rationale`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `JobCard Component`
+- **Thin community `Community 50`** (2 nodes): `Passport Photo Auto Generator`, `PrintShop Platform`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `cn`
+- **Thin community `Community 54`** (1 nodes): `electron API contextBridge`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `BillCalculatorView placeholder`
+- **Thin community `Community 57`** (1 nodes): `JobCard Component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `FixPrintView placeholder`
+- **Thin community `Community 58`** (1 nodes): `cn`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `Next.js Configuration`
+- **Thin community `Community 59`** (1 nodes): `BillCalculatorView placeholder`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (1 nodes): `PostCSS Configuration`
+- **Thin community `Community 60`** (1 nodes): `FixPrintView placeholder`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (1 nodes): `TailwindCSS Configuration`
+- **Thin community `Community 62`** (1 nodes): `Next.js Configuration`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 63`** (1 nodes): `Middleware Route Matcher Configuration`
+- **Thin community `Community 63`** (1 nodes): `PostCSS Configuration`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (1 nodes): `RootLayout web skeleton`
+- **Thin community `Community 64`** (1 nodes): `TailwindCSS Configuration`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (1 nodes): `Next.js API Web Health Check`
+- **Thin community `Community 65`** (1 nodes): `Middleware Route Matcher Configuration`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (1 nodes): `DownloadPage for Windows`
+- **Thin community `Community 66`** (1 nodes): `RootLayout web skeleton`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (1 nodes): `CustomerPage`
+- **Thin community `Community 67`** (1 nodes): `Next.js API Web Health Check`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 68`** (1 nodes): `metadata`
+- **Thin community `Community 68`** (1 nodes): `DownloadPage for Windows`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (1 nodes): `StepNav`
+- **Thin community `Community 69`** (1 nodes): `CustomerPage`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 72`** (1 nodes): `Accept a portrait photo, remove its background, detect the face,     and return`
+- **Thin community `Community 70`** (1 nodes): `metadata`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (1 nodes): `Accept an image, apply advanced portrait enhancements (skin softening,     studi`
+- **Thin community `Community 72`** (1 nodes): `StepNav`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (1 nodes): `Export a passport photo as a portal-ready JPEG.      Default output: Passport Se`
+- **Thin community `Community 74`** (1 nodes): `Accept a portrait photo, remove its background, detect the face,     and return`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (1 nodes): `Commit Rules`
+- **Thin community `Community 75`** (1 nodes): `Accept an image, apply advanced portrait enhancements (skin softening,     studi`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (1 nodes): `Commit Types`
+- **Thin community `Community 76`** (1 nodes): `Export a passport photo as a portal-ready JPEG.      Default output: Passport Se`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (1 nodes): `Planned Commits`
+- **Thin community `Community 77`** (1 nodes): `Commit Rules`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (1 nodes): `Commit History`
+- **Thin community `Community 78`** (1 nodes): `Commit Types`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (1 nodes): `Project Vision`
+- **Thin community `Community 79`** (1 nodes): `Planned Commits`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 80`** (1 nodes): `Product Thesis`
+- **Thin community `Community 80`** (1 nodes): `Commit History`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (1 nodes): `Core Product Promise`
+- **Thin community `Community 81`** (1 nodes): `Project Vision`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (1 nodes): `Hardware Bridge`
+- **Thin community `Community 82`** (1 nodes): `Product Thesis`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (1 nodes): `Monetization Strategy`
+- **Thin community `Community 83`** (1 nodes): `Core Product Promise`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (1 nodes): `Phased Roadmap`
+- **Thin community `Community 84`** (1 nodes): `Hardware Bridge`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (1 nodes): `Print Bill Calculator Spec`
+- **Thin community `Community 85`** (1 nodes): `Monetization Strategy`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (1 nodes): `Core UX Principles`
+- **Thin community `Community 86`** (1 nodes): `Phased Roadmap`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (1 nodes): `Job Data Structure`
+- **Thin community `Community 87`** (1 nodes): `Print Bill Calculator Spec`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (1 nodes): `Non-Functional Requirements`
+- **Thin community `Community 88`** (1 nodes): `Core UX Principles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (1 nodes): `Pricing and Business Model`
+- **Thin community `Community 89`** (1 nodes): `Job Data Structure`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (1 nodes): `What It Does`
+- **Thin community `Community 90`** (1 nodes): `Non-Functional Requirements`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (1 nodes): `Getting Started`
+- **Thin community `Community 91`** (1 nodes): `Pricing and Business Model`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (1 nodes): `Python Packages`
+- **Thin community `Community 92`** (1 nodes): `What It Does`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (1 nodes): `Web App Getting Started`
+- **Thin community `Community 93`** (1 nodes): `Getting Started`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (1 nodes): `Print Sathi Project Status Overview`
+- **Thin community `Community 94`** (1 nodes): `Python Packages`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (1 nodes): `DTP Shop`
+- **Thin community `Community 95`** (1 nodes): `Web App Getting Started`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (1 nodes): `35x45 mm Size`
+- **Thin community `Community 96`** (1 nodes): `Print Sathi Project Status Overview`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (1 nodes): `A4 Photo Layout`
+- **Thin community `Community 97`** (1 nodes): `DTP Shop`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 98`** (1 nodes): `35x45 mm Size`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 99`** (1 nodes): `A4 Photo Layout`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
@@ -607,11 +614,11 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: shares_data_with) - confidence is low._
 - **What is the exact relationship between `Security and RLS Rule Category` and `Zero Payment Wallet & Capability CLI Integration`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `Schema Design Rule Category` connect `Community 3` to `Community 2`?**
+- **Why does `Schema Design Rule Category` connect `Community 3` to `Community 1`?**
   _High betweenness centrality (0.010) - this node is a cross-community bridge._
-- **Why does `padImageBuffer()` connect `Community 1` to `Community 4`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
-- **Why does `Section Definitions for Postgres Best Practices` connect `Community 2` to `Community 3`?**
+- **Why does `padImageBuffer()` connect `Community 2` to `Community 4`?**
   _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **Why does `Section Definitions for Postgres Best Practices` connect `Community 1` to `Community 3`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `padImageBuffer()` (e.g. with `set()` and `getCompressedBlob()`) actually correct?**
   _`padImageBuffer()` has 7 INFERRED edges - model-reasoned connections that need verification._

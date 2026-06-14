@@ -45,7 +45,6 @@ export function QuickModeFlow({ onWorkStatusChange }: QuickModeFlowProps) {
 
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [originalProcessedImage, setOriginalProcessedImage] = useState<string | null>(null);
-  const [faceDetected, setFaceDetected] = useState(true);
   const [faceBox, setFaceBox] = useState<number[] | null>(null);
   const [isCropping, setIsCropping] = useState(false);
   const [config, setConfig] = useState<PassportConfig>(DEFAULT_CONFIG);
@@ -82,7 +81,6 @@ export function QuickModeFlow({ onWorkStatusChange }: QuickModeFlowProps) {
       const data = await res.json();
       setOriginalProcessedImage(data.image);
       setProcessedImage(data.image);
-      setFaceDetected(data.face_detected ?? true);
       setFaceBox(data.face_box ?? null);
       setStep("configure");
     } catch (err: unknown) {
@@ -155,7 +153,6 @@ export function QuickModeFlow({ onWorkStatusChange }: QuickModeFlowProps) {
     setStep("upload");
     setProcessedImage(null);
     setOriginalProcessedImage(null);
-    setFaceDetected(true);
     setFaceBox(null);
     setIsCropping(false);
     setProcessingError(null);
