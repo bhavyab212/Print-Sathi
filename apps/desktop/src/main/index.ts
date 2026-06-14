@@ -1,6 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain, Tray, Menu } from 'electron';
 import { join } from 'path';
 import { autoUpdater } from 'electron-updater';
+import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { setupPrinterHandlers } from './ipc/printer.handlers';
 
 let mainWindow: BrowserWindow | null = null;
@@ -51,7 +52,7 @@ function createTray() {
     { label: 'Open Print Sathi', click: () => mainWindow?.show() },
     { type: 'separator' },
     { label: 'Quit', click: () => {
-      app.isQuiting = true;
+      (app as any).isQuiting = true;
       app.quit();
     }}
   ]);
@@ -65,7 +66,7 @@ function createTray() {
 
 // Keep app running in background when window is closed
 app.on('window-all-closed', (e: Event) => {
-  if (process.platform !== 'darwin') {
+  if (process.platform !== 'darwin' && !(app as any).isQuiting) {
     e.preventDefault(); // Prevent app from quitting
   }
 });

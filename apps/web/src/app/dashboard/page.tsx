@@ -1,15 +1,14 @@
 export default function DashboardPage() {
   return (
     <div className="flex flex-col items-center justify-center py-20">
-      {/* Empty Queue State */}
       <div className="mx-auto max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-50">
-          <i className="bx bx-inbox text-5xl text-blue-400"></i>
+        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+          <i className="bx bx-inbox text-5xl text-primary"></i>
         </div>
-        <h3 className="mb-2 text-xl font-semibold text-gray-900">
+        <h3 className="mb-2 text-xl font-semibold text-foreground">
           No jobs in queue
         </h3>
-        <p className="mb-8 text-sm text-gray-500">
+        <p className="mb-8 text-sm text-muted-foreground">
           When customers submit print jobs via your QR code, they&apos;ll appear
           here. Use the tools in the sidebar to get started.
         </p>
@@ -23,7 +22,7 @@ export default function DashboardPage() {
           </a>
           <a
             href="/dashboard/billing"
-            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-accent"
           >
             <i className="bx bx-calculator text-lg"></i>
             Bill Calculator

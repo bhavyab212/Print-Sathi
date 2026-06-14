@@ -8,6 +8,7 @@ export function Sidebar() {
   const navItems = [
     { name: 'Queue Dashboard', path: '/queue', icon: 'bx-layer' },
     { name: 'Passport Tool', path: '/passport', icon: 'bx-id-card' },
+    { name: 'Bg Remover', path: '/bg-remove', icon: 'bx-eraser' },
     { name: 'Bill Calculator', path: '/billing', icon: 'bx-calculator' },
     { name: 'Fix & Print', path: '/fix-print', icon: 'bx-wrench' },
     { name: 'Settings', path: '/settings', icon: 'bx-cog' },

@@ -1,0 +1,33 @@
+# Community 12
+
+> 8 nodes · cohesion 0.50
+
+## Key Concepts
+
+- **PassportConfig.tsx** (4 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/web/src/components/passport/PassportConfig.tsx`
+- **setBg()** (4 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/web/src/components/passport/PassportConfig.tsx`
+- **setCopies()** (4 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/web/src/components/passport/PassportConfig.tsx`
+- **setSize()** (4 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/web/src/components/passport/PassportConfig.tsx`
+- **PassportConfig.tsx** (4 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/web/src/components/passport/PassportConfig.tsx`
+- **PassportConfig.tsx** (3 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/desktop/src/renderer/components/passport/passport/PassportConfig.tsx`
+- **PassportConfig.tsx** (3 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/desktop/src/renderer/components/passport/passport/PassportConfig.tsx`
+- **handleFile()** (2 connections) — `/media/bhavya/backup and etc/Project/Printo_/apps/web/src/components/passport/PassportConfig.tsx`
+
+## Relationships
+
+- [[Community 15]] (21 shared connections)
+
+## Source Files
+
+- `/media/bhavya/backup and etc/Project/Printo_/apps/desktop/src/renderer/components/passport/passport/PassportConfig.tsx`
+- `/media/bhavya/backup and etc/Project/Printo_/apps/web/src/components/passport/PassportConfig.tsx`
+
+## Audit Trail
+
+- EXTRACTED: 28 (100%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
+
+---
+
+*Part of the graphify knowledge wiki. See [[index]] to navigate.*

@@ -59,8 +59,8 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
         onClick={() => !disabled && inputRef.current?.click()}
         className={`relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 transition-all
           ${dragging
-            ? "border-blue-400 bg-blue-50"
-            : "border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-blue-50/40"
+            ? "border-primary bg-primary/10"
+            : "border-border bg-muted/40 hover:border-primary/50 hover:bg-primary/5"
           }
           ${disabled ? "pointer-events-none opacity-50" : ""}
         `}
@@ -83,20 +83,20 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
               alt="Selected portrait"
               className="h-44 w-44 rounded-xl object-cover shadow-md"
             />
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Photo selected — click to change
             </p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
-              <i className="bx bx-cloud-upload text-4xl text-blue-500"></i>
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
+              <i className="bx bx-cloud-upload text-4xl text-primary"></i>
             </div>
             <div>
-              <p className="text-base font-semibold text-gray-700">
-                Drag & drop portrait here
+              <p className="text-base font-semibold text-foreground">
+                Drag &amp; drop portrait here
               </p>
-              <p className="mt-1 text-sm text-gray-400">
+              <p className="mt-1 text-sm text-muted-foreground">
                 or click to browse — JPG, PNG, HEIC · max 10 MB
               </p>
             </div>
@@ -105,7 +105,7 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
       </div>
 
       {error && (
-        <div className="mt-2 flex items-center gap-2 rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600">
+        <div className="mt-2 flex items-center gap-2 rounded-lg bg-destructive/10 px-4 py-2.5 text-sm text-destructive">
           <i className="bx bx-error-circle text-base"></i>
           {error}
         </div>

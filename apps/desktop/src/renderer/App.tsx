@@ -10,6 +10,7 @@ import LoginView from './views/LoginView';
 import OnboardingView from './views/OnboardingView';
 import QueueDashboardView from './views/QueueDashboardView';
 import PassportPhotoView from './views/PassportPhotoView';
+import BgRemoveView from './views/BgRemoveView';
 import BillCalculatorView from './views/BillCalculatorView';
 import FixPrintView from './views/FixPrintView';
 import SettingsView from './views/settings/SettingsView';
@@ -78,6 +79,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/queue" replace />} />
             <Route path="/queue" element={<QueueDashboardView />} />
             <Route path="/passport" element={<PassportPhotoView />} />
+            <Route path="/bg-remove" element={<BgRemoveView />} />
             <Route path="/billing" element={<BillCalculatorView />} />
             <Route path="/fix-print" element={<FixPrintView />} />
             

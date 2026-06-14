@@ -16,7 +16,7 @@ export function JobCard({ job }: JobCardProps) {
     setIsUpdating(false);
   };
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-800',
     approved: 'bg-blue-100 text-blue-800',
     printing: 'bg-purple-100 text-purple-800',
@@ -24,7 +24,7 @@ export function JobCard({ job }: JobCardProps) {
     rejected: 'bg-red-100 text-red-800',
   };
 
-  const workflowIcons = {
+  const workflowIcons: Record<string, string> = {
     passport_photo: 'bx-id-card text-blue-500',
     document: 'bx-file text-indigo-500',
     scan: 'bx-scan text-purple-500',

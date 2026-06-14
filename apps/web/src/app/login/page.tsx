@@ -4,6 +4,9 @@ import { Suspense, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 
+const inputClass =
+  "w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20";
+
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,10 +26,7 @@ function LoginForm() {
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
@@ -54,30 +54,48 @@ function LoginForm() {
     setLoading(false);
   }
 
+  function fillTestCredentials() {
+    setEmail("printsathi.test@gmail.com");
+    setPassword("PrintSathi@123");
+  }
+
   return (
     <div className="w-full max-w-md">
-      {/* Logo / Brand */}
+      {/* Logo */}
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30">
           <i className="bx bx-printer text-3xl text-white"></i>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Print Sathi</h1>
-        <p className="mt-1 text-sm text-gray-500">Smart Print Shop Manager</p>
+        <h1 className="text-2xl font-bold text-foreground">Print Sathi</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Smart Print Shop Manager</p>
       </div>
 
       {/* Card */}
-      <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-xl shadow-gray-200/50">
+      <div className="rounded-2xl border border-border bg-card p-8 shadow-xl shadow-black/20">
         {mode === "login" ? (
           <>
-            <h2 className="mb-6 text-lg font-semibold text-gray-900">
-              Welcome back
-            </h2>
+            <h2 className="mb-1 text-lg font-semibold text-foreground">Welcome back</h2>
+            <p className="mb-6 text-sm text-muted-foreground">Sign in to your shopkeeper account.</p>
+
+            {/* Test credentials banner */}
+            <button
+              type="button"
+              onClick={fillTestCredentials}
+              className="mb-5 flex w-full items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-left text-sm transition-all hover:bg-primary/10"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15">
+                <i className="bx bx-key text-primary text-base"></i>
+              </div>
+              <div>
+                <p className="font-semibold text-primary">Use test credentials</p>
+                <p className="text-xs text-muted-foreground">printsathi.test@gmail.com / PrintSathi@123</p>
+              </div>
+              <i className="bx bx-chevron-right ml-auto text-muted-foreground"></i>
+            </button>
+
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label
-                  htmlFor="email"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
                   Email
                 </label>
                 <input
@@ -87,14 +105,11 @@ function LoginForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="shop@example.com"
                   required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className={inputClass}
                 />
               </div>
               <div>
-                <label
-                  htmlFor="password"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-foreground">
                   Password
                 </label>
                 <input
@@ -104,12 +119,12 @@ function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className={inputClass}
                 />
               </div>
 
               {error && (
-                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                   <i className="bx bx-error-circle mr-1"></i>
                   {error}
                 </div>
@@ -133,32 +148,27 @@ function LoginForm() {
 
             <button
               onClick={() => setMode("reset")}
-              className="mt-4 w-full text-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
+              className="mt-4 w-full text-center text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Forgot your password?
             </button>
           </>
         ) : (
           <>
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">
-              Reset password
-            </h2>
-            <p className="mb-6 text-sm text-gray-500">
+            <h2 className="mb-2 text-lg font-semibold text-foreground">Reset password</h2>
+            <p className="mb-6 text-sm text-muted-foreground">
               Enter your email and we&apos;ll send a reset link.
             </p>
 
             {resetSent ? (
-              <div className="rounded-lg bg-emerald-50 p-4 text-sm text-emerald-700">
+              <div className="rounded-lg bg-emerald-500/10 p-4 text-sm text-emerald-400">
                 <i className="bx bx-check-circle mr-1"></i>
                 Check your email for the reset link!
               </div>
             ) : (
               <form onSubmit={handlePasswordReset} className="space-y-4">
                 <div>
-                  <label
-                    htmlFor="reset-email"
-                    className="mb-1.5 block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="reset-email" className="mb-1.5 block text-sm font-medium text-foreground">
                     Email
                   </label>
                   <input
@@ -168,12 +178,12 @@ function LoginForm() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="shop@example.com"
                     required
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className={inputClass}
                   />
                 </div>
 
                 {error && (
-                  <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                  <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                     <i className="bx bx-error-circle mr-1"></i>
                     {error}
                   </div>
@@ -190,12 +200,8 @@ function LoginForm() {
             )}
 
             <button
-              onClick={() => {
-                setMode("login");
-                setResetSent(false);
-                setError(null);
-              }}
-              className="mt-4 w-full text-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
+              onClick={() => { setMode("login"); setResetSent(false); setError(null); }}
+              className="mt-4 w-full text-center text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               ← Back to sign in
             </button>
@@ -203,7 +209,7 @@ function LoginForm() {
         )}
       </div>
 
-      <p className="mt-6 text-center text-xs text-gray-400">
+      <p className="mt-6 text-center text-xs text-muted-foreground">
         Print Sathi © {new Date().getFullYear()}
       </p>
     </div>
@@ -212,10 +218,10 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <Suspense
         fallback={
-          <div className="flex items-center gap-2 text-gray-400">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <i className="bx bx-loader-alt animate-spin text-xl"></i>
             Loading...
           </div>

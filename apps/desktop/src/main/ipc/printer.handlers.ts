@@ -23,7 +23,7 @@ export function setupPrinterHandlers() {
         // pdf-to-printer doesn't directly support all these options universally,
         // but we map what we can.
         sumatraPdfArgs: buildSumatraArgs(options)
-      });
+      } as any);
       return { success: true };
     } catch (error: any) {
       console.error('Failed to print file:', error);
@@ -47,7 +47,7 @@ export function setupPrinterHandlers() {
         printer: printerName,
         copies: options.copies || 1,
         sumatraPdfArgs: buildSumatraArgs(options)
-      });
+      } as any);
       
       return { success: true };
     } catch (error: any) {

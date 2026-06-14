@@ -1,6 +1,7 @@
 {
   "name": "print-sathi",
   "private": true,
+  "packageManager": "npm@10.9.7",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -8,7 +9,7 @@
   "scripts": {
     "dev:web": "turbo run dev --filter=web",
     "dev:desktop": "turbo run dev --filter=@print-sathi/desktop",
-    "dev:processing": "cd apps/processing && source .venv/bin/activate && uvicorn main:app --reload",
+    "dev:processing": "cd apps/processing && .venv/bin/python -m uvicorn main:app --reload",
     "build": "turbo run build",
     "build:web": "turbo run build --filter=web",
     "build:desktop": "turbo run build --filter=@print-sathi/desktop",
