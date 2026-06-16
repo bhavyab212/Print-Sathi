@@ -96,67 +96,65 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  @layer base {
-    :root {
-      --ps-canvas:          #0a0a0b;
-      --ps-canvas-soft:     #111113;
-      --ps-surface-1:       #161618;
-      --ps-surface-2:       #1e1e21;
-      --ps-surface-3:       #252528;
-      --ps-surface-4:       #2e2e32;
-      --ps-hairline:        #2a2a2f;
-      --ps-hairline-strong: #3a3a42;
-      --ps-hairline-soft:   #1f1f23;
-      --ps-primary:         #5c6bc8;
-      --ps-primary-hover:   #7986d8;
-      --ps-primary-active:  #4a5ab0;
-      --ps-on-primary:      #ffffff;
-      --ps-ink:             #f0f0f3;
-      --ps-ink-secondary:   #c4c4cc;
-      --ps-ink-muted:       #8a8a96;
-      --ps-ink-subtle:      #55555f;
-      --ps-success:         #27c45e;
-      --ps-success-muted:   #0f2a1a;
-      --ps-warning:         #f59e0b;
-      --ps-warning-muted:   #2a1e00;
-      --ps-danger:          #e5534b;
-      --ps-danger-muted:    #2a0f0f;
-      --ps-info:            #3b96db;
-      --ps-info-muted:      #0a1e30;
-      --ps-bubble-bot:      #1e1e21;
-      --ps-bubble-customer: #2d3158;
-      --ps-bubble-bot-text: #e0e0ea;
-      --ps-bubble-customer-text: #e8eaff;
-      --ps-accent-emerald:  #10b981;
-      --ps-accent-amber:    #f59e0b;
-      --ps-accent-sky:      #38bdf8;
-      --ps-accent-rose:     #fb7185;
-      
-      --ps-shadow-soft:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-      --ps-shadow-raised: 0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
-      --ps-shadow-float:  0 8px 24px rgba(0,0,0,0.6), 0 4px 8px rgba(0,0,0,0.4);
-      --ps-shadow-modal:  0 20px 48px rgba(0,0,0,0.7), 0 8px 16px rgba(0,0,0,0.5);
+  :root {
+    --ps-canvas:          #0a0a0b;
+    --ps-canvas-soft:     #111113;
+    --ps-surface-1:       #161618;
+    --ps-surface-2:       #1e1e21;
+    --ps-surface-3:       #252528;
+    --ps-surface-4:       #2e2e32;
+    --ps-hairline:        #2a2a2f;
+    --ps-hairline-strong: #3a3a42;
+    --ps-hairline-soft:   #1f1f23;
+    --ps-primary:         #5c6bc8;
+    --ps-primary-hover:   #7986d8;
+    --ps-primary-active:  #4a5ab0;
+    --ps-on-primary:      #ffffff;
+    --ps-ink:             #f0f0f3;
+    --ps-ink-secondary:   #c4c4cc;
+    --ps-ink-muted:       #8a8a96;
+    --ps-ink-subtle:      #55555f;
+    --ps-success:         #27c45e;
+    --ps-success-muted:   #0f2a1a;
+    --ps-warning:         #f59e0b;
+    --ps-warning-muted:   #2a1e00;
+    --ps-danger:          #e5534b;
+    --ps-danger-muted:    #2a0f0f;
+    --ps-info:            #3b96db;
+    --ps-info-muted:      #0a1e30;
+    --ps-bubble-bot:      #1e1e21;
+    --ps-bubble-customer: #2d3158;
+    --ps-bubble-bot-text: #e0e0ea;
+    --ps-bubble-customer-text: #e8eaff;
+    --ps-accent-emerald:  #10b981;
+    --ps-accent-amber:    #f59e0b;
+    --ps-accent-sky:      #38bdf8;
+    --ps-accent-rose:     #fb7185;
+    
+    --ps-shadow-soft:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+    --ps-shadow-raised: 0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+    --ps-shadow-float:  0 8px 24px rgba(0,0,0,0.6), 0 4px 8px rgba(0,0,0,0.4);
+    --ps-shadow-modal:  0 20px 48px rgba(0,0,0,0.7), 0 8px 16px rgba(0,0,0,0.5);
 
-      --background:         0 0% 4%;
-      --foreground:         240 5% 94%;
-      --card:               240 5% 9%;
-      --card-foreground:    240 5% 94%;
-      --popover:            240 5% 11%;
-      --popover-foreground: 240 5% 94%;
-      --primary:            232 50% 57%;
-      --primary-foreground: 0 0% 100%;
-      --secondary:          240 5% 16%;
-      --secondary-foreground: 240 5% 94%;
-      --muted:              240 4% 16%;
-      --muted-foreground:   240 5% 54%;
-      --accent:             240 4% 16%;
-      --accent-foreground:  240 5% 94%;
-      --destructive:        4 72% 58%;
-      --destructive-foreground: 0 0% 100%;
-      --border:             240 4% 18%;
-      --input:              240 4% 18%;
-      --ring:               232 50% 57%;
-    }
+    --background:         0 0% 4%;
+    --foreground:         240 5% 94%;
+    --card:               240 5% 9%;
+    --card-foreground:    240 5% 94%;
+    --popover:            240 5% 11%;
+    --popover-foreground: 240 5% 94%;
+    --primary:            232 50% 57%;
+    --primary-foreground: 0 0% 100%;
+    --secondary:          240 5% 16%;
+    --secondary-foreground: 240 5% 94%;
+    --muted:              240 4% 16%;
+    --muted-foreground:   240 5% 54%;
+    --accent:             240 4% 16%;
+    --accent-foreground:  240 5% 94%;
+    --destructive:        4 72% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border:             240 4% 18%;
+    --input:              240 4% 18%;
+    --ring:               232 50% 57%;
   }
 }
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
