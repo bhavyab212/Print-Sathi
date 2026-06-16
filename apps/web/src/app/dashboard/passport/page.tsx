@@ -1,17 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { QuickModeFlow } from "@/components/passport/QuickModeFlow";
 import { CustomModeFlow } from "@/components/passport/CustomModeFlow";
 
 type Mode = "quick" | "custom";
 
-export default function PassportPage() {
+function PassportFlow() {
   const [mode, setMode] = useState<Mode>("custom");
   const [hasActiveWork, setHasActiveWork] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingMode, setPendingMode] = useState<Mode | null>(null);
   const [sessionKey, setSessionKey] = useState(0);
+
+  const searchParams = useSearchParams();
+  const initialImageUrl = searchParams.get("imageUrl");
+  const initialMode = searchParams.get("mode") as Mode | null;
+  const jobId = searchParams.get("jobId");
+  const itemId = searchParams.get("itemId");
+
+  useEffect(() => {
+    if (initialMode && (initialMode === "quick" || initialMode === "custom")) {
+      setMode(initialMode);
+    }
+  }, [initialMode]);
 
   const handleModeChange = (targetMode: Mode) => {
     if (mode === targetMode) return;
@@ -39,7 +52,7 @@ export default function PassportPage() {
             onClick={() => handleModeChange("quick")}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
               mode === "quick"
-                ? "bg-white text-slate-900 shadow-sm ring-1 ring-border"
+                ? "bg-card text-foreground shadow-sm ring-1 ring-border"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -50,7 +63,7 @@ export default function PassportPage() {
             onClick={() => handleModeChange("custom")}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
               mode === "custom"
-                ? "bg-white text-slate-900 shadow-sm ring-1 ring-border"
+                ? "bg-card text-foreground shadow-sm ring-1 ring-border"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -64,11 +77,11 @@ export default function PassportPage() {
       <div className="flex-1 min-h-0 relative">
         {mode === "quick" ? (
           <div className="absolute inset-0 bg-background p-6">
-            <QuickModeFlow key={`quick-${sessionKey}`} onWorkStatusChange={setHasActiveWork} />
+            <QuickModeFlow key={`quick-${sessionKey}`} onWorkStatusChange={setHasActiveWork} initialImageUrl={initialImageUrl} jobId={jobId} itemId={itemId} />
           </div>
         ) : (
           <div className="absolute inset-0 bg-background pt-6 px-6">
-            <CustomModeFlow key={`custom-${sessionKey}`} onWorkStatusChange={setHasActiveWork} />
+            <CustomModeFlow key={`custom-${sessionKey}`} onWorkStatusChange={setHasActiveWork} initialImageUrl={initialImageUrl} jobId={jobId} itemId={itemId} />
           </div>
         )}
       </div>
@@ -122,5 +135,13 @@ export default function PassportPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PassportPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading passport studio...</div>}>
+      <PassportFlow />
+    </Suspense>
   );
 }

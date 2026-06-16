@@ -278,7 +278,7 @@ export default function SettingsPage() {
           onClick={() => setActiveTab("profile")}
           className={`flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold transition-all ${
             activeTab === "profile"
-              ? "bg-white text-foreground shadow-md ring-1 ring-border/20"
+              ? "bg-card text-foreground shadow-md ring-1 ring-border/20"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -289,7 +289,7 @@ export default function SettingsPage() {
           onClick={() => setActiveTab("rates")}
           className={`flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold transition-all ${
             activeTab === "rates"
-              ? "bg-white text-foreground shadow-md ring-1 ring-border/20"
+              ? "bg-card text-foreground shadow-md ring-1 ring-border/20"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -320,9 +320,12 @@ export default function SettingsPage() {
                 id="shopName"
                 type="text"
                 required
+                minLength={3}
+                maxLength={50}
                 value={shopName}
                 onChange={e => setShopName(e.target.value)}
-                placeholder="Sharma Xerox Center"
+                placeholder="E.g. Sharma Xerox Center"
+                title="Shop name must be between 3 and 50 characters"
                 className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm transition-all focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
@@ -335,10 +338,12 @@ export default function SettingsPage() {
                 id="phone"
                 type="tel"
                 required
+                pattern="[0-9]{10}"
+                title="Please enter a valid 10-digit mobile number (e.g., 9876543210)"
                 value={phone}
-                onChange={e => setPhone(e.target.value)}
-                placeholder="9876543210"
-                className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm transition-all focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                placeholder="E.g. 9876543210"
+                className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm transition-all focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono"
               />
             </div>
 
@@ -350,9 +355,12 @@ export default function SettingsPage() {
                 id="area"
                 type="text"
                 required
+                minLength={3}
+                maxLength={80}
                 value={area}
                 onChange={e => setArea(e.target.value)}
-                placeholder="Laxmi Nagar, Delhi"
+                placeholder="E.g. Laxmi Nagar, Delhi"
+                title="Area must be between 3 and 80 characters"
                 className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm transition-all focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
@@ -364,9 +372,11 @@ export default function SettingsPage() {
               <input
                 id="address"
                 type="text"
+                maxLength={200}
                 value={address}
                 onChange={e => setAddress(e.target.value)}
-                placeholder="Shop No. 4, Main Road, opposite Metro Station"
+                placeholder="E.g. Shop No. 4, Main Road, opposite Metro Station"
+                title="Full address can be up to 200 characters"
                 className="w-full rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm transition-all focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
@@ -580,7 +590,7 @@ function RateRow({ rate, isSaving, onUpdate, onDelete }: RateRowProps) {
               <button
                 onClick={handleCancel}
                 disabled={isSaving}
-                className="rounded-lg border border-border bg-white text-muted-foreground p-2 hover:bg-muted/50 transition-colors"
+                className="rounded-lg border border-border bg-card text-muted-foreground p-2 hover:bg-muted/50 transition-colors"
               >
                 <i className="bx bx-x text-md"></i>
               </button>
@@ -589,7 +599,7 @@ function RateRow({ rate, isSaving, onUpdate, onDelete }: RateRowProps) {
             <>
               <button
                 onClick={() => setEditing(true)}
-                className="rounded-lg border border-border bg-white text-muted-foreground px-2.5 py-1.5 hover:bg-muted/50 text-xs font-semibold flex items-center gap-1 transition-all"
+                className="rounded-lg border border-border bg-card text-muted-foreground px-2.5 py-1.5 hover:bg-muted/50 text-xs font-semibold flex items-center gap-1 transition-all"
               >
                 <i className="bx bx-edit text-sm"></i>
                 Edit
@@ -598,7 +608,7 @@ function RateRow({ rate, isSaving, onUpdate, onDelete }: RateRowProps) {
                 <button
                   onClick={() => onDelete(rate.id)}
                   disabled={isSaving}
-                  className="rounded-lg border border-destructive/20 bg-white text-destructive p-1.5 hover:bg-destructive/10 transition-colors"
+                  className="rounded-lg border border-destructive/20 bg-card text-destructive p-1.5 hover:bg-destructive/10 transition-colors"
                 >
                   <i className="bx bx-trash text-sm"></i>
                 </button>

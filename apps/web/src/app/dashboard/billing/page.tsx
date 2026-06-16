@@ -555,7 +555,7 @@ export default function BillingPage() {
               <button
                 onClick={() => setShowPrintModal(true)}
                 disabled={billItems.length === 0}
-                className="flex-1 rounded-xl border border-border bg-white text-foreground hover:bg-muted font-bold py-3 text-sm flex items-center justify-center gap-1.5 shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+                className="flex-1 rounded-xl border border-border bg-card text-foreground hover:bg-muted font-bold py-3 text-sm flex items-center justify-center gap-1.5 shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
               >
                 <i className="bx bx-printer text-lg"></i>
                 Print Receipt
@@ -676,7 +676,7 @@ export default function BillingPage() {
             <div className="p-4 bg-muted/10 border-t border-border flex gap-2">
               <button
                 onClick={() => setShowPrintModal(false)}
-                className="flex-1 rounded-xl border border-border bg-white text-foreground hover:bg-muted font-semibold py-2.5 text-xs shadow-sm transition-all"
+                className="flex-1 rounded-xl border border-border bg-card text-foreground hover:bg-muted font-semibold py-2.5 text-xs shadow-sm transition-all"
               >
                 Close Preview
               </button>

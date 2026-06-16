@@ -78,6 +78,44 @@ function ConnectionStatusBadge() {
   );
 }
 
+function ThemeToggle() {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const initialTheme = savedTheme || systemTheme;
+    setTheme(initialTheme);
+    if (initialTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted/65 border border-border/50 text-foreground transition-all hover:bg-accent backdrop-blur-sm shadow-sm active:scale-95"
+      title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      aria-label="Toggle theme"
+    >
+      <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"} text-lg`} />
+    </button>
+  );
+}
+
 const navItems = [
   { label: "Queue", href: "/dashboard", icon: "bx-list-ul" },
   { label: "Passport Photo", href: "/dashboard/passport", icon: "bx-id-card" },
@@ -177,13 +215,14 @@ export default function DashboardLayout({
             </h2>
           </div>
 
-          <ConnectionStatusBadge />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <ConnectionStatusBadge />
+          </div>
         </header>
 
         {/* Page content */}
-        <main className={`flex-1 flex flex-col overflow-hidden bg-background ${pathname === '/dashboard' ? 'p-0' : 'p-6'}`}>
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto bg-background p-6">{children}</main>
       </div>
     </div>
   );

@@ -68,7 +68,7 @@ const STATUS_CONFIG: Record<string, { label: string; stripe: string; badgeClass:
 // ── Loading Skeleton ───────────────────────────────────────────────────────
 function DashboardSkeleton() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--ps-canvas)' }}>
+    <div className="h-[calc(100vh-112px)] flex flex-col overflow-hidden rounded-2xl border border-border" style={{ background: 'var(--ps-canvas)' }}>
       <div className="h-14 flex items-center gap-3 px-4 shrink-0" style={{ background: 'var(--ps-canvas-soft)', borderBottom: '1px solid var(--ps-hairline)' }}>
         <div className="skeleton w-9 h-9 rounded-full" />
         <div className="flex-1 space-y-1.5">
@@ -127,7 +127,7 @@ function QueueDashboardContent() {
   const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
   const [newJobIds, setNewJobIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const searchParams = useSearchParams();
   const overrideShopId = searchParams.get('shopId');
@@ -281,10 +281,13 @@ function QueueDashboardContent() {
   const completedJobs = jobs.filter(j => j.status === 'done' || j.status === 'rejected');
 
   useEffect(() => {
-    if (selectedJob) {
-      setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 150);
+    if (selectedJob && chatContainerRef.current) {
+      const el = chatContainerRef.current;
+      setTimeout(() => {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      }, 150);
     }
-  }, [selectedJob]);
+  }, [selectedJob, selectedJob?.job_items]);
 
   if (loading) return <DashboardSkeleton />;
 
@@ -434,6 +437,7 @@ function QueueDashboardContent() {
 
         {/* ── Chat Thread Area ──────────────────────────────────────── */}
         <div
+          ref={chatContainerRef}
           className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 chat-wallpaper"
         >
           {/* Status events (center pills) */}
@@ -443,15 +447,15 @@ function QueueDashboardContent() {
             </div>
           ))}
 
-          {/* Customer note bubble (left side — from customer) */}
+          {/* Customer note bubble (right side — from customer) */}
           {selectedJob.notes && (
-            <div className="flex justify-start animate-slide-in-left">
+            <div className="flex justify-end animate-slide-in-right">
               <div className="max-w-[75%]">
-                <div className="bubble-bot">
-                  <p className="text-xs font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--ps-ink-muted)' }}>📝 Note from customer</p>
-                  <p className="text-sm" style={{ color: 'var(--ps-bubble-bot-text)' }}>{selectedJob.notes}</p>
+                <div className="bubble-customer">
+                  <p className="text-xs font-semibold mb-1 uppercase tracking-wider" style={{ color: 'rgba(232,234,255,0.5)' }}>📝 Note from customer</p>
+                  <p className="text-sm">{selectedJob.notes}</p>
                 </div>
-                <p className="text-[10px] mt-1 pl-1" style={{ color: 'var(--ps-ink-subtle)' }}>
+                <p className="text-[10px] text-right mt-1 pr-1" style={{ color: 'var(--ps-ink-subtle)' }}>
                   {formatTime(selectedJob.created_at)} <i className="bx bx-check-double" style={{ color: 'var(--ps-primary)' }}></i>
                 </p>
               </div>
@@ -593,8 +597,6 @@ function QueueDashboardContent() {
               </div>
             </div>
           )}
-
-          <div ref={chatEndRef} />
         </div>
 
         {/* ── Action Tray (BMW-precision flat bar) ─────────────────── */}
@@ -674,8 +676,11 @@ function QueueDashboardContent() {
     );
   };
 
+  // ── Main Layout ────────────────────────────────────────────────────────
   return (
-    <div className="flex-1 w-full flex flex-col relative min-h-0" style={{ background: 'var(--ps-canvas)' }}>
+    <div className="h-[calc(100vh-112px)] flex flex-col overflow-hidden rounded-2xl border border-border" style={{ background: 'var(--ps-canvas)' }}>
+
+      {/* ── Top App Bar ───────────────────────────────────────────────── */}
       <header
         className="flex items-center gap-3 px-4 shrink-0 z-20"
         style={{

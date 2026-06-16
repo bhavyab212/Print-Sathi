@@ -9,58 +9,63 @@
 
 @layer base {
   :root {
-    /* ── Light Mode Default (Canvas & Surfaces) ─────────────────────── */
-    --ps-canvas:          #ffffff;
-    --ps-canvas-soft:     #f8f9fa;
-    --ps-surface-1:       #f1f3f5;
-    --ps-surface-2:       #e9ecef;
-    --ps-surface-3:       #dee2e6;
-    --ps-surface-4:       #ced4da;
+    /* ── Canvas (page floor, light theme) ───────────────────────────── */
+    --ps-canvas:          #f4f5f6;
+    --ps-canvas-soft:     #eaecef;
+
+    /* ── Surface Ladder (4 steps above canvas) ─────────────────────── */
+    --ps-surface-1:       #ffffff;
+    --ps-surface-2:       #f8f9fa;
+    --ps-surface-3:       #f1f3f5;
+    --ps-surface-4:       #e9ecef;
 
     /* ── Hairlines / Borders ────────────────────────────────────────── */
     --ps-hairline:        #e5e7eb;
     --ps-hairline-strong: #d1d5db;
     --ps-hairline-soft:   #f3f4f6;
 
-    /* ── Brand Accent ───────────────────────────────────────────────── */
+    /* ── Brand Accent ────────────────────────────────────────────────── */
     --ps-primary:         #4f46e5;
-    --ps-primary-hover:   #4338ca;
+    --ps-primary-hover:   #6366f1;
     --ps-primary-active:  #3730a3;
     --ps-on-primary:      #ffffff;
 
     /* ── Text Hierarchy ─────────────────────────────────────────────── */
-    --ps-ink:             #111827;
-    --ps-ink-secondary:   #374151;
-    --ps-ink-muted:       #6b7280;
-    --ps-ink-subtle:      #9ca3af;
+    --ps-ink:             #0f172a;
+    --ps-ink-secondary:   #334155;
+    --ps-ink-muted:       #475569;
+    --ps-ink-subtle:      #64748b;
 
     /* ── Semantic Status Colors ─────────────────────────────────────── */
-    --ps-success:         #10b981;
-    --ps-success-muted:   #d1fae5;
-    --ps-warning:         #f59e0b;
+    --ps-success:         #16a34a;
+    --ps-success-muted:   #dcfce7;
+    --ps-warning:         #d97706;
     --ps-warning-muted:   #fef3c7;
-    --ps-danger:          #ef4444;
+    --ps-danger:          #dc2626;
     --ps-danger-muted:    #fee2e2;
-    --ps-info:            #3b82f6;
+    --ps-info:            #2563eb;
     --ps-info-muted:      #dbeafe;
 
-    /* ── Chat Bubble Colors ─────────────────────────────────────────── */
-    --ps-bubble-bot:           #f3f4f6;
+    /* ── Chat Bubble Colors (light theme) ───────────────────────────── */
+    --ps-bubble-bot:           #f1f5f9;
     --ps-bubble-customer:      #e0e7ff;
-    --ps-bubble-bot-text:      #1f2937;
-    --ps-bubble-customer-text: #1e3a8a;
+    --ps-bubble-bot-text:      #0f172a;
+    --ps-bubble-customer-text: #1e1b4b;
 
-    /* ── Decorative Accents ─────────────────────────────────────────── */
-    --ps-accent-emerald: #059669;
-    --ps-accent-amber:   #d97706;
-    --ps-accent-sky:     #0284c7;
-    --ps-accent-rose:    #e11d48;
+    /* ── Decorative Accents (sparingly, never structural) ───────────── */
+    --ps-accent-emerald: #10b981;
+    --ps-accent-amber:   #f59e0b;
+    --ps-accent-sky:     #38bdf8;
+    --ps-accent-rose:    #fb7185;
 
-    /* ── Elevation / Shadows ────────────────────────────────────────── */
-    --ps-shadow-soft:   0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
-    --ps-shadow-raised: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-    --ps-shadow-float:  0 8px 24px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
-    --ps-shadow-modal:  0 20px 48px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.08);
+    /* ── Elevation / Shadows (softened for light mode) ───────────────── */
+    --ps-shadow-soft:   0 1px 2px rgba(0,0,0,0.05);
+    --ps-shadow-raised: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --ps-shadow-float:  0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --ps-shadow-modal:  0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+
+    /* ── Wallpaper Dot Grid ─────────────────────────────────────────── */
+    --ps-wallpaper-dot:   rgba(15, 23, 42, 0.03);
 
     /* ── Motion ─────────────────────────────────────────────────────── */
     --ps-duration-fast:    120ms;
@@ -71,49 +76,58 @@
     --ps-ease-smooth:      cubic-bezier(0.4, 0, 0.2, 1);
     --ps-ease-out:         cubic-bezier(0, 0, 0.2, 1);
 
-    /* ── Shadcn compatibility (light mode) ──────────────────── */
+    /* ── Shadcn compatibility (mapped to PS tokens) ──────────────────── */
     --background:         0 0% 100%;
-    --foreground:         240 10% 3.9%;
+    --foreground:         222.2 84% 4.9%;
     --card:               0 0% 100%;
-    --card-foreground:    240 10% 3.9%;
+    --card-foreground:    222.2 84% 4.9%;
     --popover:            0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary:            240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary:          240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted:              240 4.8% 95.9%;
-    --muted-foreground:   240 3.8% 46.1%;
-    --accent:             240 4.8% 95.9%;
-    --accent-foreground:  240 5.9% 10%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary:            243.3 75.4% 58.6%; /* #4f46e5 */
+    --primary-foreground: 210 40% 98%;
+    --secondary:          210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted:              210 40% 96.1%;
+    --muted-foreground:   215.4 16.3% 46.9%;
+    --accent:             210 40% 96.1%;
+    --accent-foreground:  222.2 47.4% 11.2%;
     --destructive:        0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border:             240 5.9% 90%;
-    --input:              240 5.9% 90%;
-    --ring:               240 10% 3.9%;
+    --destructive-foreground: 210 40% 98%;
+    --border:             214.3 31.8% 91.4%;
+    --input:              214.3 31.8% 91.4%;
+    --ring:               243.3 75.4% 58.6%;
     --radius:             0.5rem;
   }
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
+  .dark {
+    /* ── Canvas (page floor, Linear DNA) ───────────────────────────── */
     --ps-canvas:          #0a0a0b;
     --ps-canvas-soft:     #111113;
+
+    /* ── Surface Ladder (4 steps above canvas) ─────────────────────── */
     --ps-surface-1:       #161618;
     --ps-surface-2:       #1e1e21;
     --ps-surface-3:       #252528;
     --ps-surface-4:       #2e2e32;
+
+    /* ── Hairlines / Borders ────────────────────────────────────────── */
     --ps-hairline:        #2a2a2f;
     --ps-hairline-strong: #3a3a42;
     --ps-hairline-soft:   #1f1f23;
+
+    /* ── Brand Accent ────────────────────────────────────────────────── */
     --ps-primary:         #5c6bc8;
     --ps-primary-hover:   #7986d8;
     --ps-primary-active:  #4a5ab0;
     --ps-on-primary:      #ffffff;
+
+    /* ── Text Hierarchy ─────────────────────────────────────────────── */
     --ps-ink:             #f0f0f3;
     --ps-ink-secondary:   #c4c4cc;
     --ps-ink-muted:       #8a8a96;
     --ps-ink-subtle:      #55555f;
+
+    /* ── Semantic Status Colors ─────────────────────────────────────── */
     --ps-success:         #27c45e;
     --ps-success-muted:   #0f2a1a;
     --ps-warning:         #f59e0b;
@@ -122,41 +136,45 @@
     --ps-danger-muted:    #2a0f0f;
     --ps-info:            #3b96db;
     --ps-info-muted:      #0a1e30;
-    --ps-bubble-bot:      #1e1e21;
-    --ps-bubble-customer: #2d3158;
-    --ps-bubble-bot-text: #e0e0ea;
+
+    /* ── Chat Bubble Colors (WhatsApp-inspired, dark remix) ─────────── */
+    --ps-bubble-bot:           #1e1e21;
+    --ps-bubble-customer:      #2d3158;
+    --ps-bubble-bot-text:      #e0e0ea;
     --ps-bubble-customer-text: #e8eaff;
-    --ps-accent-emerald:  #10b981;
-    --ps-accent-amber:    #f59e0b;
-    --ps-accent-sky:      #38bdf8;
-    --ps-accent-rose:     #fb7185;
-    
+
+    /* ── Elevation / Shadows ────────────────────────────────────────── */
     --ps-shadow-soft:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
     --ps-shadow-raised: 0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
     --ps-shadow-float:  0 8px 24px rgba(0,0,0,0.6), 0 4px 8px rgba(0,0,0,0.4);
     --ps-shadow-modal:  0 20px 48px rgba(0,0,0,0.7), 0 8px 16px rgba(0,0,0,0.5);
 
-    --background:         0 0% 4%;
-    --foreground:         240 5% 94%;
-    --card:               240 5% 9%;
-    --card-foreground:    240 5% 94%;
-    --popover:            240 5% 11%;
-    --popover-foreground: 240 5% 94%;
+    /* ── Wallpaper Dot Grid ─────────────────────────────────────────── */
+    --ps-wallpaper-dot:   rgba(255, 255, 255, 0.015);
+
+    /* ── Shadcn compatibility (mapped to PS tokens) ──────────────────── */
+    --background:         240 10% 3.9%;
+    --foreground:         0 0% 98%;
+    --card:               240 10% 3.9%;
+    --card-foreground:    0 0% 98%;
+    --popover:            240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
     --primary:            232 50% 57%;
     --primary-foreground: 0 0% 100%;
-    --secondary:          240 5% 16%;
-    --secondary-foreground: 240 5% 94%;
-    --muted:              240 4% 16%;
-    --muted-foreground:   240 5% 54%;
-    --accent:             240 4% 16%;
-    --accent-foreground:  240 5% 94%;
-    --destructive:        4 72% 58%;
-    --destructive-foreground: 0 0% 100%;
-    --border:             240 4% 18%;
-    --input:              240 4% 18%;
+    --secondary:          240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted:              240 3.7% 15.9%;
+    --muted-foreground:   240 5% 64.9%;
+    --accent:             240 3.7% 15.9%;
+    --accent-foreground:  0 0% 98%;
+    --destructive:        0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border:             240 3.7% 15.9%;
+    --input:              240 3.7% 15.9%;
     --ring:               232 50% 57%;
   }
 }
+
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
 @layer base {
   * {
@@ -477,7 +495,7 @@
 /* ─── Chat wallpaper pattern (subtle dot grid) ────────────────────────────── */
 .chat-wallpaper {
   background-color: var(--ps-canvas);
-  background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--ps-wallpaper-dot) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
