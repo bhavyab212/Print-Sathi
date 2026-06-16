@@ -93,8 +93,10 @@
     --ring:               240 10% 3.9%;
     --radius:             0.5rem;
   }
+}
 
-  @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
+  @layer base {
     :root {
       --ps-canvas:          #0a0a0b;
       --ps-canvas-soft:     #111113;
@@ -157,7 +159,7 @@
     }
   }
 }
-
+}
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
 @layer base {
   * {
