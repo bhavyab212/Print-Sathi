@@ -181,7 +181,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Page content */}
-        <main className={`flex-1 overflow-hidden bg-background ${pathname === '/dashboard' ? 'p-0' : 'p-6'}`}>
+        <main className={`flex-1 flex flex-col overflow-hidden bg-background ${pathname === '/dashboard' ? 'p-0' : 'p-6'}`}>
           {children}
         </main>
       </div>

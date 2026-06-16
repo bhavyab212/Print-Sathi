@@ -443,15 +443,15 @@ function QueueDashboardContent() {
             </div>
           ))}
 
-          {/* Customer note bubble (right side — from customer) */}
+          {/* Customer note bubble (left side — from customer) */}
           {selectedJob.notes && (
-            <div className="flex justify-end animate-slide-in-right">
+            <div className="flex justify-start animate-slide-in-left">
               <div className="max-w-[75%]">
-                <div className="bubble-customer">
-                  <p className="text-xs font-semibold mb-1 uppercase tracking-wider" style={{ color: 'rgba(232,234,255,0.5)' }}>📝 Note from customer</p>
-                  <p className="text-sm">{selectedJob.notes}</p>
+                <div className="bubble-bot">
+                  <p className="text-xs font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--ps-ink-muted)' }}>📝 Note from customer</p>
+                  <p className="text-sm" style={{ color: 'var(--ps-bubble-bot-text)' }}>{selectedJob.notes}</p>
                 </div>
-                <p className="text-[10px] text-right mt-1 pr-1" style={{ color: 'var(--ps-ink-subtle)' }}>
+                <p className="text-[10px] mt-1 pl-1" style={{ color: 'var(--ps-ink-subtle)' }}>
                   {formatTime(selectedJob.created_at)} <i className="bx bx-check-double" style={{ color: 'var(--ps-primary)' }}></i>
                 </p>
               </div>
@@ -675,7 +675,7 @@ function QueueDashboardContent() {
   };
 
   return (
-    <div className="h-full w-full flex flex-col relative" style={{ background: 'var(--ps-canvas)' }}>
+    <div className="flex-1 w-full flex flex-col relative min-h-0" style={{ background: 'var(--ps-canvas)' }}>
       <header
         className="flex items-center gap-3 px-4 shrink-0 z-20"
         style={{
