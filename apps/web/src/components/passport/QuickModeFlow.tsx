@@ -34,9 +34,12 @@ const DEFAULT_CONFIG: PassportConfig = {
 
 interface QuickModeFlowProps {
   onWorkStatusChange: (hasWork: boolean) => void;
+  initialImageUrl?: string | null;
+  jobId?: string | null;
+  itemId?: string | null;
 }
 
-export function QuickModeFlow({ onWorkStatusChange }: QuickModeFlowProps) {
+export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, itemId }: QuickModeFlowProps) {
   const [step, setStep] = useState<Step>("upload");
 
   useEffect(() => {
@@ -90,6 +93,21 @@ export function QuickModeFlow({ onWorkStatusChange }: QuickModeFlowProps) {
       setStep("upload");
     }
   }, []);
+
+  // ── Auto-load initial image if provided ─────────────────────────────────
+  useEffect(() => {
+    if (initialImageUrl && step === "upload") {
+      fetch(initialImageUrl)
+        .then(r => r.blob())
+        .then(blob => {
+          const file = new File([blob], "passport-photo.jpg", { type: blob.type || "image/jpeg" });
+          handleFileSelected(file);
+        })
+        .catch(err => {
+          setProcessingError("Could not load initial image from URL");
+        });
+    }
+  }, [initialImageUrl, step, handleFileSelected]);
 
   // ── Crop callbacks ───────────────────────────────────────────────────
   const handleCropApply = useCallback((
@@ -323,6 +341,8 @@ export function QuickModeFlow({ onWorkStatusChange }: QuickModeFlowProps) {
                 printing={printing}
                 onReset={handleReset}
                 onCropClick={() => setIsCropping(true)}
+                jobId={jobId}
+                itemId={itemId}
               />
             </div>
           )}

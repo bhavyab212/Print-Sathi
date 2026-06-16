@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Button, GlassCard, GlassPanel } from "@/components/ui";
 
 interface RateItem {
   id: string;
@@ -218,17 +219,14 @@ export default function BillingPage() {
 
   if (error && !shopId) {
     return (
-      <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-6 text-center text-destructive">
+      <GlassCard className="glow-danger p-8 text-center text-[var(--ps-danger)]">
         <i className="bx bx-error-circle mb-2 text-4xl"></i>
-        <h3 className="text-lg font-bold">Billing Error</h3>
-        <p className="mt-1 text-sm">{error}</p>
-        <button
-          onClick={fetchData}
-          className="mt-4 rounded-xl bg-destructive px-5 py-2 text-sm font-semibold text-white hover:bg-destructive/90"
-        >
+        <h3 className="text-h3 font-display">Billing Error</h3>
+        <p className="mt-1 text-body text-[var(--ps-ink-muted)]">{error}</p>
+        <Button variant="danger" size="md" onClick={fetchData} className="mt-5">
           Try Again
-        </button>
-      </div>
+        </Button>
+      </GlassCard>
     );
   }
 
@@ -271,9 +269,9 @@ export default function BillingPage() {
       }} />
 
       {/* LEFT COLUMN: Pricing grid selector */}
-      <div className="flex-1 flex flex-col min-w-0 border border-border bg-card rounded-2xl overflow-hidden shadow-sm">
+      <div className="flex-1 flex flex-col min-w-0 glass glass-rim rounded-3xl overflow-hidden shadow-glass">
         {/* Search header */}
-        <div className="p-4 border-b border-border bg-muted/10 flex flex-col sm:flex-row items-center gap-3">
+        <div className="p-4 border-b border-[var(--ps-hairline)] flex flex-col sm:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               <i className="bx bx-search text-lg"></i>
@@ -283,7 +281,7 @@ export default function BillingPage() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search pricing items..."
-              className="w-full rounded-xl border border-border bg-muted/30 py-2.5 pl-10 pr-4 text-sm transition-all focus:border-primary focus:bg-background focus:outline-none"
+              className="w-full rounded-xl neu-inset py-2.5 pl-10 pr-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[var(--ps-primary)]/40 focus:shadow-[var(--glow-primary)]"
             />
           </div>
           {searchQuery && (
@@ -317,10 +315,10 @@ export default function BillingPage() {
                 return (
                   <div
                     key={rate.id}
-                    className={`rounded-xl border p-4 transition-all duration-200 flex flex-col justify-between gap-3 ${
+                    className={`rounded-2xl p-4 transition-all duration-200 flex flex-col justify-between gap-3 ${
                       qty > 0
-                        ? "border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20"
-                        : "border-border hover:border-border/80 hover:bg-muted/5"
+                        ? "glass glass-rim shadow-[var(--glow-primary)] ring-1 ring-[var(--ps-primary)]/30"
+                        : "neu hover:shadow-[var(--elev-2)]"
                     }`}
                   >
                     <div>
@@ -336,38 +334,38 @@ export default function BillingPage() {
                     <div className="flex items-center gap-1.5 mt-2">
                       <button
                         onClick={() => addQuickQuantity(rate, 1)}
-                        className="flex-1 bg-secondary text-foreground text-xs font-semibold py-1 rounded-lg hover:bg-secondary/80 border border-border"
+                        className="flex-1 neu text-foreground text-xs font-semibold py-1.5 rounded-lg hover:text-primary transition-all"
                       >
                         +1
                       </button>
                       <button
                         onClick={() => addQuickQuantity(rate, 5)}
-                        className="flex-1 bg-secondary text-foreground text-xs font-semibold py-1 rounded-lg hover:bg-secondary/80 border border-border"
+                        className="flex-1 neu text-foreground text-xs font-semibold py-1.5 rounded-lg hover:text-primary transition-all"
                       >
                         +5
                       </button>
                       <button
                         onClick={() => addQuickQuantity(rate, 10)}
-                        className="flex-1 bg-secondary text-foreground text-xs font-semibold py-1 rounded-lg hover:bg-secondary/80 border border-border"
+                        className="flex-1 neu text-foreground text-xs font-semibold py-1.5 rounded-lg hover:text-primary transition-all"
                       >
                         +10
                       </button>
                       <button
                         onClick={() => addQuickQuantity(rate, 50)}
-                        className="flex-1 bg-secondary text-foreground text-xs font-semibold py-1 rounded-lg hover:bg-secondary/80 border border-border"
+                        className="flex-1 neu text-foreground text-xs font-semibold py-1.5 rounded-lg hover:text-primary transition-all"
                       >
                         +50
                       </button>
                     </div>
 
                     {/* Numeric Input & Decrement */}
-                    <div className="flex items-center justify-between border-t border-border/50 pt-3 mt-1">
+                    <div className="flex items-center justify-between border-t border-[var(--ps-hairline)] pt-3 mt-1">
                       <span className="text-xs text-muted-foreground">Qty Selected</span>
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => updateQuantity(rate, Math.max(0, qty - 1))}
                           disabled={qty === 0}
-                          className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted disabled:opacity-30"
+                          className="w-8 h-8 rounded-lg neu flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30"
                         >
                           <i className="bx bx-minus"></i>
                         </button>
@@ -377,11 +375,11 @@ export default function BillingPage() {
                           value={qty || ""}
                           placeholder="0"
                           onChange={e => updateQuantity(rate, parseInt(e.target.value) || 0)}
-                          className="w-12 text-center text-sm font-semibold border border-border rounded-lg py-1 focus:outline-none"
+                          className="w-12 text-center text-sm font-mono font-semibold neu-inset rounded-lg py-1 focus:outline-none focus:ring-2 focus:ring-[var(--ps-primary)]/40"
                         />
                         <button
                           onClick={() => updateQuantity(rate, qty + 1)}
-                          className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted"
+                          className="w-8 h-8 rounded-lg neu flex items-center justify-center text-muted-foreground hover:text-primary"
                         >
                           <i className="bx bx-plus"></i>
                         </button>
@@ -396,12 +394,12 @@ export default function BillingPage() {
       </div>
 
       {/* RIGHT COLUMN: Invoice calculator details */}
-      <div className="w-full lg:w-96 shrink-0 border border-border bg-card rounded-2xl flex flex-col justify-between shadow-sm overflow-hidden">
+      <div className="w-full lg:w-96 shrink-0 glass-strong glass-rim rounded-3xl flex flex-col justify-between shadow-glass overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-border bg-muted/10 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-[var(--ps-hairline)] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <i className="bx bx-receipt text-xl text-primary"></i>
-            <h3 className="font-bold text-foreground">Selected Items</h3>
+            <h3 className="text-h3 font-display text-foreground">Selected Items</h3>
           </div>
           {billItems.length > 0 && (
             <button
@@ -414,7 +412,7 @@ export default function BillingPage() {
         </div>
 
         {/* Selected List */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-border/60">
+        <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-[var(--ps-hairline)]">
           {billItems.length === 0 ? (
             <div className="h-48 flex flex-col items-center justify-center text-muted-foreground">
               <i className="bx bx-calculator text-3xl mb-1.5"></i>
@@ -449,7 +447,7 @@ export default function BillingPage() {
         </div>
 
         {/* Controls & Calculations */}
-        <div className="border-t border-border bg-muted/5 p-6 space-y-4 shrink-0">
+        <div className="border-t border-[var(--ps-hairline)] p-6 space-y-4 shrink-0">
           {/* Disount & Tax selectors */}
           <div className="grid grid-cols-2 gap-3">
             <div className="relative">
@@ -460,16 +458,16 @@ export default function BillingPage() {
                 value={discount}
                 onChange={e => setDiscount(e.target.value)}
                 placeholder="Discount"
-                className="w-full rounded-xl border border-border bg-background py-2 pl-12 pr-3 text-sm focus:outline-none"
+                className="w-full rounded-xl neu-inset py-2 pl-12 pr-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ps-primary)]/40"
               />
             </div>
 
             <button
               onClick={() => setTaxEnabled(!taxEnabled)}
-              className={`rounded-xl border py-2 px-3 text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              className={`rounded-xl py-2 px-3 text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
                 taxEnabled
-                  ? "border-primary bg-primary/10 text-primary shadow-sm"
-                  : "border-border bg-background text-muted-foreground hover:bg-muted"
+                  ? "bg-[var(--ps-primary)] text-white shadow-[var(--glow-primary)]"
+                  : "neu text-muted-foreground hover:text-foreground"
               }`}
             >
               <i className={`bx ${taxEnabled ? "bx-checkbox-checked" : "bx-checkbox"} text-lg`}></i>
@@ -478,13 +476,13 @@ export default function BillingPage() {
           </div>
 
           {/* Line items */}
-          <div className="space-y-2 text-sm border-t border-border/50 pt-4 font-medium">
+          <div className="space-y-2 text-sm border-t border-[var(--ps-hairline)] pt-4 font-medium">
             <div className="flex justify-between text-muted-foreground">
               <span>Subtotal</span>
               <span className="font-mono">₹{subtotal.toFixed(2)}</span>
             </div>
             {discountVal > 0 && (
-              <div className="flex justify-between text-emerald-600">
+              <div className="flex justify-between text-[var(--ps-success)]">
                 <span>Discount</span>
                 <span className="font-mono">-₹{discountVal.toFixed(2)}</span>
               </div>
@@ -501,14 +499,14 @@ export default function BillingPage() {
                 </div>
               </>
             )}
-            <div className="flex justify-between text-base font-bold text-foreground border-t border-border/50 pt-2.5">
+            <div className="flex justify-between text-base font-bold text-foreground border-t border-[var(--ps-hairline)] pt-2.5">
               <span>Grand Total</span>
-              <span className="font-mono text-primary">₹{grandTotal.toFixed(2)}</span>
+              <span className="font-mono text-gradient">₹{grandTotal.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Return balance calculator */}
-          <div className="bg-muted/40 border border-border p-3.5 rounded-xl space-y-2">
+          <div className="neu-inset p-3.5 rounded-xl space-y-2">
             <div className="flex items-center gap-3">
               <label htmlFor="cashReceived" className="text-xs font-semibold text-muted-foreground shrink-0 w-24">
                 Cash Received
@@ -522,14 +520,14 @@ export default function BillingPage() {
                   value={cashReceived}
                   onChange={e => setCashReceived(e.target.value)}
                   placeholder="0.00"
-                  className="w-full rounded-lg border border-border bg-background py-1.5 pl-6 pr-3 text-sm font-semibold text-right focus:outline-none"
+                  className="w-full rounded-lg neu-inset py-1.5 pl-6 pr-3 text-sm font-mono font-semibold text-right focus:outline-none focus:ring-2 focus:ring-[var(--ps-primary)]/40"
                 />
               </div>
             </div>
             {cashReceivedVal > 0 && (
-              <div className="flex items-center justify-between pt-1 border-t border-border/30">
+              <div className="flex items-center justify-between pt-1 border-t border-[var(--ps-hairline)]">
                 <span className="text-xs font-bold text-foreground">Return Balance</span>
-                <span className="text-sm font-mono font-bold text-emerald-600">
+                <span className="text-sm font-mono font-bold text-[var(--ps-success)]">
                   ₹{changeDue.toFixed(2)}
                 </span>
               </div>
@@ -539,32 +537,34 @@ export default function BillingPage() {
           {/* Action buttons */}
           <div className="space-y-2 pt-2">
             {error && (
-              <div className="rounded-lg bg-red-50 p-2.5 text-xs text-red-600 font-semibold">
+              <div className="rounded-lg bg-[var(--ps-danger-muted)] p-2.5 text-xs text-[var(--ps-danger)] font-semibold">
                 <i className="bx bx-error-circle mr-1"></i>
                 {error}
               </div>
             )}
             {saveSuccess && (
-              <div className="rounded-lg bg-green-50 p-2.5 text-xs text-green-700 font-semibold flex items-center gap-1">
+              <div className="rounded-lg bg-[var(--ps-success-muted)] p-2.5 text-xs text-[var(--ps-success)] font-semibold flex items-center gap-1">
                 <i className="bx bx-check-circle text-md"></i>
                 Transaction logged successfully!
               </div>
             )}
 
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="glass"
+                size="md"
                 onClick={() => setShowPrintModal(true)}
                 disabled={billItems.length === 0}
-                className="flex-1 rounded-xl border border-border bg-card text-foreground hover:bg-muted font-bold py-3 text-sm flex items-center justify-center gap-1.5 shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+                className="flex-1 py-3"
               >
                 <i className="bx bx-printer text-lg"></i>
                 Print Receipt
-              </button>
+              </Button>
 
               <button
                 onClick={handleSaveTransaction}
                 disabled={billItems.length === 0 || savingTransaction}
-                className="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-3 text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+                className="clay-accent flex-1 rounded-xl text-white font-bold py-3 text-sm flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50"
               >
                 {savingTransaction ? (
                   <i className="bx bx-loader-alt animate-spin text-lg"></i>
@@ -582,11 +582,11 @@ export default function BillingPage() {
 
       {/* PRINT DIALOG PREVIEW MODAL */}
       {showPrintModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col justify-between animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-glass p-4">
+          <GlassPanel className="w-full max-w-sm overflow-hidden flex flex-col justify-between animate-in fade-in zoom-in duration-200 elev-5">
             {/* Header */}
-            <div className="p-4 border-b border-border bg-muted/10 flex justify-between items-center">
-              <span className="font-bold text-sm text-foreground">Receipt Preview</span>
+            <div className="p-4 border-b border-[var(--ps-hairline)] flex justify-between items-center">
+              <span className="text-h3 font-display text-foreground">Receipt Preview</span>
               <button
                 onClick={() => setShowPrintModal(false)}
                 className="text-muted-foreground hover:text-foreground text-lg"
@@ -596,7 +596,7 @@ export default function BillingPage() {
             </div>
 
             {/* Receipt Body (replica of paper printout) */}
-            <div className="p-6 overflow-y-auto max-h-96 bg-white text-slate-800 font-mono text-xs border-y border-border">
+            <div className="p-6 overflow-y-auto max-h-96 bg-white text-slate-800 font-mono text-xs border-y border-[var(--ps-hairline)]">
               <div className="text-center font-bold text-base uppercase">{shopName}</div>
               <div className="text-center text-[10px] mt-0.5 text-slate-600">{shopAddress}</div>
               <div className="text-center text-[10px] text-slate-600">Ph: {shopPhone}</div>
@@ -673,22 +673,26 @@ export default function BillingPage() {
             </div>
 
             {/* Print trigger button */}
-            <div className="p-4 bg-muted/10 border-t border-border flex gap-2">
-              <button
+            <div className="p-4 border-t border-[var(--ps-hairline)] flex gap-2">
+              <Button
+                variant="glass"
+                size="sm"
                 onClick={() => setShowPrintModal(false)}
-                className="flex-1 rounded-xl border border-border bg-card text-foreground hover:bg-muted font-semibold py-2.5 text-xs shadow-sm transition-all"
+                className="flex-1 py-2.5"
               >
                 Close Preview
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={handlePrintReceipt}
-                className="flex-1 rounded-xl bg-primary text-white hover:bg-primary/95 font-bold py-2.5 text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5"
               >
                 <i className="bx bx-printer text-base"></i>
                 Confirm Print
-              </button>
+              </Button>
             </div>
-          </div>
+          </GlassPanel>
         </div>
       )}
 

@@ -39,20 +39,20 @@ function PassportFlow() {
   return (
     <div className="flex flex-col h-full -m-6 relative">
       {/* Top Mode Switcher */}
-      <div className="shrink-0 border-b border-border bg-card/80 backdrop-blur-sm px-6 py-3 flex items-center justify-between z-10">
+      <div className="shrink-0 glass-nav px-6 py-3 flex items-center justify-between z-10">
         <div>
-          <h1 className="text-lg font-bold text-foreground">Passport Photo Studio</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h1 className="text-h3 font-display font-bold text-foreground">Passport Photo Studio</h1>
+          <p className="text-caption text-muted-foreground mt-0.5">
             Auto-remove background and arrange for A4 printing
           </p>
         </div>
 
-        <div className="flex bg-muted/50 border border-border p-1 rounded-xl">
+        <div className="flex neu-inset p-1 rounded-xl gap-1">
           <button
             onClick={() => handleModeChange("quick")}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
               mode === "quick"
-                ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+                ? "glass-strong text-foreground glow-primary"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -63,7 +63,7 @@ function PassportFlow() {
             onClick={() => handleModeChange("custom")}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
               mode === "custom"
-                ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+                ? "glass-strong text-foreground glow-primary"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -89,7 +89,7 @@ function PassportFlow() {
       {/* Confirmation Dialog Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="w-full max-w-md glass-strong glass-rim rounded-clay p-6 elev-5 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
                 <i className="bx bx-error-alt text-xl" />
@@ -112,7 +112,7 @@ function PassportFlow() {
                   setShowConfirmModal(false);
                   setPendingMode(null);
                 }}
-                className="rounded-xl border border-border px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:bg-accent transition"
+                className="rounded-xl neu px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition"
               >
                 Continue Working
               </button>

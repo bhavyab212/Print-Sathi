@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { canvasToBMP, canvasToTIFF, canvasToPDF, padImageBuffer } from "@/lib/imageEncoders";
+import { createBrowserClient } from "@supabase/ssr";
+import toast from "react-hot-toast";
 
 // Helper to draw stroke outline around a transparent image
 const drawOutline = (
@@ -53,6 +55,8 @@ interface LayoutPrintPanelProps {
   printing: boolean;
   onReset: () => void;
   onCropClick?: () => void;
+  jobId?: string | null;
+  itemId?: string | null;
 }
 
 export function LayoutPrintPanel({
@@ -63,6 +67,8 @@ export function LayoutPrintPanel({
   printing,
   onReset,
   onCropClick,
+  jobId,
+  itemId,
 }: LayoutPrintPanelProps) {
   const [photosOnSheet, setPhotosOnSheet] = useState(0);
   const [downloadTarget, setDownloadTarget] = useState<"single" | "sheet">("sheet");
@@ -71,6 +77,12 @@ export function LayoutPrintPanel({
   const [targetSizeKb, setTargetSizeKb] = useState<number>(50);
   const [estimatedSizeKb, setEstimatedSizeKb] = useState<number | null>(null);
   const [jpegQuality, setJpegQuality] = useState<number>(90);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const getCompressedBlob = async (
     canvas: HTMLCanvasElement,
@@ -291,6 +303,46 @@ export function LayoutPrintPanel({
     }
   };
 
+  const handleSaveToJob = async () => {
+    if (!jobId || !itemId) return;
+    setIsSaving(true);
+    const toastId = toast.loading("Saving generated passport sheet...");
+    try {
+      const c = document.getElementById("passport-a4-canvas") as HTMLCanvasElement;
+      if (!c) throw new Error("A4 Canvas not found");
+
+      // Always save as a high-quality PDF for the dashboard
+      const pdfBlob = canvasToPDF(c, 0.9);
+      const file = new File([pdfBlob], "passport_sheet.pdf", { type: "application/pdf" });
+
+      const filePath = `edited/${jobId}_${itemId}.pdf`;
+      const { error: uploadErr } = await supabase.storage.from("customer_uploads").upload(filePath, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      const { data: itemData, error: fetchErr } = await supabase.from("job_items").select("settings").eq("id", itemId).single();
+      if (fetchErr) throw fetchErr;
+
+      const newSettings = { ...(itemData?.settings || {}), action: 'direct_print' };
+
+      const { error: updateErr } = await supabase.from("job_items").update({
+        file_url: filePath,
+        file_name: "Passport_Sheet.pdf",
+        file_type: "pdf",
+        file_size_bytes: file.size,
+        settings: newSettings
+      }).eq("id", itemId);
+      if (updateErr) throw updateErr;
+
+      toast.success("Saved successfully!", { id: toastId });
+      window.location.href = "/dashboard";
+    } catch (err: any) {
+      toast.error("Failed to save: " + err.message, { id: toastId });
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full gap-0 overflow-hidden">
       {/* Main area */}
@@ -339,7 +391,7 @@ export function LayoutPrintPanel({
         <div className="overflow-y-auto p-5 flex flex-col gap-6">
 
           {/* Large single photo preview card */}
-          <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden shrink-0">
+          <div className="rounded-clay glass elev-2 overflow-hidden shrink-0">
             <div className="px-4 pt-4 pb-2 flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <i className="bx bx-user text-sm text-primary" />
@@ -349,7 +401,7 @@ export function LayoutPrintPanel({
                 <button
                   type="button"
                   onClick={onCropClick}
-                  className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] px-3 py-1.5 transition-all"
+                  className="flex items-center gap-1.5 rounded-lg neu hover:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] px-3 py-1.5 transition-all"
                 >
                   <i className="bx bx-crop text-xs" /> Crop &amp; Adjust
                 </button>
@@ -458,13 +510,13 @@ export function LayoutPrintPanel({
               <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                 Download Target
               </label>
-              <div className="grid grid-cols-2 gap-2 bg-muted/30 p-1 rounded-xl border border-border">
+              <div className="grid grid-cols-2 gap-2 neu-inset p-1 rounded-xl">
                 <button
                   type="button"
                   onClick={() => setDownloadTarget("sheet")}
                   className={`py-2 px-3 rounded-lg text-xs font-bold transition-all ${
                     downloadTarget === "sheet"
-                      ? "bg-background text-primary shadow-sm"
+                      ? "glass-strong text-primary glow-primary"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -475,7 +527,7 @@ export function LayoutPrintPanel({
                   onClick={() => setDownloadTarget("single")}
                   className={`py-2 px-3 rounded-lg text-xs font-bold transition-all ${
                     downloadTarget === "single"
-                      ? "bg-background text-primary shadow-sm"
+                      ? "glass-strong text-primary glow-primary"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -495,10 +547,10 @@ export function LayoutPrintPanel({
                     key={fmt}
                     type="button"
                     onClick={() => setExportFormat(fmt)}
-                    className={`py-1.5 px-2 rounded-xl border text-[11px] font-bold uppercase transition-all ${
+                    className={`py-1.5 px-2 rounded-xl text-[11px] font-bold uppercase transition-all ${
                       exportFormat === fmt
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border bg-card text-foreground hover:bg-accent"
+                        ? "glass-strong text-primary glow-primary ring-1 ring-primary"
+                        : "neu text-foreground hover:text-primary"
                     }`}
                   >
                     {fmt}
@@ -558,7 +610,7 @@ export function LayoutPrintPanel({
             </div>
 
             {/* Estimation & Action */}
-            <div className="bg-muted/40 border border-border rounded-xl p-3 flex items-center justify-between">
+            <div className="neu-inset rounded-xl p-3 flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Estimated Size</span>
                 <span className="text-xs text-muted-foreground uppercase font-semibold">
@@ -573,7 +625,7 @@ export function LayoutPrintPanel({
             <button
               type="button"
               onClick={handleDownload}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm glow-success hover:shadow-lg transition-all"
             >
               <i className="bx bx-download text-base" /> Download File
             </button>
@@ -582,21 +634,34 @@ export function LayoutPrintPanel({
       </div>
 
       {/* Bottom action bar */}
-      <div className="shrink-0 border-t border-border bg-card px-5 py-3 flex items-center gap-4">
+      <div className="shrink-0 glass-nav px-5 py-3 flex items-center gap-4">
         <button
           onClick={onReset}
-          className="flex items-center gap-1.5 rounded-xl border border-border px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-accent transition"
+          className="flex items-center gap-1.5 rounded-xl neu px-3 py-2.5 text-xs font-medium text-muted-foreground hover:text-foreground transition"
         >
           <i className="bx bx-refresh text-sm" />
           Start Over
         </button>
 
-        <div className="ml-auto flex flex-col items-end gap-1">
+        <div className="ml-auto flex flex-wrap items-center gap-2 justify-end">
+          {jobId && itemId && (
+            <button
+              onClick={handleSaveToJob}
+              disabled={isSaving || printing}
+              className="flex items-center gap-2 rounded-clay bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-3 text-sm font-bold text-white glow-success transition-all hover:shadow-xl hover:shadow-emerald-500/35 disabled:opacity-60"
+            >
+              {isSaving ? (
+                <><i className="bx bx-loader-alt animate-spin text-lg" /> Saving…</>
+              ) : (
+                <><i className="bx bx-check-circle text-lg" /> Save to Queue &amp; Return</>
+              )}
+            </button>
+          )}
           <button
             onClick={onPrint}
-            disabled={printing}
+            disabled={printing || isSaving}
             id="passport-print-btn"
-            className="flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:shadow-blue-500/35 disabled:opacity-60"
+            className="flex items-center gap-2.5 rounded-clay bg-gradient-to-r from-blue-500 to-indigo-600 px-7 py-3 text-sm font-bold text-white glow-primary transition-all hover:shadow-xl hover:shadow-blue-500/35 disabled:opacity-60"
           >
             {printing ? (
               <><i className="bx bx-loader-alt animate-spin text-lg" /> Opening print dialog…</>
@@ -604,9 +669,9 @@ export function LayoutPrintPanel({
               <><i className="bx bx-printer text-lg" /> Print A4 Sheet</>
             )}
           </button>
-          <p className="text-[10px] text-muted-foreground">Set scale 100% · Portrait · No margins</p>
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground text-right px-5 pb-2 -mt-1 bg-card">Set scale 100% · Portrait · No margins</p>
     </div>
   );
 }

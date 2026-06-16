@@ -3,6 +3,16 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
+import { Button } from "@/components/ui";
+import { spring } from "@/lib/motion";
+import {
+  AuthShell,
+  AuthBrand,
+  AuthCard,
+  AuthInput,
+  AuthAlert,
+} from "@/components/auth/AuthShell";
 
 const DEFAULT_RATE_ITEMS = [
   { item_type: "bw_single", label: "B&W Single Side", price: "" },
@@ -108,96 +118,77 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4">
-      <div className="w-full max-w-lg">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
-            <i className="bx bx-store text-3xl text-white"></i>
+    <AuthShell maxWidth="lg">
+      <AuthBrand
+        icon="bx-store"
+        title="Set up your shop"
+        subtitle={`Step ${step} of 2 — ${step === 1 ? "Shop details" : "Rate card"}`}
+      />
+
+      {/* Segmented progress: glass track + glowing active pills */}
+      <div className="glass glass-rim mb-8 flex gap-2 rounded-full p-1.5">
+        {[1, 2].map((s) => (
+          <div
+            key={s}
+            className="relative h-2 flex-1 overflow-hidden rounded-full bg-[var(--ps-surface-2)]"
+          >
+            <motion.div
+              initial={false}
+              animate={{ scaleX: step >= s ? 1 : 0 }}
+              transition={spring}
+              style={{ originX: 0 }}
+              className="h-full w-full rounded-full bg-[var(--ps-primary)] shadow-glow-primary"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Set up your shop</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Step {step} of 2 — {step === 1 ? "Shop details" : "Rate card"}
-          </p>
-        </div>
+        ))}
+      </div>
 
-        {/* Progress bar */}
-        <div className="mb-8 flex gap-2">
-          <div
-            className={`h-1.5 flex-1 rounded-full transition-colors ${
-              step >= 1 ? "bg-blue-500" : "bg-gray-200"
-            }`}
-          />
-          <div
-            className={`h-1.5 flex-1 rounded-full transition-colors ${
-              step >= 2 ? "bg-blue-500" : "bg-gray-200"
-            }`}
-          />
-        </div>
-
-        {/* Card */}
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-xl shadow-gray-200/50">
+      <AuthCard>
+        <AnimatePresence mode="wait" initial={false}>
           {step === 1 ? (
-            <div className="space-y-4">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Shop Details
-              </h2>
+            <motion.div
+              key="step-1"
+              initial={{ opacity: 0, x: -24 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -24 }}
+              transition={spring}
+              className="space-y-4"
+            >
+              <h2 className="text-h3 font-display mb-4 text-[var(--ps-ink)]">Shop Details</h2>
 
-              <div>
-                <label
-                  htmlFor="shop-name"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
-                >
-                  Shop Name *
-                </label>
-                <input
-                  id="shop-name"
-                  type="text"
-                  value={shopName}
-                  onChange={(e) => setShopName(e.target.value)}
-                  placeholder="e.g. Sharma Xerox Center"
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
+              <AuthInput
+                id="shop-name"
+                label="Shop Name *"
+                type="text"
+                value={shopName}
+                onChange={(e) => setShopName(e.target.value)}
+                placeholder="e.g. Sharma Xerox Center"
+                required
+              />
+              <AuthInput
+                id="area"
+                label="Area / Locality *"
+                type="text"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                placeholder="e.g. Laxmi Nagar, Delhi"
+                required
+              />
+              <AuthInput
+                id="phone"
+                label="Phone Number *"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. 9876543210"
+                required
+              />
 
-              <div>
-                <label
-                  htmlFor="area"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
-                >
-                  Area / Locality *
-                </label>
-                <input
-                  id="area"
-                  type="text"
-                  value={area}
-                  onChange={(e) => setArea(e.target.value)}
-                  placeholder="e.g. Laxmi Nagar, Delhi"
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
+              {error && <AuthAlert>{error}</AuthAlert>}
 
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
-                >
-                  Phone Number *
-                </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. 9876543210"
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
-
-              <button
+              <Button
+                variant="primary"
+                size="lg"
                 onClick={() => {
                   if (!shopName || !area || !phone) {
                     setError("Please fill all fields");
@@ -206,30 +197,36 @@ export default function OnboardingPage() {
                   setError(null);
                   setStep(2);
                 }}
-                className="mt-2 w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl"
+                className="mt-2 w-full hover:animate-glow-pulse"
               >
                 Next: Set up rate card →
-              </button>
-            </div>
+              </Button>
+            </motion.div>
           ) : (
-            <div className="space-y-4">
+            <motion.div
+              key="step-2"
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 24 }}
+              transition={spring}
+              className="space-y-4"
+            >
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Rate Card
-                </h2>
-                <span className="text-xs text-gray-400">
+                <h2 className="text-h3 font-display text-[var(--ps-ink)]">Rate Card</h2>
+                <span className="text-caption text-[var(--ps-ink-subtle)]">
                   Leave blank to skip items
                 </span>
               </div>
 
-              <div className="max-h-80 space-y-3 overflow-y-auto pr-1">
+              <div className="-mr-1 max-h-80 space-y-2.5 overflow-y-auto pr-1">
                 {rateItems.map((item, index) => (
-                  <div key={item.item_type} className="flex items-center gap-3">
-                    <label className="flex-1 text-sm text-gray-700">
-                      {item.label}
-                    </label>
+                  <div
+                    key={item.item_type}
+                    className="neu flex items-center gap-3 rounded-xl px-3.5 py-2.5"
+                  >
+                    <label className="flex-1 text-sm text-[var(--ps-ink)]">{item.label}</label>
                     <div className="relative w-28">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                      <span className="text-caption pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--ps-ink-subtle)]">
                         ₹
                       </span>
                       <input
@@ -239,53 +236,45 @@ export default function OnboardingPage() {
                         value={item.price}
                         onChange={(e) => updateRate(index, e.target.value)}
                         placeholder="0.00"
-                        className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-7 pr-3 text-right text-sm transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="neu-inset w-full rounded-lg border-0 bg-transparent py-2 pl-7 pr-3 text-right text-sm text-[var(--ps-ink)] placeholder:text-[var(--ps-ink-subtle)] outline-none transition-all focus:shadow-glow-primary focus:ring-1 focus:ring-[var(--ps-primary)]/40"
                       />
                     </div>
                   </div>
                 ))}
               </div>
 
-              {error && (
-                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-                  <i className="bx bx-error-circle mr-1"></i>
-                  {error}
-                </div>
-              )}
+              {error && <AuthAlert>{error}</AuthAlert>}
 
               <div className="flex gap-3 pt-2">
-                <button
+                <Button
+                  variant="glass"
+                  size="lg"
                   onClick={() => setStep(1)}
-                  className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-50"
+                  className="flex-1"
                 >
                   ← Back
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="primary"
+                  size="lg"
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl disabled:opacity-50"
+                  className="flex-1 hover:animate-glow-pulse"
                 >
                   {loading ? (
-                    <span className="flex items-center justify-center gap-2">
+                    <>
                       <i className="bx bx-loader-alt animate-spin"></i>
                       Creating...
-                    </span>
+                    </>
                   ) : (
                     "Create Shop & Start"
                   )}
-                </button>
+                </Button>
               </div>
-            </div>
+            </motion.div>
           )}
-
-          {step === 1 && error && (
-            <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-              <i className="bx bx-error-circle mr-1"></i>
-              {error}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+        </AnimatePresence>
+      </AuthCard>
+    </AuthShell>
   );
 }

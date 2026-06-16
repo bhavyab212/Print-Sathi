@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef, useEffect, useCallback } from "react";
 import { FileDropzone } from "../components/passport/passport/FileDropzone";
 import {

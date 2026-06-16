@@ -27,7 +27,7 @@ export function StepNav({ current, onStepClick, completedUpTo }: StepNavProps) {
   const currentIdx = STEPS.findIndex((s) => s.id === current);
 
   return (
-    <div className="flex items-center gap-0 w-full overflow-x-auto scrollbar-none">
+    <div className="flex items-center gap-0 w-full overflow-x-auto scrollbar-none glass-faint rounded-xl px-2 py-1.5">
       {STEPS.map((step, idx) => {
         const isDone    = idx <= completedUpTo && idx !== currentIdx;
         const isActive  = step.id === current;
@@ -41,7 +41,7 @@ export function StepNav({ current, onStepClick, completedUpTo }: StepNavProps) {
               disabled={isLocked}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition-all select-none whitespace-nowrap
                 ${isActive
-                  ? "bg-primary text-white shadow-md shadow-primary/30"
+                  ? "bg-primary text-white glow-primary"
                   : isDone
                     ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 cursor-pointer"
                     : isLocked

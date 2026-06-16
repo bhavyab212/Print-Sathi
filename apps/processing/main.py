@@ -17,6 +17,7 @@ try:
 except ImportError:
     pass  # HEIC support optional; skip if not installed
 
+rembg_remove = None
 try:
     from rembg import remove as rembg_remove
 except ImportError:
@@ -225,23 +226,25 @@ async def process_passport_photo(
     orig_w, orig_h = pil_img.size
     is_large = max(orig_w, orig_h) > MAX_MATTING_DIM
     
-    if alpha_matting and is_large:
+    if rembg_remove is None:
+        logger.warning("rembg is not installed — skipping background removal")
+    elif alpha_matting and is_large:
         try:
             logger.info("Downsampling image from %dx%d for safe alpha matting", orig_w, orig_h)
             ratio = MAX_MATTING_DIM / max(orig_w, orig_h)
             new_w = int(orig_w * ratio)
             new_h = int(orig_h * ratio)
             resized_img = pil_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-            
+
             if session is not None:
                 processed_resized = rembg_remove(resized_img, session=session, **rembg_kwargs)
             else:
                 processed_resized = rembg_remove(resized_img, **rembg_kwargs)
-                
+
             # Extract and upscale the computed alpha mask
             resized_alpha = processed_resized.split()[3]
             upscaled_alpha = resized_alpha.resize((orig_w, orig_h), Image.Resampling.BILINEAR)
-            
+
             # Apply back to the original full-resolution image
             pil_img = pil_img.copy()
             pil_img.putalpha(upscaled_alpha)
@@ -645,4 +648,112 @@ async def digital_export_passport_photo(
         "quality": quality,
         "within_limit": file_size_kb <= max_kb,
         "portal": "Passport Seva (passportindia.gov.in)" if target_width == 630 else "Custom",
+    })
+
+def _order_points(pts):
+    xSorted = pts[np.argsort(pts[:, 0]), :]
+    leftMost = xSorted[:2, :]
+    rightMost = xSorted[2:, :]
+    leftMost = leftMost[np.argsort(leftMost[:, 1]), :]
+    (tl, bl) = leftMost
+    rightMost = rightMost[np.argsort(rightMost[:, 1]), :]
+    (tr, br) = rightMost
+    return np.array([tl, tr, br, bl], dtype="float32")
+
+def _four_point_transform(image, pts):
+    rect = _order_points(pts)
+    (tl, tr, br, bl) = rect
+    widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    maxWidth = max(int(widthA), int(widthB))
+    heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    maxHeight = max(int(heightA), int(heightB))
+    dst = np.array([
+        [0, 0],
+        [maxWidth - 1, 0],
+        [maxWidth - 1, maxHeight - 1],
+        [0, maxHeight - 1]], dtype="float32")
+    M = cv2.getPerspectiveTransform(rect, dst)
+    warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
+    return warped
+
+@app.post("/document/clean-scan")
+async def clean_scan_document(
+    file: UploadFile = File(...),
+    apply_crop: bool = Query(False, description="Apply heuristic edge detection and crop"),
+    points: str = Form(None, description="JSON string of 4 points [[x,y],[x,y],[x,y],[x,y]]"),
+    enhance: bool = Query(True, description="Apply shadow removal and contrast enhancement")
+):
+    global _total_tasks_processed
+    ALLOWED = {"image/jpeg", "image/png", "image/heic", "image/heif", "image/webp"}
+    ct = (file.content_type or "").lower()
+    if ct not in ALLOWED and not ct.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Unsupported file type.")
+
+    raw = await file.read()
+    if len(raw) > 20 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large. Maximum 20 MB.")
+
+    try:
+        pil_img = Image.open(io.BytesIO(raw))
+        pil_img = ImageOps.exif_transpose(pil_img)
+        pil_img = pil_img.convert("RGB")
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Could not read image: {e}")
+
+    bgr = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+
+    screenCnt = None
+    if points is not None:
+        import json
+        try:
+            pts_array = json.loads(points)
+            if len(pts_array) == 4:
+                screenCnt = np.array(pts_array, dtype="float32")
+                bgr = _four_point_transform(bgr, screenCnt)
+        except Exception as e:
+            logger.warning(f"Failed to parse or apply custom points: {e}")
+    elif apply_crop:
+        gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (5, 5), 0)
+        edged = cv2.Canny(gray, 75, 200)
+
+        cnts, _ = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:5]
+
+        for c in cnts:
+            peri = cv2.arcLength(c, True)
+            approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+            if len(approx) == 4:
+                screenCnt = approx
+                break
+
+        if screenCnt is not None:
+            bgr = _four_point_transform(bgr, screenCnt.reshape(4, 2))
+
+    if enhance:
+        lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        cl = clahe.apply(l)
+        
+        cl = cv2.normalize(cl, None, 0, 255, cv2.NORM_MINMAX)
+        lab = cv2.merge((cl, a, b))
+        bgr = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+        
+        kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+        bgr = cv2.filter2D(bgr, -1, kernel)
+
+    enhanced_rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+    out_img = Image.fromarray(enhanced_rgb)
+    b64 = _image_to_base64(out_img, fmt="JPEG")
+
+    _total_tasks_processed += 1
+
+    return JSONResponse({
+        "image": b64,
+        "width": out_img.width,
+        "height": out_img.height,
+        "crop_applied": (apply_crop and screenCnt is not None) or (points is not None)
     })

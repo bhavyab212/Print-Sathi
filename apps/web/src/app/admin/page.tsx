@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import AdminPanelClient from "./AdminPanelClient";
+
+export const dynamic = "force-dynamic";
+
 
 export default async function AdminPage() {
   const supabase = createClient();
@@ -11,42 +15,78 @@ export default async function AdminPage() {
     redirect("/login?redirectTo=/admin");
   }
 
-  // TODO: Check admin role from DB
-  // For now, any authenticated user can see the skeleton
+  // Check if admin users table is empty (gives initial setup access)
+  const { count } = await supabase
+    .from("admin_users")
+    .select("*", { count: "exact", head: true });
+
+  const { data: adminUser } = await supabase
+    .from("admin_users")
+    .select("role")
+    .eq("user_id", user.id)
+    .single();
+
+  const isTestAccount = user.email === "printsathi.test@gmail.com";
+  const isSuperAdmin = (adminUser && adminUser.role === "super_admin") || count === 0 || isTestAccount;
+
+  if (!isSuperAdmin) {
+    redirect("/dashboard");
+  }
+
+  // Fetch all registered shops
+  const { data: shops } = await supabase
+    .from("shops")
+    .select("id, name, slug, phone, area, created_at")
+    .order("created_at", { ascending: false });
+
+  // Fetch all usage logs for analytics
+  const { data: usageLogs } = await supabase
+    .from("usage_logs")
+    .select("feature, action, created_at, shop_id");
+
+  // Fetch all jobs for analytics
+  const { data: jobs } = await supabase
+    .from("jobs")
+    .select("id, status, source, created_at, shop_id");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen mesh-bg relative">
+      <div className="ambient-orbs" aria-hidden />
       {/* Admin Header */}
-      <header className="border-b border-gray-200 bg-white">
+      <header className="glass-nav glass-rim sticky top-0 z-30">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
-              <i className="bx bx-shield-quarter text-lg text-white"></i>
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl clay-accent text-white shadow-[var(--glow-primary)]">
+              <i className="bx bx-shield-quarter text-lg"></i>
             </div>
-            <h1 className="text-lg font-bold text-gray-900">
-              Print Sathi Admin
-            </h1>
+            <div>
+              <h1 className="text-h3 font-display text-gradient">
+                Print Sathi Admin
+              </h1>
+              <p className="text-[10px] text-muted-foreground tracking-wide">Platform Administration</p>
+            </div>
           </div>
-          <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-600">
-            Super Admin
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="rounded-full glass glass-rim px-3 py-1 text-xs font-semibold text-primary">
+              Super Admin Mode
+            </span>
+            <a
+              href="/dashboard"
+              className="text-xs font-semibold bg-[var(--ps-primary)] hover:bg-[var(--ps-primary-hover)] hover:shadow-[var(--glow-primary)] text-white px-4 py-2 rounded-xl transition-all"
+            >
+              Shop Queue →
+            </a>
+          </div>
         </div>
       </header>
 
       {/* Content */}
-      <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="text-center py-20">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-purple-50">
-            <i className="bx bx-bar-chart-alt-2 text-4xl text-purple-400"></i>
-          </div>
-          <h2 className="mb-2 text-xl font-semibold text-gray-900">
-            Admin Panel
-          </h2>
-          <p className="text-sm text-gray-500">
-            Shop management, analytics, and platform controls. Coming in Phase
-            5.
-          </p>
-        </div>
+      <main className="mx-auto max-w-7xl px-6 py-8 relative z-10">
+        <AdminPanelClient 
+          initialShops={shops || []} 
+          usageLogs={usageLogs || []} 
+          jobs={jobs || []} 
+        />
       </main>
     </div>
   );

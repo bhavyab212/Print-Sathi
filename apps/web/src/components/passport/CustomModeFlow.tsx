@@ -43,9 +43,12 @@ const STEP_ORDER: PassportStep[] = ["upload", "processing", "bg-review", "crop",
 
 interface CustomModeFlowProps {
   onWorkStatusChange: (hasWork: boolean) => void;
+  initialImageUrl?: string | null;
+  jobId?: string | null;
+  itemId?: string | null;
 }
 
-export function CustomModeFlow({ onWorkStatusChange }: CustomModeFlowProps) {
+export function CustomModeFlow({ onWorkStatusChange, initialImageUrl, jobId, itemId }: CustomModeFlowProps) {
   const [step, setStep]                     = useState<PassportStep>("upload");
 
   useEffect(() => {
@@ -163,9 +166,24 @@ export function CustomModeFlow({ onWorkStatusChange }: CustomModeFlowProps) {
   // ── Handler bindings ─────────────────────────────────────────────────
 
   // Step 1 → 2 (& 2)
-  const handleFileSelected = useCallback((file: File, mdl: AIModel) => {
+  const handleFileSelected = useCallback((file: File, mdl: AIModel = "u2net") => {
     processFile(file, mdl);
   }, [processFile]);
+
+  // ── Auto-load initial image if provided ─────────────────────────────────
+  useEffect(() => {
+    if (initialImageUrl && step === "upload") {
+      fetch(initialImageUrl)
+        .then(r => r.blob())
+        .then(blob => {
+          const file = new File([blob], "passport-photo.jpg", { type: blob.type || "image/jpeg" });
+          handleFileSelected(file);
+        })
+        .catch(err => {
+          setProcessingError("Could not load initial image from URL");
+        });
+    }
+  }, [initialImageUrl, step, handleFileSelected]);
 
   // Retry: re-send with same file & model, possibly with feedback
   const handleRetry = useCallback((feedback?: { alpha_matting?: boolean; fg?: number; bg?: number; remove_shadow?: boolean }) => {
@@ -395,6 +413,8 @@ export function CustomModeFlow({ onWorkStatusChange }: CustomModeFlowProps) {
                 printing={printing}
                 onReset={handleReset}
                 onCropClick={() => setStep("crop")}
+                jobId={jobId}
+                itemId={itemId}
               />
             </div>
           )}

@@ -21,7 +21,11 @@ const BG_STEPS: { id: BgStep; label: string; icon: string }[] = [
   { id: "done",       label: "Download",     icon: "bx-download"      },
 ];
 
-export function BgRemoveFlow() {
+interface BgRemoveFlowProps {
+  initialImageUrl?: string | null;
+}
+
+export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
   const [step, setStep] = useState<BgStep>("upload");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [model, setModel] = useState<AIModel>("u2net");
@@ -144,11 +148,26 @@ export function BgRemoveFlow() {
 
   // Handlers
   const handleFileSelected = useCallback(
-    (file: File, mdl: AIModel) => {
+    (file: File, mdl: AIModel = "u2net") => {
       processFile(file, mdl);
     },
     [processFile]
   );
+
+  // ── Auto-load initial image if provided ─────────────────────────────────
+  useEffect(() => {
+    if (initialImageUrl && step === "upload") {
+      fetch(initialImageUrl)
+        .then((r) => r.blob())
+        .then((blob) => {
+          const file = new File([blob], "bg-remove-image.jpg", { type: blob.type || "image/jpeg" });
+          handleFileSelected(file);
+        })
+        .catch((err) => {
+          setProcessingError("Could not load initial image from URL");
+        });
+    }
+  }, [initialImageUrl, step, handleFileSelected]);
 
   const handleRetry = useCallback(
     (feedback?: { alpha_matting?: boolean; fg?: number; bg?: number; remove_shadow?: boolean }) => {
@@ -263,7 +282,7 @@ export function BgRemoveFlow() {
       )}
 
       {/* Top Header/Action Bar */}
-      <div className="shrink-0 border-b border-border bg-card/85 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-4 z-10">
+      <div className="shrink-0 glass-nav px-4 py-3 flex items-center justify-between gap-4 z-10">
         
         {/* Left: Back button & Title */}
         <div className="flex items-center gap-2 shrink-0">
@@ -273,7 +292,7 @@ export function BgRemoveFlow() {
                 const cur = BG_STEP_ORDER.indexOf(step);
                 if (cur > 0) setStep(BG_STEP_ORDER[cur - 1]);
               }}
-              className="flex items-center gap-1 rounded-xl border border-border px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-accent transition"
+              className="flex items-center gap-1 rounded-xl neu px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition"
             >
               <i className="bx bx-chevron-left text-base" /> Back
             </button>
@@ -286,7 +305,7 @@ export function BgRemoveFlow() {
 
         {/* Middle: Stepper */}
         <div className="flex-1 max-w-xl mx-auto">
-          <div className="flex items-center gap-0 w-full overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-0 w-full overflow-x-auto scrollbar-none glass-faint rounded-xl px-2 py-1.5">
             {BG_STEPS.map((s, idx) => {
               const isDone    = idx <= completedUpTo && idx !== currentIdx;
               const isActive  = s.id === step;
@@ -300,7 +319,7 @@ export function BgRemoveFlow() {
                     disabled={isLocked}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all select-none whitespace-nowrap
                       ${isActive
-                        ? "bg-primary text-white shadow-md shadow-primary/30"
+                        ? "bg-primary text-white glow-primary"
                         : isDone
                           ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 cursor-pointer"
                           : isLocked
@@ -334,7 +353,7 @@ export function BgRemoveFlow() {
           {step !== "upload" && (
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition"
+              className="flex items-center gap-1.5 rounded-xl neu px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-destructive transition"
               title="Start over"
             >
               <i className="bx bx-refresh text-base"></i>
@@ -393,8 +412,8 @@ export function BgRemoveFlow() {
 
         {step === "done" && finalImage && (
           <div className="h-full flex items-center justify-center p-6 overflow-y-auto">
-            <div className="w-full max-w-xl bg-card border border-border rounded-2xl p-8 shadow-2xl flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 mb-4">
+            <div className="w-full max-w-xl glass-strong glass-rim rounded-clay p-8 elev-5 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 glow-success mb-4">
                 <i className="bx bx-check-shield text-3xl" />
               </div>
               <h2 className="text-xl font-bold text-foreground">Background Removed successfully!</h2>
@@ -425,14 +444,14 @@ export function BgRemoveFlow() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md">
                 <button
                   onClick={() => handleDownload(false)}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/35 transition"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 py-3 text-sm font-bold text-white glow-primary hover:shadow-xl hover:shadow-blue-500/35 transition"
                 >
                   <i className="bx bx-download text-lg" />
                   Download Cutout
                 </button>
                 <button
                   onClick={() => handleDownload(true)}
-                  className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card py-3 text-sm font-bold text-foreground hover:bg-accent transition"
+                  className="flex items-center justify-center gap-2 rounded-xl neu py-3 text-sm font-bold text-foreground hover:text-primary transition"
                 >
                   <i className="bx bx-download text-lg text-muted-foreground" />
                   Force White BG (JPG)

@@ -57,7 +57,7 @@ export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
           <i className="bx bx-id-card text-sm" />
           Step 1 — Upload Photo
         </div>
-        <h2 className="text-2xl font-bold text-foreground">Upload a Portrait Photo</h2>
+        <h2 className="text-h2 font-display font-bold text-foreground">Upload a Portrait Photo</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Clear face, neutral expression, good lighting · JPG, PNG, HEIC up to 10 MB
         </p>
@@ -93,10 +93,10 @@ export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
             <button
               key={opt.id}
               onClick={() => setModel(opt.id)}
-              className={`group flex flex-col gap-2.5 rounded-2xl border p-4 text-left transition-all ${
+              className={`group flex flex-col gap-2.5 rounded-clay p-4 text-left transition-all ${
                 model === opt.id
-                  ? "border-primary bg-primary/8 shadow-sm ring-1 ring-primary"
-                  : "border-border bg-card hover:border-primary/30 hover:bg-accent"
+                  ? "glass-strong ring-1 ring-primary glow-primary"
+                  : "neu hover:text-foreground"
               }`}
             >
               <div className="flex items-center justify-between">

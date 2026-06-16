@@ -156,12 +156,8 @@ export const useQueueStore = create<QueueState>((set, get) => ({
     } catch (error) {
       console.error('Error updating job status:', error);
       // Revert optimistic update by refetching
-      const { data: shop } = await supabase.auth.getUser();
-      if (shop.user) {
-        // Fetch shop_id, ideally we'd have it in auth store but we can get it from the first job
-        const shopId = get().jobs[0]?.shop_id;
-        if (shopId) get().fetchJobs(shopId);
-      }
+      const shopId = get().jobs[0]?.shop_id;
+      if (shopId) get().fetchJobs(shopId);
     }
   },
 

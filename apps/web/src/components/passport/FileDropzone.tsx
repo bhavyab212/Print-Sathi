@@ -57,10 +57,10 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         onClick={() => !disabled && inputRef.current?.click()}
-        className={`relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 transition-all
+        className={`relative flex cursor-pointer flex-col items-center justify-center rounded-clay border-2 border-dashed glass-faint p-10 transition-all
           ${dragging
-            ? "border-primary bg-primary/10"
-            : "border-border bg-muted/40 hover:border-primary/50 hover:bg-primary/5"
+            ? "border-primary bg-primary/10 glow-primary"
+            : "border-border hover:border-primary/50 hover:bg-primary/5"
           }
           ${disabled ? "pointer-events-none opacity-50" : ""}
         `}
@@ -89,7 +89,7 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20 animate-float">
               <i className="bx bx-cloud-upload text-4xl text-primary"></i>
             </div>
             <div>

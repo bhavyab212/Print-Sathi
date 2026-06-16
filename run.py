@@ -60,7 +60,18 @@ def main():
         print(f"Backend API:  \033[96mhttp://localhost:8000/docs\033[0m")
 
     print("\nStarting servers (Ctrl+C to stop)...")
-    
+
+    # Free ports if already in use from a previous session
+    for port in [8000, 3000]:
+        try:
+            subprocess.run(
+                ["fuser", "-k", f"{port}/tcp"],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
+        except Exception:
+            pass
+    time.sleep(0.8)  # let the OS reclaim the ports
+
     root_dir = os.path.dirname(os.path.abspath(__file__))
     backend_dir = os.path.join(root_dir, "apps", "processing")
     frontend_dir = os.path.join(root_dir, "apps", "web")

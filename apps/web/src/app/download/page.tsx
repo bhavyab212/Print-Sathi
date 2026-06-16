@@ -1,79 +1,174 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "motion/react";
+import {
+  AmbientBackground,
+  GlassCard,
+  ClayCard,
+  Reveal,
+  buttonVariants,
+} from "@/components/ui";
+import { fadeUp, stagger } from "@/lib/motion";
+
+const highlights = [
+  {
+    icon: "bx-bolt-circle",
+    title: "Real-time Queue",
+    desc: "Get instant desktop notifications when customers submit print jobs.",
+    gradient: "from-[#3b82f6] to-[#06b6d4]",
+  },
+  {
+    icon: "bx-id-card",
+    title: "1-Click Passports",
+    desc: "Auto-remove backgrounds and print perfect A4 sheets directly from the app.",
+    gradient: "from-[#10b981] to-[#14b8a6]",
+  },
+  {
+    icon: "bx-printer",
+    title: "Direct Printing",
+    desc: "Bypass browser print dialogs. Send jobs straight to your configured printers.",
+    gradient: "from-[#a855f7] to-[#ec4899]",
+  },
+];
 
 export default function DownloadPage() {
   const downloadUrl = process.env.NEXT_PUBLIC_DESKTOP_DOWNLOAD_URL || "#";
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-              <i className="bx bx-printer text-white"></i>
-            </div>
-            <span className="font-bold text-gray-900">Print Sathi</span>
+    <div className="relative min-h-screen overflow-x-hidden bg-[var(--ps-canvas)] text-[var(--ps-ink)]">
+      {/* Floating glass nav */}
+      <header className="sticky top-0 z-50 px-4 pt-4">
+        <nav className="glass-nav mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="clay-accent flex h-9 w-9 items-center justify-center rounded-xl">
+              <i className="bx bx-printer text-lg text-white" />
+            </span>
+            <span className="text-lg font-bold tracking-tight">Print Sathi</span>
           </Link>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900"
-            >
-              Web Login (Backup)
-            </Link>
-          </div>
-        </div>
+          <Link
+            href="/login"
+            className="text-sm font-medium text-[var(--ps-ink-muted)] transition-colors hover:text-[var(--ps-ink)]"
+          >
+            Web Login (Backup)
+          </Link>
+        </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-100">
-            <i className="bx bxl-windows text-4xl text-blue-600"></i>
+      <main>
+        {/* Hero */}
+        <section className="relative overflow-hidden">
+          <AmbientBackground />
+          <div className="mx-auto max-w-3xl px-6 pb-20 pt-16 text-center lg:pt-24">
+            <motion.div variants={stagger} initial="hidden" animate="show">
+              <motion.div
+                variants={fadeUp}
+                className="mb-8 flex justify-center"
+              >
+                <span className="clay-accent flex h-20 w-20 items-center justify-center rounded-3xl shadow-glow-primary">
+                  <i className="bx bxl-windows text-4xl text-white" />
+                </span>
+              </motion.div>
+
+              <motion.div variants={fadeUp} className="mb-6 flex justify-center">
+                <span className="shimmer-border glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-[var(--ps-ink-muted)]">
+                  <i className="bx bx-desktop text-[var(--ps-primary)]" />
+                  Desktop app for Windows
+                </span>
+              </motion.div>
+
+              <motion.h1 variants={fadeUp} className="text-h1 mb-6 text-balance">
+                Download Print Sathi for{" "}
+                <span className="text-gradient">Windows</span>
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className="text-body mx-auto mb-10 max-w-xl text-[var(--ps-ink-muted)]"
+              >
+                The ultimate desktop OS for your print shop. Manage queues,
+                auto-print passports, and calculate bills seamlessly.
+              </motion.p>
+
+              <motion.div
+                variants={fadeUp}
+                className="flex flex-col items-center justify-center gap-4 sm:flex-row"
+              >
+                <a
+                  href={downloadUrl}
+                  className={`${buttonVariants({ variant: "primary", size: "lg" })} animate-glow-pulse`}
+                >
+                  <i className="bx bx-download text-xl" />
+                  Download for Windows (x64)
+                </a>
+              </motion.div>
+              <motion.p
+                variants={fadeUp}
+                className="mt-4 text-sm text-[var(--ps-ink-subtle)]"
+              >
+                Requires Windows 10 or 11.
+              </motion.p>
+            </motion.div>
           </div>
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Download Print Sathi for Windows
-          </h1>
-          <p className="mb-10 text-lg text-gray-600">
-            The ultimate desktop OS for your print shop. Manage queues, auto-print passports, and calculate bills seamlessly.
-          </p>
-          
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href={downloadUrl}
-              className="flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:shadow-xl"
-            >
-              <i className="bx bx-download text-xl"></i>
-              Download for Windows (x64)
-            </a>
-          </div>
-          <p className="mt-4 text-sm text-gray-500">Requires Windows 10 or 11.</p>
-        </div>
-        
-        <div className="mx-auto mt-24 max-w-5xl rounded-3xl border border-gray-200 bg-white p-8 shadow-sm sm:p-12">
-          <div className="grid gap-8 md:grid-cols-3">
-            <div>
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <i className="bx bx-bolt-circle text-2xl"></i>
+        </section>
+
+        {/* Feature highlights */}
+        <section className="mx-auto max-w-5xl px-6 pb-24">
+          <Reveal>
+            <GlassCard className="glass-strong rounded-clay p-8 sm:p-12">
+              <div className="grid gap-8 md:grid-cols-3">
+                {highlights.map((h, i) => (
+                  <Reveal key={h.title} delay={i * 90} className="group">
+                    <div
+                      className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${h.gradient} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+                    >
+                      <i className={`bx ${h.icon} text-2xl text-white`} />
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold">{h.title}</h3>
+                    <p className="text-sm leading-relaxed text-[var(--ps-ink-muted)]">
+                      {h.desc}
+                    </p>
+                  </Reveal>
+                ))}
               </div>
-              <h3 className="mb-2 font-semibold text-gray-900">Real-time Queue</h3>
-              <p className="text-sm text-gray-600">Get instant desktop notifications when customers submit print jobs.</p>
-            </div>
-            <div>
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <i className="bx bx-id-card text-2xl"></i>
+            </GlassCard>
+          </Reveal>
+
+          {/* Secondary CTA */}
+          <Reveal delay={120} className="mt-10">
+            <ClayCard className="flex flex-col items-center justify-between gap-4 p-7 text-center sm:flex-row sm:text-left">
+              <div>
+                <h3 className="text-h3 mb-1">Prefer the web app?</h3>
+                <p className="text-sm text-[var(--ps-ink-muted)]">
+                  Run Print Sathi in your browser — no install needed.
+                </p>
               </div>
-              <h3 className="mb-2 font-semibold text-gray-900">1-Click Passports</h3>
-              <p className="text-sm text-gray-600">Auto-remove backgrounds and print perfect A4 sheets directly from the app.</p>
-            </div>
-            <div>
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <i className="bx bx-printer text-2xl"></i>
-              </div>
-              <h3 className="mb-2 font-semibold text-gray-900">Direct Printing</h3>
-              <p className="text-sm text-gray-600">Bypass browser print dialogs. Send jobs directly to your configured printers.</p>
-            </div>
-          </div>
-        </div>
+              <Link
+                href="/login"
+                className={buttonVariants({ variant: "glass", size: "lg" })}
+              >
+                Open Web App
+                <i className="bx bx-right-arrow-alt text-lg" />
+              </Link>
+            </ClayCard>
+          </Reveal>
+        </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[var(--ps-hairline)] px-6 py-10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-sm text-[var(--ps-ink-subtle)] sm:flex-row">
+          <div className="flex items-center gap-3">
+            <span className="clay-accent flex h-8 w-8 items-center justify-center rounded-lg">
+              <i className="bx bx-printer text-white" />
+            </span>
+            <span className="font-semibold text-[var(--ps-ink-muted)]">Print Sathi</span>
+          </div>
+          <p>
+            © {new Date().getFullYear()} Print Sathi — Made for Indian print shops
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
