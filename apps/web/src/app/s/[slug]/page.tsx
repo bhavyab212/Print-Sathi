@@ -132,6 +132,8 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success_tick'>('idle');
   const [animateRocketFly, setAnimateRocketFly] = useState(false);
+  const [rocketPhase, setRocketPhase] = useState<'entering' | 'wobble' | 'thrust' | 'liftoff'>('entering');
+  const [uploadPercent, setUploadPercent] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [organiserOpen, setOrganiserOpen] = useState(false);
@@ -409,6 +411,8 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       }
 
       setUploadProgress('Creating your print job...');
+      setUploadPercent(0);
+      setRocketPhase('entering');
       // Pass notes into the RPC directly — avoids a separate UPDATE that requires auth
       const { data: rpcResult, error: rpcErr } = await supabase.rpc('create_job_with_sequence', {
         p_shop_id: shopId,
@@ -429,12 +433,15 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       for (let i = 0; i < finalFiles.length; i++) {
         const item = finalFiles[i];
         const fileSizeMB = (item.file.size / (1024 * 1024)).toFixed(1);
+        setUploadPercent(0);
         setUploadProgress(`Uploading file ${i + 1} of ${finalFiles.length} (0%) - ${fileSizeMB}MB`);
         const fileExt = item.file.name.split('.').pop();
         const filePath = `${shopId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
         
         const uploadData = await uploadFileWithProgress(item.file, filePath, (percent) => {
+          setUploadPercent(percent);
           setUploadProgress(`Uploading file ${i + 1} of ${finalFiles.length} (${percent}%) - ${fileSizeMB}MB`);
+          if (percent > 0 && rocketPhase !== 'thrust') setRocketPhase('thrust');
         });
         const fileType = item.file.type.includes('pdf') ? 'pdf' : item.file.type.startsWith('image/') ? 'image' : 'document';
         const { error: itemErr } = await supabase.from('job_items').insert({
@@ -452,6 +459,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       setJobId(jobData.id);
       
       // Start rocket fly-away animation
+      setRocketPhase('liftoff');
       setAnimateRocketFly(true);
       await new Promise(r => setTimeout(r, 800)); // wait for rocket to fly away
 
@@ -494,9 +502,9 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d1117' }}>
         <div className="text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <i className="bx bx-printer text-3xl text-white"></i>
+            <i className="bx bx-printer text-3xl text-slate-800 dark:text-white"></i>
           </div>
-          <p className="text-white/60 text-sm">Connecting to shop...</p>
+          <p className="text-slate-600 dark:text-white/60 text-sm">Connecting to shop...</p>
         </div>
       </div>
     );
@@ -507,7 +515,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#0d1117' }}>
         <div className="bg-red-900/30 border border-red-700/50 rounded-2xl p-8 text-center max-w-sm">
           <i className="bx bx-error-circle text-5xl text-red-400 mb-4"></i>
-          <h2 className="text-white font-bold text-xl mb-2">Shop Not Found</h2>
+          <h2 className="text-slate-800 dark:text-white font-bold text-xl mb-2">Shop Not Found</h2>
           <p className="text-red-300 text-sm">{error}</p>
         </div>
       </div>
@@ -537,8 +545,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           setIsDragging(true);
         }
       }}
-      className="dark min-h-screen flex flex-col relative"
-      style={{ background: '#0b141a' }}
+      className={`${isDarkMode ? 'dark' : ''} min-h-screen flex flex-col relative bg-[#f0f2f5] dark:bg-[#0b141a] text-slate-800 dark:text-white transition-colors duration-500`}
     >
       {/* ── Toast Notifications ──────────────────────────────────────── */}
       {toasts.length > 0 && (
@@ -546,7 +553,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           {toasts.map(t => (
             <div
               key={t.id}
-              className="glass-strong elev-3 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white animate-in fade-in slide-in-from-top-3 duration-200"
+              className="glass-strong elev-3 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-slate-800 dark:text-white animate-in fade-in slide-in-from-top-3 duration-200"
             >
               <i className={`bx ${t.icon} text-sm text-emerald-400`}></i>
               {t.msg}
@@ -572,8 +579,8 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           <div className="bg-[#1f2c34] p-8 rounded-full shadow-2xl mb-4 animate-bounce">
             <i className="bx bx-upload text-5xl text-emerald-400"></i>
           </div>
-          <p className="text-white font-black text-xl">Drop files here to upload</p>
-          <p className="text-white/60 text-sm mt-1">PDF, Word, Excel, Images (Max 25MB)</p>
+          <p className="text-slate-800 dark:text-white font-black text-xl">Drop files here to upload</p>
+          <p className="text-slate-600 dark:text-white/60 text-sm mt-1">PDF, Word, Excel, Images (Max 25MB)</p>
         </div>
       )}
 
@@ -581,11 +588,11 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       {cropFileId && activeCropFile && activeCropFile.previewUrl && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
           <div className="glass-nav flex items-center justify-between p-4">
-            <button onClick={() => setCropFileId(null)} className="text-white/70 hover:text-white">
+            <button onClick={() => setCropFileId(null)} className="text-slate-600 dark:text-white/70 hover:text-slate-800 dark:text-white">
               <i className="bx bx-arrow-back text-2xl"></i>
             </button>
-            <h3 className="text-white font-bold">Crop & Rotate</h3>
-            <button onClick={() => setCropFileId(null)} className="text-white/70 hover:text-white text-sm">Cancel</button>
+            <h3 className="text-slate-800 dark:text-white font-bold">Crop & Rotate</h3>
+            <button onClick={() => setCropFileId(null)} className="text-slate-600 dark:text-white/70 hover:text-slate-800 dark:text-white text-sm">Cancel</button>
           </div>
           <div className="relative flex-1">
             {activeCrop && (
@@ -604,7 +611,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
             <div className="flex gap-2 justify-center">
               {[-90, -45, 45, 90].map(deg => (
                 <button key={deg} onClick={() => setActiveCrop(prev => prev ? { ...prev, rotation: (prev.rotation + deg) % 360 } : prev)}
-                  className="px-3 py-2 bg-white/10 text-white text-sm rounded-xl hover:bg-white/20 transition">{deg > 0 ? `+${deg}°` : `${deg}°`}</button>
+                  className="px-3 py-2 bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white text-sm rounded-xl hover:bg-slate-300 dark:bg-white/20 transition">{deg > 0 ? `+${deg}°` : `${deg}°`}</button>
               ))}
             </div>
             <button
@@ -618,7 +625,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                   setCropFileId(null); setActiveCrop(null);
                 } catch (e) { console.error('Crop failed:', e); }
               }}
-              className="clay-accent w-full py-3 text-white font-bold rounded-clay hover:brightness-110 transition shadow-glow-success"
+              className="clay-accent w-full py-3 text-slate-800 dark:text-white font-bold rounded-clay hover:brightness-110 transition shadow-glow-success"
             >✂️ Crop &amp; Done</button>
           </div>
         </div>
@@ -629,13 +636,13 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col justify-end sm:justify-center items-center sm:p-4">
           <div className="glass-strong elev-5 w-full sm:max-w-sm sm:rounded-clay rounded-t-3xl p-6 animate-in slide-in-from-bottom-8 duration-300">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-white font-bold text-lg">Passport Photo Setup</h3>
-              <button onClick={() => setPassportModalFileId(null)} className="text-white/50 hover:text-white">
+              <h3 className="text-slate-800 dark:text-white font-bold text-lg">Passport Photo Setup</h3>
+              <button onClick={() => setPassportModalFileId(null)} className="text-slate-500 dark:text-white/50 hover:text-slate-800 dark:text-white">
                 <i className="bx bx-x text-2xl"></i>
               </button>
             </div>
             
-            <p className="text-white/70 text-sm mb-4">Select the size of passport photo you need:</p>
+            <p className="text-slate-600 dark:text-white/70 text-sm mb-4">Select the size of passport photo you need:</p>
             
             <div className="space-y-3 max-h-64 overflow-y-auto pr-2 mb-6">
               {PASSPORT_SIZES.map(size => {
@@ -651,10 +658,10 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                     className="w-full text-left p-3 rounded-xl border border-white/5 hover:border-amber-500/50 hover:bg-amber-500/10 transition flex items-center justify-between"
                   >
                     <div>
-                      <p className="text-white font-semibold text-sm">{size.label}</p>
-                      <p className="text-white/50 text-xs mt-0.5">{size.widthMm} x {size.heightMm} mm</p>
+                      <p className="text-slate-800 dark:text-white font-semibold text-sm">{size.label}</p>
+                      <p className="text-slate-500 dark:text-white/50 text-xs mt-0.5">{size.widthMm} x {size.heightMm} mm</p>
                     </div>
-                    <div className="bg-white/5 px-2 py-1 rounded text-amber-400 font-bold text-xs">
+                    <div className="bg-slate-200 dark:bg-white/5 px-2 py-1 rounded text-amber-400 font-bold text-xs">
                       {copies} copies
                     </div>
                   </button>
@@ -670,26 +677,26 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {/* Main header row */}
         <div className="flex items-center gap-3 px-4 py-3">
           <div className="w-10 h-10 rounded-full clay-accent flex items-center justify-center shrink-0 shadow-glow-success">
-            <i className="bx bx-printer text-white text-lg"></i>
+            <i className="bx bx-printer text-slate-800 dark:text-white text-lg"></i>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white font-bold text-sm truncate">{shopName || 'Print Shop'}</p>
+            <p className="text-slate-800 dark:text-white font-bold text-sm truncate">{shopName || 'Print Shop'}</p>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-white/50 text-xs">Print Bot · Online</span>
+              <span className="text-slate-500 dark:text-white/50 text-xs">Print Bot · Online</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {/* Help button */}
             <button
               onClick={() => { setGuideOpen(true); setGuideStep(0); }}
-              className="w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-white/10"
+              className="w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-200 dark:bg-white/10"
               style={{ color: 'rgba(255,255,255,0.4)' }}
               title="How to use"
             >
               <i className="bx bx-help-circle text-xl"></i>
             </button>
-            <i className="bx bx-dots-vertical-rounded text-xl text-white/40 hover:text-white cursor-pointer transition"></i>
+            <i className="bx bx-dots-vertical-rounded text-xl text-slate-500 dark:text-white/40 hover:text-slate-800 dark:text-white cursor-pointer transition"></i>
           </div>
         </div>
 
@@ -737,18 +744,18 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         <div className="absolute inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
           <div className="glass-strong elev-5 w-full rounded-clay p-6 animate-in slide-in-from-bottom-8 duration-500 max-w-sm mb-20 sm:mb-0">
             <div className="w-16 h-16 rounded-full clay-accent flex items-center justify-center mb-6 mx-auto shadow-glow-success animate-float">
-              <i className="bx bx-store text-4xl text-white"></i>
+              <i className="bx bx-store text-4xl text-slate-800 dark:text-white"></i>
             </div>
-            <h2 className="text-h2 font-black text-white text-center mb-2">Welcome to {shopName || 'Print Shop'}</h2>
-            <p className="text-white/60 text-center text-sm mb-6">Enter your name to start your print order</p>
+            <h2 className="text-h2 font-black text-slate-800 dark:text-white text-center mb-2">Welcome to {shopName || 'Print Shop'}</h2>
+            <p className="text-slate-600 dark:text-white/60 text-center text-sm mb-6">Enter your name to start your print order</p>
 
             <form onSubmit={(e) => { e.preventDefault(); handleStartChat(); }}>
               <input type="text" value={name} onChange={e => setName(e.target.value)}
                 placeholder="Your Name" autoFocus
-                className="neu-inset w-full text-white px-4 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-center font-bold text-lg bg-transparent"
+                className="neu-inset w-full text-slate-800 dark:text-white px-4 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-center font-bold text-lg bg-transparent"
               />
               <button type="submit" disabled={name.length < 2}
-                className="clay-accent w-full py-4 disabled:opacity-50 text-white font-black rounded-clay transition active:scale-95 flex items-center justify-center gap-2 shadow-glow-success hover:brightness-110"
+                className="clay-accent w-full py-4 disabled:opacity-50 text-slate-800 dark:text-white font-black rounded-clay transition active:scale-95 flex items-center justify-center gap-2 shadow-glow-success hover:brightness-110"
               >
                 Start <i className="bx bx-right-arrow-alt text-xl"></i>
               </button>
@@ -782,7 +789,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {isBotTyping && (
           <div className="flex items-end gap-2 mb-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
             <div className="w-7 h-7 rounded-full bg-emerald-700 flex items-center justify-center shrink-0">
-              <i className="bx bx-printer text-white text-xs"></i>
+              <i className="bx bx-printer text-slate-800 dark:text-white text-xs"></i>
             </div>
             <div className="glass px-4 py-3 rounded-2xl rounded-bl-sm shadow-elev-1" style={{ maxWidth: '60px' }}>
               <div className="flex gap-1 items-center">
@@ -797,7 +804,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {/* Upload progress */}
         {step === 'uploading' && uploadProgress && (
           <div className="flex justify-center my-3">
-            <div className="bg-white/10 text-white/70 text-xs px-4 py-2 rounded-full flex items-center gap-2">
+            <div className="bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-white/70 text-xs px-4 py-2 rounded-full flex items-center gap-2">
               <i className="bx bx-loader-alt animate-spin text-sm"></i>
               {uploadProgress}
             </div>
@@ -808,21 +815,21 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {step === 'confirm' && (
           <div className="flex items-end gap-2 mb-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="w-7 h-7 rounded-full bg-emerald-700 flex items-center justify-center shrink-0">
-              <i className="bx bx-printer text-white text-xs"></i>
+              <i className="bx bx-printer text-slate-800 dark:text-white text-xs"></i>
             </div>
             <div className="glass-strong elev-3 rounded-2xl rounded-bl-sm overflow-hidden" style={{ maxWidth: '85%' }}>
-              <div className="p-3 border-b border-white/10 flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #075E54, #128C7E)' }}>
-                <i className="bx bx-receipt text-white text-lg"></i>
-                <span className="text-white font-bold text-sm">Print Job Summary</span>
+              <div className="p-3 border-b border-slate-300 dark:border-white/10 flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #075E54, #128C7E)' }}>
+                <i className="bx bx-receipt text-slate-800 dark:text-white text-lg"></i>
+                <span className="text-slate-800 dark:text-white font-bold text-sm">Print Job Summary</span>
               </div>
               <div className="p-3 space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-white/50">Customer</span>
-                  <span className="text-white font-semibold">{name}</span>
+                  <span className="text-slate-500 dark:text-white/50">Customer</span>
+                  <span className="text-slate-800 dark:text-white font-semibold">{name}</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-white/50">Files</span>
-                  <span className="text-white font-semibold">{files.length} file(s)</span>
+                  <span className="text-slate-500 dark:text-white/50">Files</span>
+                  <span className="text-slate-800 dark:text-white font-semibold">{files.length} file(s)</span>
                 </div>
                 {/* Per-group summary */}
                 {GROUP_SLOTS.filter(g => files.some(f => f.groupId === g.id)).map(g => {
@@ -832,7 +839,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                       <p className="font-bold mb-1.5 flex items-center gap-1" style={{ color: g.color }}>
                         <i className="bx bxs-file-pdf text-sm"></i> {g.label} → PDF ({gFiles.length} files)
                       </p>
-                      <ul className="list-disc pl-4 space-y-0.5 text-white/60">
+                      <ul className="list-disc pl-4 space-y-0.5 text-slate-600 dark:text-white/60">
                         {gFiles.map(f => <li key={f.id} className="truncate">{f.file.name}</li>)}
                       </ul>
                     </div>
@@ -840,9 +847,9 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                 })}
                 {/* Ungrouped files */}
                 {files.filter(f => !f.groupId).map(f => (
-                  <div key={f.id} className="bg-white/5 rounded-xl p-2 text-xs">
-                    <p className="text-white font-medium truncate">{f.file.name}</p>
-                    <p className="text-white/40 mt-0.5">{f.color === 'bw' ? '⬛ B&W' : '🎨 Color'} · {f.paperSize} · {f.copies}× · {f.pageRange === 'all' ? 'All pages' : `Pages: ${f.pageRange}`}</p>
+                  <div key={f.id} className="bg-slate-200 dark:bg-white/5 rounded-xl p-2 text-xs">
+                    <p className="text-slate-800 dark:text-white font-medium truncate">{f.file.name}</p>
+                    <p className="text-slate-500 dark:text-white/40 mt-0.5">{f.color === 'bw' ? '⬛ B&W' : '🎨 Color'} · {f.paperSize} · {f.copies}× · {f.pageRange === 'all' ? 'All pages' : `Pages: ${f.pageRange}`}</p>
                   </div>
                 ))}
                 {notes && (
@@ -857,14 +864,14 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                 )}
                 <button
                   onClick={handleSubmit}
-                  className="clay-accent w-full py-3 font-bold text-sm text-white rounded-clay flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 shadow-glow-success"
+                  className="clay-accent w-full py-3 font-bold text-sm text-slate-800 dark:text-white rounded-clay flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 shadow-glow-success"
                 >
                   <i className="bx bx-paper-plane text-lg"></i>
                   Submit Print Order
                 </button>
                 <button
                   onClick={() => { setStep('files'); setError(null); }}
-                  className="w-full py-2 text-xs text-white/50 hover:text-white/80 transition"
+                  className="w-full py-2 text-xs text-slate-500 dark:text-white/50 hover:text-slate-700 dark:text-white/80 transition"
                 >← Edit files</button>
               </div>
             </div>
@@ -876,24 +883,24 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           <div className="flex justify-center my-4 animate-in fade-in zoom-in-95 duration-500">
             <div className="glass-strong elev-5 rounded-clay overflow-hidden shadow-glow-success w-full max-w-xs">
               <div className="p-4 text-center" style={{ background: 'linear-gradient(135deg, #075E54, #128C7E)' }}>
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 animate-float">
+                <div className="w-16 h-16 bg-slate-300 dark:bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 animate-float">
                   <span className="text-3xl">🎉</span>
                 </div>
-                <h3 className="text-white font-black text-xl">You're in queue!</h3>
-                <p className="text-white/70 text-sm mt-1">Show this to the shopkeeper</p>
-                <div className="mt-4 bg-white/15 rounded-2xl py-4 shimmer-border">
-                  <p className="text-white/60 text-xs uppercase tracking-widest">Your Token</p>
-                  <p className="text-white font-black text-5xl mt-1 font-mono">#{tokenNumber}</p>
+                <h3 className="text-slate-800 dark:text-white font-black text-xl">You're in queue!</h3>
+                <p className="text-slate-600 dark:text-white/70 text-sm mt-1">Show this to the shopkeeper</p>
+                <div className="mt-4 bg-slate-300 dark:bg-white/15 rounded-2xl py-4 shimmer-border">
+                  <p className="text-slate-600 dark:text-white/60 text-xs uppercase tracking-widest">Your Token</p>
+                  <p className="text-slate-800 dark:text-white font-black text-5xl mt-1 font-mono">#{tokenNumber}</p>
                 </div>
               </div>
               <div className="p-4 space-y-2">
                 <button
                   onClick={() => { window.location.href = `/s/${params.slug}/status/${jobId}`; }}
-                  className="clay-accent w-full py-3 text-sm font-bold rounded-clay transition-all hover:brightness-110 active:scale-95 text-white shadow-glow-success"
+                  className="clay-accent w-full py-3 text-sm font-bold rounded-clay transition-all hover:brightness-110 active:scale-95 text-slate-800 dark:text-white shadow-glow-success"
                 >
                   📱 Track My Order →
                 </button>
-                <p className="text-center text-white/30 text-xs">Powered by Print Sathi</p>
+                <p className="text-center text-slate-400 dark:text-white/30 text-xs">Powered by Print Sathi</p>
               </div>
             </div>
           </div>
@@ -912,7 +919,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
               className="flex items-center gap-2 px-3 pt-2.5 pb-1 overflow-x-auto"
               style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
             >
-              <span className="shrink-0 text-[11px] font-bold text-white/40 whitespace-nowrap uppercase tracking-wider">
+              <span className="shrink-0 text-[11px] font-bold text-slate-500 dark:text-white/40 whitespace-nowrap uppercase tracking-wider">
                 {files.length} file{files.length !== 1 ? 's' : ''}:
               </span>
               {files.map(f => {
@@ -945,7 +952,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           {/* ── Group Summary Bar ─────────────────────────────────────── */}
           {step === 'files' && GROUP_SLOTS.some(g => files.some(f => f.groupId === g.id)) && (
             <div className="flex items-center gap-2 px-3 py-1.5 overflow-x-auto" style={{ background: '#111b21', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <i className="bx bxs-file-pdf text-xs text-white/30 shrink-0"></i>
+              <i className="bx bxs-file-pdf text-xs text-slate-400 dark:text-white/30 shrink-0"></i>
               {GROUP_SLOTS.filter(g => files.some(f => f.groupId === g.id)).map(g => {
                 const n = files.filter(f => f.groupId === g.id).length;
                 return (
@@ -955,7 +962,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                 );
               })}
               {files.filter(f => !f.groupId).length > 0 && (
-                <span className="shrink-0 text-[10px] text-white/30 whitespace-nowrap">
+                <span className="shrink-0 text-[10px] text-slate-400 dark:text-white/30 whitespace-nowrap">
                   +{files.filter(f => !f.groupId).length} separate
                 </span>
               )}
@@ -972,7 +979,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
             {(step === 'confirm' || (step === 'files' && files.length === 0)) && (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-11 h-11 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all shrink-0"
+                className="w-11 h-11 rounded-full flex items-center justify-center text-slate-600 dark:text-white/60 hover:text-slate-800 dark:text-white hover:bg-slate-200 dark:bg-white/10 transition-all shrink-0"
                 aria-label="Attach files"
               >
                 <i className="bx bx-paperclip text-2xl rotate-[-45deg]"></i>
@@ -991,19 +998,19 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                     onKeyDown={e => e.key === 'Enter' && handleSendNotes()}
                     placeholder="Special instructions (optional)..."
                     maxLength={250}
-                    className="flex-1 rounded-full px-4 py-3 text-sm text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all"
+                    className="flex-1 rounded-full px-4 py-3 text-sm text-slate-800 dark:text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all"
                     style={{ background: '#2a3942' }}
                     autoFocus
                   />
                   <button
                     onClick={() => { setInputValue(''); handleSendNotes(); }}
-                    className="px-4 py-2 rounded-full text-xs font-bold text-white/70 hover:text-white transition-all"
+                    className="px-4 py-2 rounded-full text-xs font-bold text-slate-600 dark:text-white/70 hover:text-slate-800 dark:text-white transition-all"
                     style={{ background: '#2a3942' }}
                   >Skip</button>
                 </div>
                 <button
                   onClick={handleSendNotes}
-                  className="clay-accent w-11 h-11 rounded-full flex items-center justify-center text-white transition-all active:scale-90 shrink-0 shadow-glow-success hover:brightness-110"
+                  className="clay-accent w-11 h-11 rounded-full flex items-center justify-center text-slate-800 dark:text-white transition-all active:scale-90 shrink-0 shadow-glow-success hover:brightness-110"
                 >
                   <i className="bx bx-send text-lg"></i>
                 </button>
@@ -1015,7 +1022,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
               <div className="flex-1 flex gap-2">
                 {files.length === 0 ? (
                   /* No files yet — prompt */
-                  <div className="flex-1 flex items-center px-4 py-3 rounded-full text-sm text-white/30" style={{ background: '#2a3942' }}>
+                  <div className="flex-1 flex items-center px-4 py-3 rounded-full text-sm text-slate-400 dark:text-white/30" style={{ background: '#2a3942' }}>
                     Tap 📎 to attach files...
                   </div>
                 ) : (
@@ -1024,7 +1031,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                     <Tooltip text="Add more files">
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="shrink-0 flex items-center gap-1 px-3 py-3 rounded-full text-sm font-bold text-white/60 hover:text-white transition-all active:scale-95"
+                        className="shrink-0 flex items-center gap-1 px-3 py-3 rounded-full text-sm font-bold text-slate-600 dark:text-white/60 hover:text-slate-800 dark:text-white transition-all active:scale-95"
                         style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
                       >
                         <i className="bx bx-plus text-lg"></i>
@@ -1055,7 +1062,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                       )}
                       <button
                         onClick={() => { handleDoneWithFiles(); markSeen('done'); }}
-                        className="clay-accent w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-bold text-white transition-all active:scale-95 hover:brightness-110 shadow-glow-success"
+                        className="clay-accent w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-bold text-slate-800 dark:text-white transition-all active:scale-95 hover:brightness-110 shadow-glow-success"
                       >
                         <i className="bx bx-check-circle text-lg"></i>
                         Done ({files.length})
@@ -1068,7 +1075,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
 
             {/* confirm step */}
             {step === 'confirm' && (
-              <div className="flex-1 flex items-center px-4 py-3 rounded-full text-sm text-white/30" style={{ background: '#2a3942' }}>
+              <div className="flex-1 flex items-center px-4 py-3 rounded-full text-sm text-slate-400 dark:text-white/30" style={{ background: '#2a3942' }}>
                 Review your order above...
               </div>
             )}
@@ -1082,7 +1089,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           {/* Coach mark on ? button — shows once */}
           {!seenHints.has('help-btn') && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 delay-1000">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-2xl rounded-br-sm text-xs font-bold text-white shadow-2xl"
+              <div className="flex items-center gap-2 px-3 py-2 rounded-2xl rounded-br-sm text-xs font-bold text-slate-800 dark:text-white shadow-2xl"
                 style={{ background: 'rgba(129,140,248,0.95)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping absolute"></span>
                 <span className="w-1.5 h-1.5 rounded-full bg-white/80 shrink-0 relative"></span>
@@ -1136,51 +1143,63 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       {/* Custom Rocket Loading Overlay */}
       {uploadStatus !== 'idle' && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/75 backdrop-blur-md transition-all duration-300 animate-in fade-in">
-          <div className="relative flex flex-col items-center justify-center p-8 rounded-clay glass-strong border border-white/10 shadow-elev-5 max-w-sm w-full mx-4 overflow-hidden">
+          <div className="relative flex flex-col items-center justify-center p-8 rounded-clay glass-strong border border-slate-300 dark:border-white/10 shadow-elev-5 max-w-sm w-full mx-4 overflow-hidden">
             {/* Mesh background effect inside loader */}
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,transparent_70%)]" />
 
             {uploadStatus === 'uploading' ? (
-              <div className="flex flex-col items-center">
-                {/* Rocket Icon with float and shake effects */}
-                <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 relative shadow-inner">
-                  {/* Smoke particles */}
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 animate-pulse">
-                    <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-ping" style={{ animationDuration: '0.4s' }}></span>
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full animate-ping" style={{ animationDuration: '0.6s' }}></span>
-                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping" style={{ animationDuration: '0.5s' }}></span>
+                <div className="flex flex-col items-center">
+                  {/* Rocket Icon Container */}
+                  <div className="w-24 h-24 mb-6 relative">
+                    <div className="absolute inset-0 z-10" style={{
+                      animation: rocketPhase === 'entering' ? 'rocketSlideIn 1s cubic-bezier(0.1, 0.9, 0.2, 1) forwards' : 
+                                rocketPhase === 'liftoff' ? 'rocketLiftoff 1s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards' :
+                                rocketPhase === 'thrust' ? 'rocketThrustShake 0.5s linear infinite, rocketThrustDrift 3s ease-out forwards' :
+                                'rocketWobble 2s ease-in-out infinite'
+                    }}>
+                      {/* Thrust flames, only show when uploading */}
+                      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center" style={{ opacity: rocketPhase === 'thrust' ? 1 : 0, transition: 'opacity 0.3s' }}>
+                        <div className="w-4 h-8 bg-gradient-to-b from-yellow-300 via-orange-500 to-red-600 rounded-full blur-[2px] animate-pulse"></div>
+                        <div className="w-2 h-6 bg-yellow-200 rounded-full absolute top-1 blur-[1px]" style={{ animation: 'flameCore 0.3s infinite alternate' }}></div>
+                        <div className="flex gap-2 absolute top-6">
+                           <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-ping" style={{ animationDuration: '0.4s' }}></span>
+                           <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping" style={{ animationDuration: '0.5s' }}></span>
+                        </div>
+                      </div>
+                      
+                      {/* SVG Rocket */}
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute top-0 left-1/2 -translate-x-1/2 z-10 drop-shadow-lg" style={{ filter: 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))' }}>
+                        <path d="M12.9839 21.0503L12.0125 18.0645C11.9567 17.8929 11.8928 17.7251 11.8211 17.5615C11.6248 17.1132 11.3789 16.6901 11.0898 16.3033L9.61057 14.3218L6.28913 13.0642C5.97541 12.9454 5.67269 12.8028 5.3831 12.6375C4.94582 12.3879 4.54228 12.0837 4.1824 11.7317L2 9.59868C2 9.59868 6.30545 8.16361 8.78311 6.32675C11.3651 4.41249 14.8398 2 14.8398 2C14.8398 2 13.9782 5.62688 14.8398 8.44199C15.6883 11.2144 19.4674 12.8753 19.4674 12.8753L16.2731 16.0378C15.7483 16.5574 15.3529 17.1856 15.1166 17.8769L14.0759 20.9197C14.0042 21.1293 13.9168 21.3328 13.8142 21.5287L12.9839 21.0503Z" fill="#CBD5E1"/>
+                        <path d="M14.8398 2C14.8398 2 18.6657 5.75389 21.338 11.6376L22.1818 13.496C22.2536 13.6543 22.3168 13.8159 22.3712 13.9804L23 15.8817L19.4674 12.8753C19.4674 12.8753 15.6883 11.2144 14.8398 8.44199C13.9782 5.62688 14.8398 2 14.8398 2Z" fill="#F43F5E"/>
+                        <path d="M11.6961 8.87786C12.3276 9.38714 13.2504 9.28621 13.7573 8.65239C14.2642 8.01857 14.1632 7.09139 13.5317 6.58211C12.9001 6.07284 11.9774 6.17376 11.4704 6.80758C10.9635 7.4414 11.0645 8.36858 11.6961 8.87786Z" fill="#3B82F6"/>
+                      </svg>
+                    </div>
                   </div>
-                  
-                  {/* Thrust flame glow */}
-                  <div className="absolute bottom-1 w-8 h-8 rounded-full bg-orange-500/30 blur-md animate-flame"></div>
-                  
-                  <div className={animateRocketFly ? "animate-rocket-fly" : "animate-rocket-shake animate-rocket-float"}>
-                    <i className="bx bxs-rocket text-5xl text-gradient-indigo-purple"></i>
-                  </div>
-                </div>
 
-                <h3 className="text-white font-black text-xl mb-2 tracking-tight">Uploading Order...</h3>
-                <p className="text-white/60 text-xs font-mono text-center max-w-[240px] px-2 animate-pulse">
-                  {uploadProgress}
-                </p>
-                
-                {/* Progress bar */}
-                <div className="w-48 h-1 bg-white/10 rounded-full mt-4 overflow-hidden">
-                  <div className="h-full bg-indigo-500 rounded-full transition-all duration-300 animate-pulse" style={{ width: '100%' }}></div>
+                  <h3 className="text-slate-800 dark:text-white font-black text-xl mb-2 tracking-tight">Uploading Order...</h3>
+                  <p className="text-slate-600 dark:text-white/60 text-xs font-mono text-center max-w-[240px] px-2 animate-pulse">
+                    {uploadProgress}
+                  </p>
+                  
+                  {/* Progress bar */}
+                  <div className="w-48 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full mt-4 overflow-hidden relative">
+                    <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full transition-all duration-300 ease-out" style={{ width: `${uploadPercent}%` }}></div>
+                  </div>
                 </div>
-              </div>
             ) : (
               <div className="flex flex-col items-center text-center">
                 {/* Checked circular ring */}
                 <div className="relative w-24 h-24 flex items-center justify-center mb-6 animate-scale-in">
                   <div className="absolute inset-0 rounded-full border border-emerald-500/20 bg-emerald-500/10 flex items-center justify-center">
-                    <i className="bx bx-check text-5xl text-emerald-400"></i>
+                    <svg className="w-12 h-12 text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-tick-draw" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                       <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
                   </div>
                 </div>
 
                 <h3 className="text-emerald-400 font-black text-2xl mb-1 tracking-tight animate-scale-in" style={{ animationDelay: '100ms' }}>Order Confirmed!</h3>
-                <p className="text-white/40 text-xs font-semibold mb-3 mt-1 animate-scale-in" style={{ animationDelay: '200ms' }}>Token: #{tokenNumber}</p>
-                <p className="text-white/60 text-xs animate-scale-in px-4" style={{ animationDelay: '300ms' }}>
+                <p className="text-slate-500 dark:text-white/40 text-xs font-semibold mb-3 mt-1 animate-scale-in" style={{ animationDelay: '200ms' }}>Token: #{tokenNumber}</p>
+                <p className="text-slate-600 dark:text-white/60 text-xs animate-scale-in px-4" style={{ animationDelay: '300ms' }}>
                   Redirecting to live status tracker...
                 </p>
               </div>
@@ -1202,7 +1221,7 @@ function CoachMark({ text, direction = 'up', color = '#25D366', onDismiss }: {
   return (
     <div className={`absolute ${direction === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 -translate-x-1/2 z-50 animate-in fade-in zoom-in-90 duration-200`} style={{ whiteSpace: 'nowrap' }}>
       {direction === 'down' && <div className="flex justify-center"><div className="w-0 h-0" style={{ borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderBottom: `6px solid ${color}` }}></div></div>}
-      <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-white shadow-2xl" style={{ background: color }}>
+      <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-800 dark:text-white shadow-2xl" style={{ background: color }}>
         <span className="w-2 h-2 rounded-full bg-white/50 animate-ping absolute left-2.5"></span>
         <span className="w-2 h-2 rounded-full bg-white shrink-0 relative"></span>
         {text}
@@ -1221,7 +1240,7 @@ function Tooltip({ text, children }: { text: string; children: React.ReactNode }
       {children}
       {show && (
         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-in fade-in duration-150" style={{ whiteSpace: 'nowrap' }}>
-          <div className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-white" style={{ background: 'rgba(10,20,30,0.95)', border: '1px solid rgba(255,255,255,0.12)' }}>{text}</div>
+          <div className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-slate-800 dark:text-white" style={{ background: 'rgba(10,20,30,0.95)', border: '1px solid rgba(255,255,255,0.12)' }}>{text}</div>
           <div className="flex justify-center"><div className="w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid rgba(10,20,30,0.95)' }}></div></div>
         </div>
       )}
@@ -1241,7 +1260,7 @@ const GUIDE_STEPS = [
         {['📷','📷','📷'].map((e,i) => (
           <div key={i} className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{ background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.4)' }}>{e}</div>
         ))}
-        <div className="flex items-center text-white/40"><i className="bx bx-right-arrow-alt text-2xl"></i></div>
+        <div className="flex items-center text-slate-500 dark:text-white/40"><i className="bx bx-right-arrow-alt text-2xl"></i></div>
         <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{ background: 'rgba(129,140,248,0.2)', border: '1px solid rgba(129,140,248,0.5)' }}>📄</div>
       </div>
     ),
@@ -1259,9 +1278,9 @@ const GUIDE_STEPS = [
         ].map(g => (
           <div key={g.id} className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: g.bg, border: `1px solid ${g.color}40` }}>
             <span className="text-xs font-black" style={{ color: g.color }}>{g.label}</span>
-            <span className="text-white/30 text-xs mx-1">→</span>
+            <span className="text-slate-400 dark:text-white/30 text-xs mx-1">→</span>
             {g.files.map((e,i) => <span key={i} className="text-base">{e}</span>)}
-            <span className="text-white/30 text-xs mx-1">→</span>
+            <span className="text-slate-400 dark:text-white/30 text-xs mx-1">→</span>
             <span style={{ color: g.color }} className="text-xs font-bold">1 PDF</span>
           </div>
         ))}
@@ -1324,8 +1343,8 @@ function FloatingGuide({ step, onNext, onClose, onOpenOrganiser }: {
             <i className={`bx ${s.icon} text-2xl`} style={{ color: s.iconColor }}></i>
           </div>
 
-          <h3 className="text-white font-black text-lg text-center leading-snug mb-2">{s.title}</h3>
-          <p className="text-white/60 text-sm text-center leading-relaxed"
+          <h3 className="text-slate-800 dark:text-white font-black text-lg text-center leading-snug mb-2">{s.title}</h3>
+          <p className="text-slate-600 dark:text-white/60 text-sm text-center leading-relaxed"
             dangerouslySetInnerHTML={{ __html: s.body.replace(/\*\*(.*?)\*\*/g, '<strong style="color:white">$1</strong>') }} />
 
           {/* Visual illustration */}
@@ -1334,7 +1353,7 @@ function FloatingGuide({ step, onNext, onClose, onOpenOrganiser }: {
 
         <div className="px-6 pb-6 flex gap-3">
           <button onClick={onClose}
-            className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:bg-white/5"
+            className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:bg-slate-200 dark:bg-white/5"
             style={{ color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}>
             Skip
           </button>
@@ -1386,8 +1405,8 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
           <img src={f.previewUrl} alt={f.file.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-            <i className={`bx ${getFileTypeBadge(f.file).icon} text-2xl text-white/40`}></i>
-            <span className="text-[8px] text-white/30 text-center px-1 leading-tight truncate w-full text-center">{f.file.name.split('.').pop()?.toUpperCase()}</span>
+            <i className={`bx ${getFileTypeBadge(f.file).icon} text-2xl text-slate-500 dark:text-white/40`}></i>
+            <span className="text-[8px] text-slate-400 dark:text-white/30 text-center px-1 leading-tight truncate w-full text-center">{f.file.name.split('.').pop()?.toUpperCase()}</span>
           </div>
         )}
         {/* Remove button */}
@@ -1396,10 +1415,10 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
           className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/70 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity group-hover:opacity-100"
           style={{ zIndex: 10 }}
         >
-          <i className="bx bx-x text-xs text-white/70"></i>
+          <i className="bx bx-x text-xs text-slate-600 dark:text-white/70"></i>
         </button>
         {/* File name tooltip on hover */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-0.5 text-[8px] text-white/60 text-center truncate px-1">
+        <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-0.5 text-[8px] text-slate-600 dark:text-white/60 text-center truncate px-1">
           {f.file.name.length > 10 ? f.file.name.slice(0, 9) + '…' : f.file.name}
         </div>
       </div>
@@ -1429,10 +1448,10 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
           <div className="w-10 h-1 rounded-full mb-3" style={{ background: 'rgba(255,255,255,0.2)' }}></div>
           <div className="flex items-center justify-between w-full">
             <div>
-              <h2 className="text-white font-black text-lg">Organise Files</h2>
-              <p className="text-white/40 text-xs mt-0.5">Files in the same group get combined into 1 PDF</p>
+              <h2 className="text-slate-800 dark:text-white font-black text-lg">Organise Files</h2>
+              <p className="text-slate-500 dark:text-white/40 text-xs mt-0.5">Files in the same group get combined into 1 PDF</p>
             </div>
-            <button onClick={onClose} className="w-9 h-9 rounded-xl flex items-center justify-center transition hover:bg-white/10" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <button onClick={onClose} className="w-9 h-9 rounded-xl flex items-center justify-center transition hover:bg-slate-200 dark:bg-white/10" style={{ color: 'rgba(255,255,255,0.5)' }}>
               <i className="bx bx-x text-2xl"></i>
             </button>
           </div>
@@ -1441,7 +1460,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
           <div className="mt-3 flex items-start gap-3 px-4 py-3 rounded-2xl" style={{ background: 'rgba(129,140,248,0.08)', border: '1px solid rgba(129,140,248,0.2)' }}>
             <i className="bx bx-info-circle text-lg shrink-0 mt-0.5" style={{ color: '#818cf8' }}></i>
             <div className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              <strong className="text-white/80">How to use:</strong> Tap the <strong className="text-white/70">[A] [B] [C] [D]</strong> buttons on any file to assign it to a group. Files in the same group will be merged into <strong className="text-white/70">one PDF</strong>. Unassigned files print separately.
+              <strong className="text-slate-700 dark:text-white/80">How to use:</strong> Tap the <strong className="text-slate-600 dark:text-white/70">[A] [B] [C] [D]</strong> buttons on any file to assign it to a group. Files in the same group will be merged into <strong className="text-slate-600 dark:text-white/70">one PDF</strong>. Unassigned files print separately.
             </div>
           </div>
         </div>
@@ -1522,7 +1541,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
 
           {/* Unassigned picker — all files, tap to assign */}
           <div className="rounded-2xl px-4 py-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-white/30 mb-3">Tap a file to assign group</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-white/30 mb-3">Tap a file to assign group</p>
             <div className="space-y-2">
               {files.map(f => {
                 const grp = f.groupId ? GROUP_SLOTS.find(g => g.id === f.groupId) : null;
@@ -1534,12 +1553,12 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
                       style={{ background: '#1a2733' }}>
                       {f.previewUrl
                         ? <img src={f.previewUrl} alt="" className="w-full h-full object-cover" />
-                        : <i className={`bx ${getFileTypeBadge(f.file).icon} text-xl text-white/40`}></i>
+                        : <i className={`bx ${getFileTypeBadge(f.file).icon} text-xl text-slate-500 dark:text-white/40`}></i>
                       }
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-xs font-semibold truncate">{f.file.name}</p>
-                      <p className="text-white/30 text-[10px]">{formatSize(f.file.size)}</p>
+                      <p className="text-slate-800 dark:text-white text-xs font-semibold truncate">{f.file.name}</p>
+                      <p className="text-slate-400 dark:text-white/30 text-[10px]">{formatSize(f.file.size)}</p>
                     </div>
                     {/* Group assign pills */}
                     <div className="flex gap-1 shrink-0">
@@ -1576,7 +1595,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
         <div className="px-5 pb-6 pt-2 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <button
             onClick={onClose}
-            className="clay-accent w-full py-4 rounded-clay text-base font-black text-white transition-all hover:brightness-110 active:scale-95 shadow-glow-success"
+            className="clay-accent w-full py-4 rounded-clay text-base font-black text-slate-800 dark:text-white transition-all hover:brightness-110 active:scale-95 shadow-glow-success"
           >
             ✓ Done Organising
           </button>
@@ -1613,7 +1632,7 @@ function GroupPicker({ currentGroupId, onChange }: {
         <div
           className="glass-strong elev-4 absolute bottom-full left-0 right-0 mb-1.5 rounded-xl overflow-hidden z-30 animate-in fade-in slide-in-from-bottom-2 duration-150"
         >
-          <p className="px-3 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-white/30">Assign to group</p>
+          <p className="px-3 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-white/30">Assign to group</p>
           <div className="p-2 space-y-1">
             {GROUP_SLOTS.map(g => (
               <button
@@ -1629,14 +1648,14 @@ function GroupPicker({ currentGroupId, onChange }: {
             ))}
             <button
               onClick={() => { onChange(null); setOpen(false); }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition text-white/40 hover:text-white/60 hover:bg-white/5"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:bg-white/5"
               style={{ border: '1px solid transparent' }}
             >
               <span className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
                 <i className="bx bx-minus text-xs"></i>
               </span>
               Print separately
-              {!currentGroupId && <i className="bx bx-check ml-auto text-sm text-white/40"></i>}
+              {!currentGroupId && <i className="bx bx-check ml-auto text-sm text-slate-500 dark:text-white/40"></i>}
             </button>
           </div>
         </div>
@@ -1666,7 +1685,7 @@ function MessageBubble({
     <div className={`flex items-end gap-2 mb-1 animate-in fade-in slide-in-from-bottom-2 duration-300 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
       {isBot && (
         <div className="w-7 h-7 rounded-full bg-emerald-700 flex items-center justify-center shrink-0 mb-1">
-          <i className="bx bx-printer text-white text-xs"></i>
+          <i className="bx bx-printer text-slate-800 dark:text-white text-xs"></i>
         </div>
       )}
       {isUser && <div className="w-7 shrink-0"></div>}
@@ -1693,17 +1712,17 @@ function MessageBubble({
             )}
             <div className={`p-3 ${fileItem.previewUrl ? '' : 'pt-3'}`}>
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                  <i className={`bx ${getFileTypeBadge(fileItem.file).icon} text-white text-lg`}></i>
+                <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/10 flex items-center justify-center shrink-0">
+                  <i className={`bx ${getFileTypeBadge(fileItem.file).icon} text-slate-800 dark:text-white text-lg`}></i>
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-white text-xs font-semibold truncate">{fileItem.file.name}</p>
-                  <p className="text-white/40 text-[10px]">{formatSize(fileItem.file.size)} · {getFileTypeBadge(fileItem.file).label}</p>
+                  <p className="text-slate-800 dark:text-white text-xs font-semibold truncate">{fileItem.file.name}</p>
+                  <p className="text-slate-500 dark:text-white/40 text-[10px]">{formatSize(fileItem.file.size)} · {getFileTypeBadge(fileItem.file).label}</p>
                 </div>
               </div>
 
               {isBot && (
-                <div className="space-y-2 mt-2 border-t border-white/10 pt-2">
+                <div className="space-y-2 mt-2 border-t border-slate-300 dark:border-white/10 pt-2">
 
                   {/* ── Group Picker (images only) ──────────────────────── */}
                   {isImage && (
@@ -1731,25 +1750,25 @@ function MessageBubble({
                       <div className="flex gap-1">
                         {(['bw', 'color'] as const).map(c => (
                           <button key={c} onClick={() => updateFileSetting(fileItem.id, 'color', c)}
-                            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${fileItem.color === c ? 'text-white' : 'bg-white/10 text-white/50 hover:text-white'}`}
+                            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${fileItem.color === c ? 'text-slate-800 dark:text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:text-slate-800 dark:text-white'}`}
                             style={fileItem.color === c ? { background: '#25D366' } : {}}
                           >{c === 'bw' ? '⬛ B&W' : '🎨 Color'}</button>
                         ))}
                       </div>
                       {/* Copies */}
                       <div className="flex items-center gap-2">
-                        <span className="text-white/50 text-[11px] shrink-0">Copies:</span>
+                        <span className="text-slate-500 dark:text-white/50 text-[11px] shrink-0">Copies:</span>
                         <div className="flex items-center gap-1">
                           {[1, 2, 3].map(n => (
                             <button key={n} onClick={() => updateFileSetting(fileItem.id, 'copies', n)}
-                              className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${fileItem.copies === n ? 'text-white' : 'bg-white/10 text-white/50 hover:text-white'}`}
+                              className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${fileItem.copies === n ? 'text-slate-800 dark:text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:text-slate-800 dark:text-white'}`}
                               style={fileItem.copies === n ? { background: '#075E54' } : {}}
                             >×{n}</button>
                           ))}
                           <input type="number" min={1} max={50} value={fileItem.copies > 3 ? fileItem.copies : ''}
                             onChange={e => { const v = parseInt(e.target.value); if (v > 0) updateFileSetting(fileItem.id, 'copies', v); }}
                             placeholder="..."
-                            className="w-10 h-8 rounded-lg text-xs text-center text-white bg-white/10 border-0 outline-none focus:ring-1 focus:ring-emerald-500 placeholder-white/30"
+                            className="w-10 h-8 rounded-lg text-xs text-center text-slate-800 dark:text-white bg-slate-200 dark:bg-white/10 border-0 outline-none focus:ring-1 focus:ring-emerald-500 placeholder-white/30"
                           />
                         </div>
                       </div>
@@ -1757,7 +1776,7 @@ function MessageBubble({
                       <div className="flex gap-1">
                         {['A4', 'A3', 'Letter'].map(s => (
                           <button key={s} onClick={() => updateFileSetting(fileItem.id, 'paperSize', s)}
-                            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${fileItem.paperSize === s ? 'text-white' : 'bg-white/10 text-white/50 hover:text-white'}`}
+                            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${fileItem.paperSize === s ? 'text-slate-800 dark:text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:text-slate-800 dark:text-white'}`}
                             style={fileItem.paperSize === s ? { background: '#075E54' } : {}}
                           >{s}</button>
                         ))}
@@ -1778,11 +1797,11 @@ function MessageBubble({
                   {/* Page range for PDFs */}
                   {fileItem.file.type === 'application/pdf' && (
                     <div>
-                      <p className="text-white/50 text-[11px] mb-1">Pages:</p>
+                      <p className="text-slate-500 dark:text-white/50 text-[11px] mb-1">Pages:</p>
                       <input type="text" value={fileItem.pageRange}
                         onChange={e => updateFileSetting(fileItem.id, 'pageRange', e.target.value)}
                         placeholder="all — or e.g. 1-5, 8"
-                        className="w-full px-3 py-1.5 rounded-lg text-xs text-white bg-white/10 outline-none focus:ring-1 focus:ring-emerald-500 placeholder-white/30"
+                        className="w-full px-3 py-1.5 rounded-lg text-xs text-slate-800 dark:text-white bg-slate-200 dark:bg-white/10 outline-none focus:ring-1 focus:ring-emerald-500 placeholder-white/30"
                       />
                     </div>
                   )}
@@ -1806,7 +1825,7 @@ function MessageBubble({
                           setPassportModalFileId(fileItem.id);
                         }
                       }}
-                      className={`w-full py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 border ${fileItem.action === 'passport_photo' ? 'bg-amber-500 text-white border-amber-400' : 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20'}`}
+                      className={`w-full py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 border ${fileItem.action === 'passport_photo' ? 'bg-amber-500 text-slate-800 dark:text-white border-amber-400' : 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20'}`}
                     >
                       <i className="bx bx-id-card text-lg"></i>
                       {fileItem.action === 'passport_photo' ? '🛂 Passport Photo (Selected)' : 'Make Passport Photo'}
@@ -1831,7 +1850,7 @@ function MessageBubble({
             className={`px-3 py-2.5 rounded-2xl shadow-elev-1 ${isBot ? 'rounded-bl-sm glass' : 'rounded-br-sm'}`}
             style={{ background: isBot ? undefined : '#128C7E', maxWidth: fileItem ? '290px' : undefined }}
           >
-            <p className="text-white text-sm leading-relaxed whitespace-pre-wrap"
+            <p className="text-slate-800 dark:text-white text-sm leading-relaxed whitespace-pre-wrap"
               dangerouslySetInnerHTML={{
                 __html: msg.content
                   .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
