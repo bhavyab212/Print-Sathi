@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useRef, useEffect } from "react";
 
@@ -154,7 +156,7 @@ export function ProcessingPanel({ selectedFile, stageIdx, animPct, model, type =
           ) : (
             <div className="flex items-center justify-center rounded-2xl border border-dashed border-border bg-muted/30"
               style={{ width: 280, height: 360 }}>
-              <i className="bx bx-image-alt text-4xl text-muted-foreground/40 animate-pulse" />
+              <Boxicon className="bx bx-image-alt text-4xl text-muted-foreground/40 animate-pulse" />
             </div>
           )}
 
@@ -190,7 +192,7 @@ export function ProcessingPanel({ selectedFile, stageIdx, animPct, model, type =
           <div className="w-full">
             <div className="mb-2 flex items-center justify-between text-xs font-semibold">
               <span className="flex items-center gap-1.5 text-muted-foreground">
-                <i className="bx bx-loader-alt animate-spin text-sm" />
+                <Boxicon className="bx bx-loader-alt animate-spin text-sm" />
                 Analyzing structure...
               </span>
               <span className="text-sm font-bold tabular-nums text-primary">{animPct}%</span>
@@ -214,9 +216,9 @@ export function ProcessingPanel({ selectedFile, stageIdx, animPct, model, type =
                   isActive ? "font-bold text-primary translate-x-1" : "text-muted-foreground/40"
                 }`}>
                   <div className="flex h-5 w-5 shrink-0 items-center justify-center">
-                    {isDone   ? <i className="bx bx-check-circle text-base text-emerald-500" /> :
+                    {isDone   ? <Boxicon className="bx bx-check-circle text-base text-emerald-500" /> :
                      isActive ? <i className={`bx ${s.icon} animate-pulse text-base text-primary`} /> :
-                                <i className="bx bx-circle text-sm opacity-40" />}
+                                <Boxicon className="bx bx-circle text-sm opacity-40" />}
                   </div>
                   <span className="truncate">{s.label}</span>
                 </div>

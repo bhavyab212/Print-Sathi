@@ -1,17 +1,23 @@
-# Project: UI/UX Enhancements
+# Project: Print Sathi Landing Page Redesign & Icon Migration
 
 ## Architecture
-- `apps/web/src/app/s/[slug]/page.tsx`: Customer dashboard
-- `apps/web/src/app/dashboard/page.tsx`: Shopkeeper dashboard
+- `apps/web/src/app/page.tsx`: Landing page containing hero section, queue mockup, and bento-style feature grids.
+- `apps/web/src/app/s/[slug]/page.tsx`: Customer Upload page.
+- `apps/web/src/app/dashboard/page.tsx`: Shopkeeper Dashboard page.
+- `apps/web/src/app/admin/AdminPanelClient.tsx`: Admin Panel.
+- `apps/web/public/images/`: Storage for custom AI-generated image assets.
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| 1 | UI/UX Execution | Implement R1 (Passport copy counts), R2 (Dashboard tab transitions), R3 (Micro-interactions, active/hover states, scaling) | none | PLANNED |
+| 1 | Exploration & Assets | Locate Boxicons, design layouts, generate AI image assets, and save to public folder | none | IN_PROGRESS |
+| 2 | Implementation & Migration | Redesign landing page, replace all Boxicons with Lucide React in 4 target files | M1 | PLANNED |
+| 3 | Verification & Polish | Verify Next.js project compilation, review layout premium design, audit for integrity | M2 | PLANNED |
 
 ## Interface Contracts
-- No new external APIs, pure UI enhancements.
+- Landing page elements must dynamically adjust layout (responsive) and support theme systems.
+- Lucide React icons must replicate original icon sizing/colors exactly.
 
 ## Code Layout
-- Next.js App Router (React)
-- Tailwind CSS styling (`active:scale-95`, transitions)
+- Next.js (TypeScript, Tailwind CSS)
+- Lucide React package for premium icons

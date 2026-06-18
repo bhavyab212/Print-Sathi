@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { PASSPORT_SIZES, type PassportConfig } from "@/components/passport/PassportConfig";
@@ -312,7 +314,7 @@ export function CustomModeFlow({ onWorkStatusChange, initialImageUrl, jobId, ite
               }}
               className="shrink-0 flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent transition"
             >
-              <i className="bx bx-chevron-left text-base" /> Back
+              <Boxicon className="bx bx-chevron-left text-base" /> Back
             </button>
           )}
 
@@ -329,7 +331,7 @@ export function CustomModeFlow({ onWorkStatusChange, initialImageUrl, jobId, ite
               className="shrink-0 flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition"
               title="Start over"
             >
-              <i className="bx bx-x text-base" />
+              <Boxicon className="bx bx-x text-base" />
               <span className="hidden sm:inline">Reset</span>
             </button>
           )}

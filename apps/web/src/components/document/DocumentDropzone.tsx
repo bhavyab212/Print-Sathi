@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useRef, useState } from "react";
 
@@ -88,7 +90,7 @@ export function DocumentDropzone({ onFileSelected, disabled }: DocumentDropzoneP
 
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20 animate-float">
-            <i className="bx bx-file text-4xl text-primary"></i>
+            <Boxicon className="bx bx-file text-4xl text-primary" />
           </div>
           <div>
             <p className="text-base font-semibold text-foreground">
@@ -103,7 +105,7 @@ export function DocumentDropzone({ onFileSelected, disabled }: DocumentDropzoneP
 
       {error && (
         <div className="mt-2 flex items-start gap-2 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive border border-destructive/20">
-          <i className="bx bx-error-circle mt-0.5 text-base"></i>
+          <Boxicon className="bx bx-error-circle mt-0.5 text-base" />
           <div>
             <p className="font-semibold">Upload failed</p>
             <p className="text-destructive/80">{error}</p>

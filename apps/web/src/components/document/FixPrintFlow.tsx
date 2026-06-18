@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useCallback, useEffect } from "react";
 import { DocumentDropzone } from "@/components/document/DocumentDropzone";
@@ -136,7 +138,7 @@ export function FixPrintFlow() {
               onClick={handleReset}
               className="flex items-center gap-2 rounded-xl neu px-4 py-2 text-sm font-medium text-foreground transition hover:text-primary"
             >
-              <i className="bx bx-refresh text-base"></i>
+              <Boxicon className="bx bx-refresh text-base" />
               Start over
             </button>
           )}
@@ -155,7 +157,7 @@ export function FixPrintFlow() {
           {step === "processing" && (
             <div className="absolute inset-0 overflow-y-auto pr-1 pb-6">
               <div className="flex flex-col items-center justify-center gap-6 rounded-clay glass elev-2 py-20">
-                 <i className="bx bx-loader-alt animate-spin text-4xl text-primary"></i>
+                 <Boxicon className="bx bx-loader-alt animate-spin text-4xl text-primary" />
                  <p className="text-base font-semibold text-foreground">Processing Document...</p>
               </div>
             </div>
@@ -216,7 +218,7 @@ export function FixPrintFlow() {
                     disabled={isProcessing}
                     className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-sm font-semibold text-white glow-primary hover:shadow-xl hover:shadow-blue-500/35 transition-all disabled:opacity-50"
                  >
-                    <i className="bx bx-printer text-lg"></i>
+                    <Boxicon className="bx bx-printer text-lg" />
                     Print Document
                  </button>
               </div>
@@ -225,7 +227,7 @@ export function FixPrintFlow() {
               <div className="flex-1 rounded-clay glass-faint overflow-hidden elev-1 relative">
                 {isProcessing && (
                     <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
-                        <i className="bx bx-loader-alt animate-spin text-4xl text-primary"></i>
+                        <Boxicon className="bx bx-loader-alt animate-spin text-4xl text-primary" />
                     </div>
                 )}
                 <iframe 
@@ -257,7 +259,7 @@ function PresetButton({ active, onClick, title, desc, icon, loading }: any) {
                 active ? "bg-blue-500 text-white" : "bg-muted text-muted-foreground"
             }`}>
                 {loading ? (
-                    <i className="bx bx-loader-alt animate-spin text-base"></i>
+                    <Boxicon className="bx bx-loader-alt animate-spin text-base" />
                 ) : (
                     <i className={`bx ${icon} text-base`}></i>
                 )}

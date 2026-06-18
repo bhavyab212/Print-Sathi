@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useRef, useState } from "react";
 
@@ -90,7 +92,7 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
         ) : (
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20 animate-float">
-              <i className="bx bx-cloud-upload text-4xl text-primary"></i>
+              <Boxicon className="bx bx-cloud-upload text-4xl text-primary" />
             </div>
             <div>
               <p className="text-base font-semibold text-foreground">
@@ -106,7 +108,7 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
 
       {error && (
         <div className="mt-2 flex items-center gap-2 rounded-lg bg-destructive/10 px-4 py-2.5 text-sm text-destructive">
-          <i className="bx bx-error-circle text-base"></i>
+          <Boxicon className="bx bx-error-circle text-base" />
           {error}
         </div>
       )}

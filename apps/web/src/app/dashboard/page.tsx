@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useEffect, useState, useCallback, Suspense, useRef, useMemo } from "react";
 import { usePresence, PresencePayload } from "@/hooks/usePresence";
@@ -74,7 +76,7 @@ const STATUS_CONFIG: Record<string, { label: string; stripe: string; badgeClass:
 // ── Loading Skeleton ───────────────────────────────────────────────────────
 function DashboardSkeleton() {
   return (
-    <div className="h-[calc(100vh-112px)] flex flex-col overflow-hidden rounded-clay glass-strong glass-rim elev-4" style={{ background: 'var(--ps-canvas)' }}>
+    <div className="h-[calc(100vh-112px)] flex flex-col overflow-hidden rounded-clay card-depth" style={{ background: 'var(--ps-canvas)' }}>
       <div className="glass-nav h-14 flex items-center gap-3 px-4 shrink-0" style={{ borderBottom: '1px solid var(--ps-hairline)' }}>
         <div className="skeleton w-9 h-9 rounded-full" />
         <div className="flex-1 space-y-1.5">
@@ -83,7 +85,7 @@ function DashboardSkeleton() {
         </div>
       </div>
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-80 shrink-0 flex flex-col gap-0" style={{ background: 'var(--ps-canvas-soft)', borderRight: '1px solid var(--ps-hairline)' }}>
+        <div className="w-80 shrink-0 flex flex-col gap-0 tray-depth" style={{ borderRight: '1px solid var(--ps-hairline)' }}>
           <div className="p-3">
             <div className="skeleton h-9 w-full rounded-full" />
           </div>
@@ -142,13 +144,42 @@ function QueueDashboardContent() {
   // ── Data Fetching ──────────────────────────────────────────────────────
   const fetchJobs = useCallback(async (sid: string, manual = false) => {
     if (manual) setIsRefreshing(true);
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('jobs')
       .select(`id, word_token, customer_name, status, created_at, approved_at, completed_at, notes, job_items ( id, file_name, file_url, file_size_bytes, file_type, settings )`)
       .eq('shop_id', sid)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
       .order('created_at', { ascending: false });
-    if (!error && data) setJobs(data as unknown as PrintJob[]);
+
+    // Fallback if the database has not been migrated yet with approved_at/completed_at columns
+    if (error && error.message.includes('approved_at')) {
+      console.warn("approved_at column missing, falling back to updated_at query");
+      const fallback = await supabase
+        .from('jobs')
+        .select(`id, word_token, customer_name, status, created_at, updated_at, notes, job_items ( id, file_name, file_url, file_size_bytes, file_type, settings )`)
+        .eq('shop_id', sid)
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .order('created_at', { ascending: false });
+      
+      data = fallback.data;
+      error = fallback.error;
+      
+      if (data) {
+        // Map updated_at to the expected fields for the timeline rendering
+        data = data.map((job: any) => ({
+          ...job,
+          approved_at: job.updated_at,
+          completed_at: job.updated_at
+        }));
+      }
+    }
+
+    if (error) {
+      console.error("Failed to fetch jobs:", error);
+      toast.error(`Database error: ${error.message}`);
+    } else if (data) {
+      setJobs(data as unknown as PrintJob[]);
+    }
     setIsInitialLoad(false);
     if (manual) setTimeout(() => setIsRefreshing(false), 500);
   }, [supabase]);
@@ -180,7 +211,7 @@ function QueueDashboardContent() {
   useEffect(() => {
     if (!shopId) return;
     const channel = supabase.channel('public:jobs')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs', filter: `shop_id=eq.${shopId}` }, (payload) => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs', filter: `shop_id=eq.${shopId}` }, (payload: any) => {
         if (payload.eventType === 'INSERT') {
           const newId = (payload.new as any).id;
           playSound('notification');
@@ -384,7 +415,7 @@ function QueueDashboardContent() {
       return (
         <div className="flex-1 flex flex-col items-center justify-center text-center p-8 chat-wallpaper animate-fade-in">
           <div className="glass glass-rim animate-float w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <i className="bx bx-message-dots text-5xl" style={{ color: 'var(--ps-primary)' }}></i>
+            <Boxicon className="bx bx-message-dots text-5xl" style={{ color: 'var(--ps-primary)' }} />
           </div>
           <h3 className="font-semibold text-lg font-display" style={{ color: 'var(--ps-ink-muted)' }}>Select a job to review</h3>
           <p className="text-sm mt-2" style={{ color: 'var(--ps-ink-subtle)' }}>Choose any job from the left panel to view its details and take action</p>
@@ -412,7 +443,7 @@ function QueueDashboardContent() {
             style={{ color: 'var(--ps-ink-muted)' }}
             aria-label="Back to list"
           >
-            <i className="bx bx-arrow-back text-xl"></i>
+            <Boxicon className="bx bx-arrow-back text-xl" />
           </button>
 
           {/* Token */}
@@ -450,7 +481,7 @@ function QueueDashboardContent() {
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-danger)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-ink-subtle)'; }}
           >
-            <i className="bx bx-trash text-lg"></i>
+            <Boxicon className="bx bx-trash text-lg" />
           </button>
         </div>
 
@@ -475,7 +506,7 @@ function QueueDashboardContent() {
                   <p className="text-sm">{selectedJob.notes}</p>
                 </div>
                 <p className="text-[10px] text-right mt-1 pr-1" style={{ color: 'var(--ps-ink-subtle)' }}>
-                  {formatTime(selectedJob.created_at)} <i className="bx bx-check-double" style={{ color: 'var(--ps-primary)' }}></i>
+                  {formatTime(selectedJob.created_at)} <Boxicon className="bx bx-check-double" style={{ color: 'var(--ps-primary)' }} />
                 </p>
               </div>
             </div>
@@ -517,10 +548,10 @@ function QueueDashboardContent() {
                           style={{ color: 'var(--ps-ink-muted)', background: 'var(--ps-surface-3)' }}
                           aria-label="Edit settings"
                         >
-                          <i className="bx bx-cog text-base"></i>
+                          <Boxicon className="bx bx-cog text-base" />
                         </button>
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: 'var(--ps-ink-muted)', background: 'var(--ps-surface-3)' }}>
-                          <i className="bx bx-show text-base"></i>
+                          <Boxicon className="bx bx-show text-base" />
                         </div>
                       </div>
                     </div>
@@ -563,7 +594,7 @@ function QueueDashboardContent() {
                       >
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--ps-warning)' }}>
-                            <i className="bx bx-id-card mr-1"></i>Passport Tools
+                            <Boxicon className="bx bx-id-card mr-1" />Passport Tools
                           </p>
                           {item.settings?.passport_config && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'var(--ps-surface-3)', color: 'var(--ps-ink-muted)' }}>
@@ -577,14 +608,14 @@ function QueueDashboardContent() {
                             className="flex-1 py-2 rounded-lg text-[11px] font-bold transition-all duration-150 hover:brightness-110 active:scale-95 flex items-center justify-center gap-1"
                             style={{ background: 'var(--ps-warning)', color: '#000' }}
                           >
-                            <i className="bx bx-bolt-circle text-sm"></i> Quick
+                            <Boxicon className="bx bx-bolt-circle text-sm" /> Quick
                           </button>
                           <button
                             onClick={(e) => openPassportTool(e, item, 'custom')}
                             className="flex-1 py-2 rounded-lg text-[11px] font-bold transition-all duration-150 hover:brightness-110 active:scale-95 flex items-center justify-center gap-1"
                             style={{ background: 'var(--ps-primary)', color: 'var(--ps-on-primary)' }}
                           >
-                            <i className="bx bx-slider text-sm"></i> Custom
+                            <Boxicon className="bx bx-slider text-sm" /> Custom
                           </button>
                         </div>
                         <button
@@ -592,7 +623,7 @@ function QueueDashboardContent() {
                           className="w-full py-1.5 rounded-lg text-[10px] font-bold transition-all duration-150 hover:brightness-110 active:scale-95 flex items-center justify-center gap-1"
                           style={{ background: 'var(--ps-surface-3)', color: 'var(--ps-ink-secondary)', border: '1px solid var(--ps-hairline)' }}
                         >
-                          <i className="bx bx-cut"></i> Remove BG (AI)
+                          <Boxicon className="bx bx-cut" /> Remove BG (AI)
                         </button>
                       </div>
                     )}
@@ -620,7 +651,7 @@ function QueueDashboardContent() {
           <motion.div
             layout
             transition={spring}
-            className="glass-strong glass-rim elev-4 rounded-2xl flex gap-3 p-2.5"
+            className="action-tray rounded-2xl flex gap-3 p-2.5"
           >
           {selectedJob.status === 'pending' && (
             <>
@@ -632,8 +663,8 @@ function QueueDashboardContent() {
                 aria-label="Reject job"
               >
                 {actionLoading[selectedJob.id] === 'rejected'
-                  ? <i className="bx bx-loader-alt animate-spin text-xl"></i>
-                  : <><i className="bx bx-x text-xl"></i> Reject</>
+                  ? <Boxicon className="bx bx-loader-alt animate-spin text-xl" />
+                  : <><Boxicon className="bx bx-x text-xl" /> Reject</>
                 }
               </button>
               <button
@@ -644,8 +675,8 @@ function QueueDashboardContent() {
                 aria-label="Approve job"
               >
                 {actionLoading[selectedJob.id] === 'approved'
-                  ? <i className="bx bx-loader-alt animate-spin text-xl"></i>
-                  : <><i className="bx bx-check text-xl"></i> Approve ✓</>
+                  ? <Boxicon className="bx bx-loader-alt animate-spin text-xl" />
+                  : <><Boxicon className="bx bx-check text-xl" /> Approve ✓</>
                 }
               </button>
             </>
@@ -659,8 +690,8 @@ function QueueDashboardContent() {
               aria-label="Print job now"
             >
               {actionLoading[selectedJob.id] === 'print'
-                ? <i className="bx bx-loader-alt animate-spin text-2xl"></i>
-                : <><i className="bx bx-printer text-2xl"></i> Send to Printer 🖨️</>
+                ? <Boxicon className="bx bx-loader-alt animate-spin text-2xl" />
+                : <><Boxicon className="bx bx-printer text-2xl" /> Send to Printer 🖨️</>
               }
             </button>
           )}
@@ -672,7 +703,7 @@ function QueueDashboardContent() {
                 style={{ color: 'var(--ps-ink)' }}
                 aria-label="Reprint job"
               >
-                <i className="bx bx-refresh text-xl"></i> Reprint
+                <Boxicon className="bx bx-refresh text-xl" /> Reprint
               </button>
               <button
                 onClick={() => updateStatus(selectedJob.id, 'done')}
@@ -680,7 +711,7 @@ function QueueDashboardContent() {
                 style={{ background: 'var(--ps-success)' }}
                 aria-label="Mark job done"
               >
-                <i className="bx bx-check-double text-xl"></i> Done ✅
+                <Boxicon className="bx bx-check-double text-xl" /> Done ✅
               </button>
             </>
           )}
@@ -697,7 +728,7 @@ function QueueDashboardContent() {
 
   // ── Main Layout ────────────────────────────────────────────────────────
   return (
-    <div className="relative h-[calc(100vh-112px)] flex flex-col overflow-hidden rounded-clay glass-strong glass-rim elev-4" style={{ background: 'var(--ps-canvas)' }}>
+    <div className="relative h-[calc(100vh-112px)] flex flex-col overflow-hidden rounded-clay card-depth" style={{ background: 'var(--ps-canvas)' }}>
 
       {/* ── Top App Bar ───────────────────────────────────────────────── */}
       <header
@@ -710,7 +741,7 @@ function QueueDashboardContent() {
         {/* Brand */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="clay-accent w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
-            <i className="bx bx-printer text-white text-lg"></i>
+            <Boxicon className="bx bx-printer text-white text-lg" />
           </div>
           <div className="min-w-0">
             <h1 className="font-semibold text-base truncate font-display" style={{ color: 'var(--ps-ink)', letterSpacing: '-0.3px' }}>
@@ -770,7 +801,7 @@ function QueueDashboardContent() {
             title="Refresh"
             aria-label="Refresh jobs"
           >
-            <i className={`bx bx-refresh text-lg ${isRefreshing ? 'animate-spin' : ''}`}></i>
+            <Boxicon className={`bx bx-refresh text-lg ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={() => setIsQrModalOpen(true)}
@@ -779,7 +810,7 @@ function QueueDashboardContent() {
             title="Show QR code"
             aria-label="Show QR code"
           >
-            <i className="bx bx-qr-scan text-lg"></i>
+            <Boxicon className="bx bx-qr-scan text-lg" />
           </button>
         </div>
       </header>
@@ -794,13 +825,13 @@ function QueueDashboardContent() {
 
           {/* Left Panel — Job Sidebar */}
           <aside
-            className={`flex flex-col ${mobileView === 'detail' ? 'hidden lg:flex' : 'flex'} lg:w-80 xl:w-96 shrink-0 overflow-hidden`}
-            style={{ background: 'var(--ps-canvas-soft)', borderRight: '1px solid var(--ps-hairline)' }}
+            className={`tray-depth flex flex-col ${mobileView === 'detail' ? 'hidden lg:flex' : 'flex'} lg:w-80 xl:w-96 shrink-0 overflow-hidden`}
+            style={{ borderRight: '1px solid var(--ps-hairline)' }}
           >
             {/* Search bar */}
             <div className="px-3 py-2.5 shrink-0 flex items-center gap-2" style={{ borderBottom: '1px solid var(--ps-hairline-soft)' }}>
               <div className="neu-inset flex-1 flex items-center gap-2 px-3 py-2 rounded-full">
-                <i className="bx bx-search text-base" style={{ color: 'var(--ps-ink-subtle)' }}></i>
+                <Boxicon className="bx bx-search text-base" style={{ color: 'var(--ps-ink-subtle)' }} />
                 <span className="text-sm" style={{ color: 'var(--ps-ink-subtle)' }}>Search jobs...</span>
               </div>
               <button
@@ -815,7 +846,7 @@ function QueueDashboardContent() {
                 aria-label="Filter pending jobs"
                 aria-pressed={showPendingOnly}
               >
-                <i className="bx bx-filter-alt text-lg"></i>
+                <Boxicon className="bx bx-filter-alt text-lg" />
               </button>
             </div>
 
@@ -824,7 +855,7 @@ function QueueDashboardContent() {
               {jobs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center p-8 animate-fade-in">
                   <div className="glass glass-rim animate-float w-16 h-16 rounded-2xl flex items-center justify-center mb-4">
-                    <i className="bx bx-qr-scan text-3xl" style={{ color: 'var(--ps-primary)' }}></i>
+                    <Boxicon className="bx bx-qr-scan text-3xl" style={{ color: 'var(--ps-primary)' }} />
                   </div>
                   <p className="font-semibold text-sm" style={{ color: 'var(--ps-ink-muted)' }}>Queue is empty</p>
                   <p className="text-xs mt-1" style={{ color: 'var(--ps-ink-subtle)' }}>Waiting for customers to scan QR code</p>
@@ -889,7 +920,7 @@ function QueueDashboardContent() {
                 style={{ color: 'var(--ps-ink-muted)' }}
                 aria-label="Close"
               >
-                <i className="bx bx-x text-xl"></i>
+                <Boxicon className="bx bx-x text-xl" />
               </button>
             </div>
 
@@ -970,7 +1001,7 @@ function QueueDashboardContent() {
                 onClick={handleSaveSettings}
                 className="clay-accent w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-xl mt-2 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
               >
-                <i className="bx bx-save text-lg"></i> Save Settings
+                <Boxicon className="bx bx-save text-lg" /> Save Settings
               </button>
             </div>
           </motion.div>
@@ -991,7 +1022,7 @@ function QueueDashboardContent() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 overflow-hidden">
-              <i className="bx bxs-file-blank text-2xl shrink-0" style={{ color: 'var(--ps-primary)' }}></i>
+              <Boxicon className="bx bxs-file-blank text-2xl shrink-0" style={{ color: 'var(--ps-primary)' }} />
               <div className="overflow-hidden">
                 <p className="font-semibold text-sm truncate" style={{ color: 'var(--ps-ink)' }}>{preview.fileName}</p>
                 <p className="text-xs font-mono" style={{ color: 'var(--ps-ink-muted)' }}>
@@ -1008,7 +1039,7 @@ function QueueDashboardContent() {
                   className="neu inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-all hover:-translate-y-0.5 active:scale-95"
                   style={{ color: 'var(--ps-ink)' }}
                 >
-                  <i className="bx bx-fullscreen"></i> Full
+                  <Boxicon className="bx bx-fullscreen" /> Full
                 </a>
               )}
               <a
@@ -1016,7 +1047,7 @@ function QueueDashboardContent() {
                 download={preview.fileName}
                 className="clay-accent inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-all hover:-translate-y-0.5 active:scale-95"
               >
-                <i className="bx bx-download"></i> Download
+                <Boxicon className="bx bx-download" /> Download
               </a>
               <button
                 onClick={() => setPreview(null)}
@@ -1024,7 +1055,7 @@ function QueueDashboardContent() {
                 style={{ color: 'var(--ps-ink-muted)' }}
                 aria-label="Close preview"
               >
-                <i className="bx bx-x text-xl"></i>
+                <Boxicon className="bx bx-x text-xl" />
               </button>
             </div>
           </div>
@@ -1035,7 +1066,7 @@ function QueueDashboardContent() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full gap-6 p-8 text-center">
                 <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background: 'var(--ps-warning-muted)' }}>
-                  <i className="bx bxs-file-doc text-5xl" style={{ color: 'var(--ps-warning)' }}></i>
+                  <Boxicon className="bx bxs-file-doc text-5xl" style={{ color: 'var(--ps-warning)' }} />
                 </div>
                 <div>
                   <h3 className="font-bold text-xl mb-2" style={{ color: 'var(--ps-ink)' }}>{preview.fileName}</h3>
@@ -1048,7 +1079,7 @@ function QueueDashboardContent() {
                   download={preview.fileName}
                   className="clay-accent inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5 active:scale-95"
                 >
-                  <i className="bx bx-download text-xl"></i> Download &amp; Print
+                  <Boxicon className="bx bx-download text-xl" /> Download &amp; Print
                 </a>
               </div>
             )}
@@ -1082,7 +1113,7 @@ function QueueDashboardContent() {
               <div className="mt-5 p-4 bg-white rounded-2xl inline-block" style={{ boxShadow: 'var(--ps-shadow-raised)' }}>
                 {qrDataUrl
                   ? <img src={qrDataUrl} alt="QR Code" className="w-48 h-48 object-contain" />
-                  : <div className="w-48 h-48 flex items-center justify-center"><i className="bx bx-loader-alt animate-spin text-3xl" style={{ color: 'var(--ps-primary)' }}></i></div>
+                  : <div className="w-48 h-48 flex items-center justify-center"><Boxicon className="bx bx-loader-alt animate-spin text-3xl" style={{ color: 'var(--ps-primary)' }} /></div>
                 }
               </div>
             </div>
@@ -1099,7 +1130,7 @@ function QueueDashboardContent() {
                   className="text-xs font-semibold shrink-0 transition-all duration-150 hover:scale-110 flex items-center gap-1"
                   style={{ color: copied ? 'var(--ps-success)' : 'var(--ps-primary)' }}
                 >
-                  <i className={`bx ${copied ? 'bx-check' : 'bx-copy'}`}></i>
+                  <Boxicon className={`bx ${copied ? 'bx-check' : 'bx-copy'}`} />
                   {copied ? 'Copied!' : 'Copy'}
                 </button>
               </div>
@@ -1116,7 +1147,7 @@ function QueueDashboardContent() {
                   onClick={handlePrintQr}
                   className="clay-accent py-3 text-sm font-semibold rounded-xl inline-flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                 >
-                  <i className="bx bx-printer"></i> Print Flyer
+                  <Boxicon className="bx bx-printer" /> Print Flyer
                 </button>
               </div>
             </div>

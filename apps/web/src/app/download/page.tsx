@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import Link from "next/link";
 import { motion } from "motion/react";
@@ -42,7 +44,7 @@ export default function DownloadPage() {
         <nav className="glass-nav mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
             <span className="clay-accent flex h-9 w-9 items-center justify-center rounded-xl">
-              <i className="bx bx-printer text-lg text-white" />
+              <Boxicon className="bx bx-printer text-lg text-white" />
             </span>
             <span className="text-lg font-bold tracking-tight">Print Sathi</span>
           </Link>
@@ -66,13 +68,13 @@ export default function DownloadPage() {
                 className="mb-8 flex justify-center"
               >
                 <span className="clay-accent flex h-20 w-20 items-center justify-center rounded-3xl shadow-glow-primary">
-                  <i className="bx bxl-windows text-4xl text-white" />
+                  <Boxicon className="bx bxl-windows text-4xl text-white" />
                 </span>
               </motion.div>
 
               <motion.div variants={fadeUp} className="mb-6 flex justify-center">
                 <span className="shimmer-border glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-[var(--ps-ink-muted)]">
-                  <i className="bx bx-desktop text-[var(--ps-primary)]" />
+                  <Boxicon className="bx bx-desktop text-[var(--ps-primary)]" />
                   Desktop app for Windows
                 </span>
               </motion.div>
@@ -98,7 +100,7 @@ export default function DownloadPage() {
                   href={downloadUrl}
                   className={`${buttonVariants({ variant: "primary", size: "lg" })} animate-glow-pulse`}
                 >
-                  <i className="bx bx-download text-xl" />
+                  <Boxicon className="bx bx-download text-xl" />
                   Download for Windows (x64)
                 </a>
               </motion.div>
@@ -148,7 +150,7 @@ export default function DownloadPage() {
                 className={buttonVariants({ variant: "glass", size: "lg" })}
               >
                 Open Web App
-                <i className="bx bx-right-arrow-alt text-lg" />
+                <Boxicon className="bx bx-right-arrow-alt text-lg" />
               </Link>
             </ClayCard>
           </Reveal>
@@ -160,7 +162,7 @@ export default function DownloadPage() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-sm text-[var(--ps-ink-subtle)] sm:flex-row">
           <div className="flex items-center gap-3">
             <span className="clay-accent flex h-8 w-8 items-center justify-center rounded-lg">
-              <i className="bx bx-printer text-white" />
+              <Boxicon className="bx bx-printer text-white" />
             </span>
             <span className="font-semibold text-[var(--ps-ink-muted)]">Print Sathi</span>
           </div>

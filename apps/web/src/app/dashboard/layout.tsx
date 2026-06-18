@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -128,7 +130,7 @@ function ThemeToggle() {
       title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
       aria-label="Toggle theme"
     >
-      <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"} text-lg`} />
+      <Boxicon className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"} text-lg`} />
     </button>
   );
 }
@@ -176,15 +178,15 @@ export default function DashboardLayout({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col glass-nav bg-toolpanel-gradient transition-transform duration-300 lg:static lg:translate-x-0 ${
+        className={`sidebar-brand-stripe sidebar-depth fixed inset-y-0 left-0 z-40 flex w-64 flex-col glass-nav bg-toolpanel-gradient transition-transform duration-300 lg:static lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ borderRight: "1px solid var(--ps-hairline)" }}
       >
         {/* Brand */}
         <div className="flex h-16 items-center gap-3 px-5" style={{ borderBottom: "1px solid var(--ps-hairline)" }}>
-          <div className="clay-accent flex h-10 w-10 items-center justify-center rounded-xl shrink-0">
-            <i className="bx bx-printer text-xl text-white"></i>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 overflow-hidden">
+            <img src="/images/logo.png" alt="Print Sathi" className="w-full h-full object-contain" />
           </div>
           <div className="min-w-0">
             <span className="block text-lg font-bold text-gradient font-display leading-tight">Print Sathi</span>
@@ -207,12 +209,12 @@ export default function DashboardLayout({
                   setSidebarOpen(false);
                 }}
                 className={`group relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
-                  isActive ? "glow-primary" : "hover:-translate-y-px"
+                  isActive ? "nav-chip-active" : "nav-chip hover:-translate-y-px"
                 }`}
                 style={
                   isActive
-                    ? { background: "rgba(92,107,200,0.12)", border: "1px solid rgba(92,107,200,0.3)" }
-                    : { color: "var(--ps-ink-muted)", border: "1px solid transparent" }
+                    ? undefined
+                    : { color: "var(--ps-ink-muted)" }
                 }
               >
                 {isActive && (
@@ -242,7 +244,7 @@ export default function DashboardLayout({
             onMouseEnter={(e) => { e.currentTarget.style.color = "var(--ps-danger)"; e.currentTarget.style.background = "var(--ps-danger-muted)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ps-ink-muted)"; e.currentTarget.style.background = "transparent"; }}
           >
-            <i className="bx bx-log-out text-xl"></i>
+            <Boxicon className="bx bx-log-out text-xl" />
             Sign out
           </button>
         </div>
@@ -251,14 +253,14 @@ export default function DashboardLayout({
       {/* Main content */}
       <div className="relative flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="relative z-20 flex h-16 items-center justify-between glass-nav bg-header-gradient px-6" style={{ borderBottom: "1px solid var(--ps-hairline)" }}>
+        <header className="header-depth relative z-20 flex h-16 items-center justify-between glass-nav bg-header-gradient px-6" style={{ borderBottom: "1px solid var(--ps-hairline)" }}>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}
               className="neu rounded-lg p-2 lg:hidden active:scale-95"
               style={{ color: "var(--ps-ink-muted)" }}
             >
-              <i className="bx bx-menu text-xl"></i>
+              <Boxicon className="bx bx-menu text-xl" />
             </button>
             <h2 className="text-lg font-semibold font-display" style={{ color: "var(--ps-ink)", letterSpacing: "-0.02em" }}>
               {navItems.find((item) => item.href === pathname)?.label || "Dashboard"}
@@ -272,7 +274,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Page content */}
-        <main className="relative flex-1 overflow-y-auto p-6">
+        <main className="main-depth relative flex-1 overflow-y-auto p-6">
           <AmbientBackground orbs grain={false} />
           {children}
         </main>

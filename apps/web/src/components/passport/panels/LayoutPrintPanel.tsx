@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useEffect } from "react";
 import { canvasToBMP, canvasToTIFF, canvasToPDF, padImageBuffer } from "@/lib/imageEncoders";
@@ -394,7 +396,7 @@ export function LayoutPrintPanel({
           <div className="rounded-clay glass elev-2 overflow-hidden shrink-0">
             <div className="px-4 pt-4 pb-2 flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <i className="bx bx-user text-sm text-primary" />
+                <Boxicon className="bx bx-user text-sm text-primary" />
                 Processed Photo
               </h3>
               {onCropClick && (
@@ -403,7 +405,7 @@ export function LayoutPrintPanel({
                   onClick={onCropClick}
                   className="flex items-center gap-1.5 rounded-lg neu hover:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] px-3 py-1.5 transition-all"
                 >
-                  <i className="bx bx-crop text-xs" /> Crop &amp; Adjust
+                  <Boxicon className="bx bx-crop text-xs" /> Crop &amp; Adjust
                 </button>
               )}
             </div>
@@ -425,7 +427,7 @@ export function LayoutPrintPanel({
 
           <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/10">
-              <i className="bx bx-layout text-indigo-500 text-sm" />
+              <Boxicon className="bx bx-layout text-indigo-500 text-sm" />
             </div>
             Layout & Background
           </h3>
@@ -447,7 +449,7 @@ export function LayoutPrintPanel({
                       : "hover:scale-105"
                   }`}
                 >
-                  {c.value === "custom" && <i className="bx bx-palette text-white text-xs drop-shadow" />}
+                  {c.value === "custom" && <Boxicon className="bx bx-palette text-white text-xs drop-shadow" />}
                 </button>
               ))}
               <input
@@ -500,7 +502,7 @@ export function LayoutPrintPanel({
           <div className="border-t border-border/60 pt-6 space-y-5">
             <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
               <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/10">
-                <i className="bx bx-download text-emerald-500 text-sm" />
+                <Boxicon className="bx bx-download text-emerald-500 text-sm" />
               </div>
               Download &amp; Export Config
             </h3>
@@ -627,7 +629,7 @@ export function LayoutPrintPanel({
               onClick={handleDownload}
               className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm glow-success hover:shadow-lg transition-all"
             >
-              <i className="bx bx-download text-base" /> Download File
+              <Boxicon className="bx bx-download text-base" /> Download File
             </button>
           </div>
         </div>
@@ -639,7 +641,7 @@ export function LayoutPrintPanel({
           onClick={onReset}
           className="flex items-center gap-1.5 rounded-xl neu px-3 py-2.5 text-xs font-medium text-muted-foreground hover:text-foreground transition"
         >
-          <i className="bx bx-refresh text-sm" />
+          <Boxicon className="bx bx-refresh text-sm" />
           Start Over
         </button>
 
@@ -651,9 +653,9 @@ export function LayoutPrintPanel({
               className="flex items-center gap-2 rounded-clay bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-3 text-sm font-bold text-white glow-success transition-all hover:shadow-xl hover:shadow-emerald-500/35 disabled:opacity-60"
             >
               {isSaving ? (
-                <><i className="bx bx-loader-alt animate-spin text-lg" /> Saving…</>
+                <><Boxicon className="bx bx-loader-alt animate-spin text-lg" /> Saving…</>
               ) : (
-                <><i className="bx bx-check-circle text-lg" /> Save to Queue &amp; Return</>
+                <><Boxicon className="bx bx-check-circle text-lg" /> Save to Queue &amp; Return</>
               )}
             </button>
           )}
@@ -664,9 +666,9 @@ export function LayoutPrintPanel({
             className="flex items-center gap-2.5 rounded-clay bg-gradient-to-r from-blue-500 to-indigo-600 px-7 py-3 text-sm font-bold text-white glow-primary transition-all hover:shadow-xl hover:shadow-blue-500/35 disabled:opacity-60"
           >
             {printing ? (
-              <><i className="bx bx-loader-alt animate-spin text-lg" /> Opening print dialog…</>
+              <><Boxicon className="bx bx-loader-alt animate-spin text-lg" /> Opening print dialog…</>
             ) : (
-              <><i className="bx bx-printer text-lg" /> Print A4 Sheet</>
+              <><Boxicon className="bx bx-printer text-lg" /> Print A4 Sheet</>
             )}
           </button>
         </div>

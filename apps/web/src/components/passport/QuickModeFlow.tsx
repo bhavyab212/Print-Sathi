@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useCallback, useEffect } from "react";
 import { FileDropzone } from "@/components/passport/FileDropzone";
@@ -221,7 +223,7 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
               onClick={handleReset}
               className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
             >
-              <i className="bx bx-refresh text-base"></i>
+              <Boxicon className="bx bx-refresh text-base" />
               Start over
             </button>
           )}
@@ -272,7 +274,7 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
 
                 {processingError && (
                   <div className="mb-4 flex items-start gap-3 rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive border border-destructive/20">
-                    <i className="bx bx-error-circle mt-0.5 text-base"></i>
+                    <Boxicon className="bx bx-error-circle mt-0.5 text-base" />
                     <div>
                       <p className="font-semibold">Processing failed</p>
                       <p className="text-destructive/80">{processingError}</p>
@@ -289,7 +291,7 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
                 <FileDropzone onFileSelected={handleFileSelected} />
 
                 <div className="mt-4 flex items-start gap-2 rounded-xl bg-primary/10 px-4 py-3 text-xs text-primary border border-primary/20">
-                  <i className="bx bx-info-circle mt-0.5 text-sm"></i>
+                  <Boxicon className="bx bx-info-circle mt-0.5 text-sm" />
                   <p>
                     For best results: clear face, neutral expression, good lighting,
                     plain background. The AI will auto-remove the background.
@@ -308,7 +310,7 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
                 <div className="relative flex h-20 w-20 items-center justify-center">
                   <div className="absolute inset-0 animate-ping rounded-full bg-primary/20"></div>
                   <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-                    <i className="bx bx-image-alt text-4xl text-primary"></i>
+                    <Boxicon className="bx bx-image-alt text-4xl text-primary" />
                   </div>
                 </div>
                 <div className="text-center">
@@ -361,7 +363,7 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
               onClick={() => setIsCropping(false)}
               className="flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
             >
-              <i className="bx bx-x text-base" /> Cancel
+              <Boxicon className="bx bx-x text-base" /> Cancel
             </button>
           </div>
           <div className="flex-1 min-h-0 bg-muted/5">

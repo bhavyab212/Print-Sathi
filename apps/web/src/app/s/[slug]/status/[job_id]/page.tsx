@@ -1,9 +1,11 @@
 "use client";
+import { Boxicon } from "@/components/ui";
 
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, useCallback } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/lib/supabase/client";
 import { playSound } from "@/lib/audio";
 import { AmbientBackground } from "@/components/ui";
 
@@ -19,27 +21,42 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
   // Queue stats
   const [peopleAhead, setPeopleAhead] = useState<number>(0);
   
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const supabase = createClient();
+
+  const fetchStatus = useCallback(async () => {
+    const { data } = await supabase
+      .from('jobs')
+      .select('status, word_token, shop_id, created_at')
+      .eq('id', params.job_id)
+      .single();
+    
+    if (data) {
+      setStatus(data.status as JobStatus);
+      setToken(data.word_token);
+      setShopId(data.shop_id);
+      setCreatedAt(data.created_at);
+    }
+  }, [params.job_id, supabase]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    playSound('pop');
+    await fetchStatus();
+    if (shopId && createdAt) {
+      const { count } = await supabase
+        .from('jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('shop_id', shopId)
+        .in('status', ['pending', 'approved', 'printing'])
+        .lt('created_at', createdAt);
+        
+      setPeopleAhead(count || 0);
+    }
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
 
   useEffect(() => {
-    const fetchStatus = async () => {
-      const { data } = await supabase
-        .from('jobs')
-        .select('status, word_token, shop_id, created_at')
-        .eq('id', params.job_id)
-        .single();
-      
-      if (data) {
-        setStatus(data.status as JobStatus);
-        setToken(data.word_token);
-        setShopId(data.shop_id);
-        setCreatedAt(data.created_at);
-      }
-    };
-    
     fetchStatus();
 
     const channel = supabase
@@ -69,13 +86,14 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [params.job_id, supabase]);
+  }, [params.job_id, supabase, fetchStatus]);
 
-  // Poll for queue position
+  // Poll for status and queue position
   useEffect(() => {
     if (!shopId || !createdAt || status === 'done' || status === 'rejected') return;
 
-    const fetchQueuePosition = async () => {
+    const poll = async () => {
+      await fetchStatus();
       const { count } = await supabase
         .from('jobs')
         .select('*', { count: 'exact', head: true })
@@ -86,10 +104,10 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
       setPeopleAhead(count || 0);
     };
 
-    fetchQueuePosition();
-    const interval = setInterval(fetchQueuePosition, 10000); // Poll every 10s
+    poll();
+    const interval = setInterval(poll, 10000); // Poll every 10s
     return () => clearInterval(interval);
-  }, [shopId, createdAt, status, supabase]);
+  }, [shopId, createdAt, status, supabase, fetchStatus]);
 
   const estWaitTime = peopleAhead * 3; // 3 mins per person
 
@@ -129,7 +147,16 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
           className="absolute top-4 left-4 w-8 h-8 flex items-center justify-center rounded-full glass-faint text-white/70 hover:text-white transition-colors hover:scale-105 active:scale-95"
           aria-label="Back to Upload"
         >
-          <i className="bx bx-arrow-back"></i>
+          <Boxicon className="bx bx-arrow-back" />
+        </button>
+
+        <button
+          onClick={handleRefresh}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full glass-faint text-white/70 hover:text-white transition-colors hover:scale-105 active:scale-95"
+          aria-label="Refresh Status"
+          title="Refresh"
+        >
+          <Boxicon className={`bx bx-refresh ${isRefreshing ? 'animate-spin' : ''}`} />
         </button>
 
         <div className="text-center mb-8">
@@ -161,7 +188,7 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
                       ${isActive ? 'text-white clay-accent shadow-glow-primary' : 'glass-faint text-white/40'}
                       ${isCurrent ? 'ring-4 ring-primary/25 animate-glow-pulse' : ''}
                     `}>
-                      <i className={`bx ${step.icon}`}></i>
+                      <Boxicon className={`bx ${step.icon}`} />
                     </div>
                     <span className={`text-xs font-semibold ${isActive ? 'text-white' : 'text-white/40'}`}>
                       {step.label}
@@ -191,7 +218,7 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
         {/* Main Status Display */}
         <div className="text-center">
             <div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-4 transition-all duration-500 ring-1 ${display.bg} ${display.color} ${display.ring} ${display.glow}`}>
-                <i className={`bx ${display.icon} text-4xl ${status === 'pending' ? 'animate-pulse' : ''} ${status === 'printing' ? 'animate-bounce' : ''}`}></i>
+                <Boxicon className={`bx ${display.icon} text-4xl ${status === 'pending' ? 'animate-pulse' : ''} ${status === 'printing' ? 'animate-bounce' : ''}`} />
             </div>
 
             <h2 className="text-h2 font-bold text-white mb-2">
@@ -211,14 +238,14 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
             <h3 className="text-lg font-bold text-center text-emerald-400 mb-4">Thank you for using Print Sathi! 🎉</h3>
             <div className="flex flex-col gap-3">
               <button onClick={() => router.push(`/s/${params.slug}`)} className="w-full py-3 clay-accent text-white font-bold rounded-clay shadow-glow-success transition-all hover:brightness-110 active:scale-95 flex items-center justify-center gap-2">
-                <i className="bx bx-refresh text-xl"></i> Start Over
+                <Boxicon className="bx bx-refresh text-xl" /> Start Over
               </button>
               <div className="flex gap-3">
                 <button onClick={() => router.push(`/s/${params.slug}`)} className="flex-1 py-3 glass text-white font-semibold rounded-clay transition-all hover:brightness-125 active:scale-95 flex items-center justify-center gap-2">
-                  <i className="bx bx-message-dots"></i> Continue Chat
+                  <Boxicon className="bx bx-message-dots" /> Continue Chat
                 </button>
                 <button onClick={() => alert('Support team has been notified. We will reach out shortly.')} className="flex-1 py-3 text-red-400 font-semibold rounded-clay transition-all hover:bg-red-500/10 active:scale-95 flex items-center justify-center gap-2" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
-                  <i className="bx bx-error-circle"></i> Report Issue
+                  <Boxicon className="bx bx-error-circle" /> Report Issue
                 </button>
               </div>
             </div>

@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -56,7 +58,7 @@ function PassportFlow() {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <i className="bx bx-bolt-circle text-base"></i>
+            <Boxicon className="bx bx-bolt-circle text-base" />
             Quick Mode
           </button>
           <button
@@ -67,7 +69,7 @@ function PassportFlow() {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <i className="bx bx-slider-alt text-base"></i>
+            <Boxicon className="bx bx-slider-alt text-base" />
             Custom Mode
           </button>
         </div>
@@ -92,7 +94,7 @@ function PassportFlow() {
           <div className="w-full max-w-md glass-strong glass-rim rounded-clay p-6 elev-5 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                <i className="bx bx-error-alt text-xl" />
+                <Boxicon className="bx bx-error-alt text-xl" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-foreground">Discard changes?</h3>

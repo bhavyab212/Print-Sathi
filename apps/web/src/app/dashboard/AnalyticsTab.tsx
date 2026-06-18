@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -34,9 +36,9 @@ export default function AnalyticsTab({ shopId }: { shopId: string }) {
         let bw = 0;
         let color = 0;
         
-        jobs.forEach(job => {
+        jobs.forEach((job: any) => {
           if (job.job_items) {
-            job.job_items.forEach(item => {
+            job.job_items.forEach((item: any) => {
               const copies = item.settings?.copies || 1;
               if (item.settings?.color === 'color') {
                 color += copies;

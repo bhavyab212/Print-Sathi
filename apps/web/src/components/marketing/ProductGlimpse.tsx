@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { GlassCard, Badge } from "@/components/ui";
 import { fadeUp } from "@/lib/motion";
+import { TrendingUp } from "lucide-react";
 
 type QueueRow = {
   id: string;
@@ -75,7 +76,7 @@ export function ProductGlimpse() {
               <span className="text-caption uppercase tracking-wide text-[var(--ps-ink-subtle)]">
                 Today
               </span>
-              <i className="bx bx-trending-up text-[var(--ps-success)]" />
+              <TrendingUp className="w-4 h-4 text-[var(--ps-success)]" />
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[

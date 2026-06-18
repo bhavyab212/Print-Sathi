@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useEffect, useRef, useState, useCallback } from "react";
 
@@ -522,7 +524,7 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
           {/* Icon + Title */}
           <div className="flex items-center gap-2 mr-2">
             <div className="p-1.5 bg-primary/10 rounded-lg">
-              <i className="bx bx-brush text-primary text-base" />
+              <Boxicon className="bx bx-brush text-primary text-base" />
             </div>
             <span className="text-sm font-bold text-foreground hidden sm:block">Precision Editor</span>
           </div>
@@ -551,13 +553,13 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
           {/* Brush Size (only for brush/dot tools) */}
           {tool !== "lasso" && (
             <div className="flex items-center gap-2">
-              <i className="bx bx-circle text-muted-foreground text-[10px]" />
+              <Boxicon className="bx bx-circle text-muted-foreground text-[10px]" />
               <input
                 type="range" min={4} max={120} value={brushSize}
                 onChange={e => setBrushSize(Number(e.target.value))}
                 className="w-20 accent-primary h-1 rounded-lg bg-muted cursor-pointer"
               />
-              <i className="bx bx-circle text-muted-foreground text-sm" />
+              <Boxicon className="bx bx-circle text-muted-foreground text-sm" />
               <span className="text-[10px] text-muted-foreground font-mono w-6">{brushSize}</span>
             </div>
           )}
@@ -571,7 +573,7 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
               className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition text-xs"
               title="Zoom out"
             >
-              <i className="bx bx-minus" />
+              <Boxicon className="bx bx-minus" />
             </button>
             <input
               type="range"
@@ -588,7 +590,7 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
               className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition text-xs"
               title="Zoom in"
             >
-              <i className="bx bx-plus" />
+              <Boxicon className="bx bx-plus" />
             </button>
             <span className="text-[10px] font-mono text-muted-foreground w-10 text-center">{Math.round(zoom * 100)}%</span>
             <button
@@ -604,13 +606,13 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
           {/* Undo / Redo / Reset */}
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)" className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground disabled:opacity-30 transition">
-              <i className="bx bx-undo text-sm" />
+              <Boxicon className="bx bx-undo text-sm" />
             </button>
             <button onClick={redo} disabled={!canRedo} title="Redo (Ctrl+Y)" className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground disabled:opacity-30 transition">
-              <i className="bx bx-redo text-sm" />
+              <Boxicon className="bx bx-redo text-sm" />
             </button>
             <button onClick={resetAll} title="Reset to original result" className="p-1.5 rounded-lg border border-border hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition">
-              <i className="bx bx-reset text-sm" />
+              <Boxicon className="bx bx-reset text-sm" />
             </button>
           </div>
         </div>
@@ -624,7 +626,7 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
             onClick={handleApply}
             className="px-5 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition"
           >
-            <i className="bx bx-check text-sm mr-1" />
+            <Boxicon className="bx bx-check text-sm mr-1" />
             Apply Changes
           </button>
         </div>
@@ -721,13 +723,13 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
                 onClick={() => applyLasso("erase")}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold shadow-md hover:bg-rose-600 transition"
               >
-                <i className="bx bx-eraser text-sm" /> Erase Area
+                <Boxicon className="bx bx-eraser text-sm" /> Erase Area
               </button>
               <button
                 onClick={() => applyLasso("restore")}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-bold shadow-md hover:bg-emerald-600 transition"
               >
-                <i className="bx bx-brush-alt text-sm" /> Restore Area
+                <Boxicon className="bx bx-brush-alt text-sm" /> Restore Area
               </button>
               <button
                 onClick={() => {
@@ -743,7 +745,7 @@ export function ManualMaskEditor({ originalFile, processedSrc, onApply, onCancel
                 }}
                 className="p-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted transition"
               >
-                <i className="bx bx-x text-sm" />
+                <Boxicon className="bx bx-x text-sm" />
               </button>
             </div>
           );

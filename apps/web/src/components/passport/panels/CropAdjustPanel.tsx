@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useRef, useEffect, useCallback } from "react";
 
@@ -546,7 +548,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
       <div className="shrink-0 border-b border-border bg-card px-6 py-4 flex items-center justify-between flex-wrap gap-4 shadow-sm z-10">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-primary/10 rounded-xl">
-            <i className="bx bx-crop text-primary text-xl" />
+            <Boxicon className="bx bx-crop text-primary text-xl" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-foreground">Interactive Crop Workspace</h2>
@@ -604,7 +606,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs font-semibold">
                   <span className="text-muted-foreground flex items-center gap-1">
-                    <i className="bx bx-zoom-in text-sm text-primary" /> Image Zoom Scale
+                    <Boxicon className="bx bx-zoom-in text-sm text-primary" /> Image Zoom Scale
                   </span>
                   <span className="font-mono text-primary bg-primary/5 px-2 py-0.5 rounded text-[11px]">
                     {Math.round(zoom * 100)}%
@@ -615,7 +617,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
                     onClick={() => setZoom(z => Math.max(0.5, z - 0.1))} 
                     className="p-1.5 rounded-lg border border-border/60 hover:bg-muted text-muted-foreground transition"
                   >
-                    <i className="bx bx-minus text-sm" />
+                    <Boxicon className="bx bx-minus text-sm" />
                   </button>
                   <input
                     type="range"
@@ -630,7 +632,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
                     onClick={() => setZoom(z => Math.min(4.0, z + 0.1))} 
                     className="p-1.5 rounded-lg border border-border/60 hover:bg-muted text-muted-foreground transition"
                   >
-                    <i className="bx bx-plus text-sm" />
+                    <Boxicon className="bx bx-plus text-sm" />
                   </button>
                 </div>
               </div>
@@ -639,7 +641,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs font-semibold">
                   <span className="text-muted-foreground flex items-center gap-1">
-                    <i className="bx bx-rotate-left text-sm text-primary" /> Rotation Alignment
+                    <Boxicon className="bx bx-rotate-left text-sm text-primary" /> Rotation Alignment
                   </span>
                   <span className="font-mono text-primary bg-primary/5 px-2 py-0.5 rounded text-[11px]">
                     {rotation > 0 ? "+" : ""}{rotation.toFixed(1)}°
@@ -650,7 +652,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
                     onClick={() => setRotation(r => Math.max(-45, r - 1))} 
                     className="p-1.5 rounded-lg border border-border/60 hover:bg-muted text-muted-foreground transition"
                   >
-                    <i className="bx bx-rotate-left text-sm" />
+                    <Boxicon className="bx bx-rotate-left text-sm" />
                   </button>
                   <input
                     type="range"
@@ -665,7 +667,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
                     onClick={() => setRotation(r => Math.min(45, r + 1))} 
                     className="p-1.5 rounded-lg border border-border/60 hover:bg-muted text-muted-foreground transition"
                   >
-                    <i className="bx bx-rotate-right text-sm" />
+                    <Boxicon className="bx bx-rotate-right text-sm" />
                   </button>
                 </div>
               </div>
@@ -776,7 +778,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
                 onClick={resetCrop}
                 className="flex items-center justify-center gap-1.5 py-3 rounded-xl border border-border text-xs font-semibold text-muted-foreground hover:bg-accent transition duration-200"
               >
-                <i className="bx bx-reset text-sm" />
+                <Boxicon className="bx bx-reset text-sm" />
                 Reset
               </button>
               <button
@@ -789,7 +791,7 @@ export function CropAdjustPanel({ processedSrc, faceBox, onApply, onSkip }: Crop
                 onClick={applyCrop}
                 className="flex items-center justify-center gap-1.5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition duration-200"
               >
-                <i className="bx bx-check-circle text-sm" />
+                <Boxicon className="bx bx-check-circle text-sm" />
                 Apply Crop
               </button>
             </div>

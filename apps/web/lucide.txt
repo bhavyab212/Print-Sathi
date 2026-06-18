@@ -1,0 +1,4 @@
+print-sathi@ /media/bhavya/backup and etc/Project/Printo_
+`-- web@0.1.0 -> ./apps/web
+  `-- lucide-react@1.17.0
+

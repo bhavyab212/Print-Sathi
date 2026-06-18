@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ManualMaskEditor } from "./ManualMaskEditor";
@@ -655,7 +657,7 @@ export function BgReviewPanel({
       {/* Face warning (for passport mode) */}
       {!faceDetected && !standalone && (
         <div className="shrink-0 mx-6 mt-4 flex items-start gap-3 rounded-xl bg-amber-500/10 px-4 py-2.5 text-sm text-amber-400 border border-amber-500/20">
-          <i className="bx bx-error mt-0.5 shrink-0" />
+          <Boxicon className="bx bx-error mt-0.5 shrink-0" />
           <div>
             <p className="font-semibold text-xs">No face detected</p>
             <p className="text-xs opacity-80">The crop may not be passport-standard. Review or retry.</p>
@@ -670,9 +672,9 @@ export function BgReviewPanel({
           <div className="w-full max-w-2xl flex flex-col gap-3 h-full">
             {/* Slide guide label */}
             <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground px-1">
-              <span className="flex items-center gap-1.5"><i className="bx bx-image-alt" /> Original</span>
+              <span className="flex items-center gap-1.5"><Boxicon className="bx bx-image-alt" /> Original</span>
               <span className="text-foreground font-bold text-[11px] bg-muted px-2.5 py-0.5 rounded-full uppercase tracking-wider">Drag Slider to Compare</span>
-              <span className="flex items-center gap-1.5">Cutout Studio <i className="bx bx-eraser" /></span>
+              <span className="flex items-center gap-1.5">Cutout Studio <Boxicon className="bx bx-eraser" /></span>
             </div>
 
             {/* Slider Container */}
@@ -725,8 +727,8 @@ export function BgReviewPanel({
                 style={{ left: `${comparePos}%`, transform: "translateX(-50%)" }}
               >
                 <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-xl border border-border">
-                  <i className="bx bx-left-arrow-alt text-muted-foreground text-xs" />
-                  <i className="bx bx-right-arrow-alt text-muted-foreground text-xs -ml-0.5" />
+                  <Boxicon className="bx bx-left-arrow-alt text-muted-foreground text-xs" />
+                  <Boxicon className="bx bx-right-arrow-alt text-muted-foreground text-xs -ml-0.5" />
                 </div>
               </div>
             </div>
@@ -739,7 +741,7 @@ export function BgReviewPanel({
                   onClick={handleDownloadClick}
                   className="flex items-center gap-1.5 text-primary font-bold hover:underline transition"
                 >
-                  <i className="bx bx-download" /> Download Cutout
+                  <Boxicon className="bx bx-download" /> Download Cutout
                 </button>
               )}
             </div>
@@ -860,7 +862,7 @@ export function BgReviewPanel({
                       onClick={() => fileInputRef.current?.click()}
                       className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/20 py-3 text-xs font-semibold text-foreground hover:bg-accent transition"
                     >
-                      <i className="bx bx-image-add text-lg text-primary" />
+                      <Boxicon className="bx bx-image-add text-lg text-primary" />
                       Upload background file
                     </button>
                   </div>
@@ -1004,7 +1006,7 @@ export function BgReviewPanel({
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Enhance Adjust</span>
                     <button onClick={resetAdjustments} className="text-[10px] text-primary font-bold hover:underline flex items-center gap-0.5">
-                      <i className="bx bx-reset" /> Reset all
+                      <Boxicon className="bx bx-reset" /> Reset all
                     </button>
                   </div>
 
@@ -1082,7 +1084,7 @@ export function BgReviewPanel({
                         onClick={() => setRotation((prev) => (prev + 90) % 360)}
                         className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-2 text-[10px] font-bold text-foreground hover:bg-accent transition"
                       >
-                        <i className="bx bx-rotate-right text-base text-primary" />
+                        <Boxicon className="bx bx-rotate-right text-base text-primary" />
                         <span>Rotate 90°</span>
                       </button>
                       <button
@@ -1091,7 +1093,7 @@ export function BgReviewPanel({
                           flipHorizontal ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-foreground hover:bg-accent"
                         }`}
                       >
-                        <i className="bx bx-reflect-vertical text-base" />
+                        <Boxicon className="bx bx-reflect-vertical text-base" />
                         <span>Flip Horiz</span>
                       </button>
                       <button
@@ -1100,7 +1102,7 @@ export function BgReviewPanel({
                           flipVertical ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-foreground hover:bg-accent"
                         }`}
                       >
-                        <i className="bx bx-reflect-horizontal text-base" />
+                        <Boxicon className="bx bx-reflect-horizontal text-base" />
                         <span>Flip Vert</span>
                       </button>
                     </div>
@@ -1332,13 +1334,13 @@ export function BgReviewPanel({
                         onClick={() => handleDownload(bgColor !== "transparent")}
                         className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-primary text-white font-bold text-xs shadow-md hover:shadow-lg transition-all"
                       >
-                        <i className="bx bx-download" /> Download
+                        <Boxicon className="bx bx-download" /> Download
                       </button>
                       <button
                         onClick={copyImageToClipboard}
                         className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-border bg-card text-foreground font-semibold text-xs hover:bg-accent transition-all"
                       >
-                        <i className="bx bx-copy" /> Copy
+                        <Boxicon className="bx bx-copy" /> Copy
                       </button>
                     </div>
                   </div>
@@ -1359,7 +1361,7 @@ export function BgReviewPanel({
               disabled={action !== "idle"}
               className="sm:col-span-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:shadow-xl hover:shadow-emerald-500/35 disabled:opacity-50"
             >
-              <i className="bx bx-check-circle text-lg" />
+              <Boxicon className="bx bx-check-circle text-lg" />
               Accept &amp; Continue
             </button>
 
@@ -1373,9 +1375,9 @@ export function BgReviewPanel({
                 }`}
               >
                 {action === "retrying" || action === "analyzing" ? (
-                  <i className="bx bx-loader-alt animate-spin text-base text-primary" />
+                  <Boxicon className="bx bx-loader-alt animate-spin text-base text-primary" />
                 ) : (
-                  <i className="bx bx-refresh text-lg" />
+                  <Boxicon className="bx bx-refresh text-lg" />
                 )}
                 <span>{action === "analyzing" ? "Analyzing…" : "Smart Retry"}</span>
               </button>
@@ -1387,7 +1389,7 @@ export function BgReviewPanel({
                   {/* Analyzing spinner */}
                   {action === "analyzing" && (
                     <div className="flex flex-col items-center gap-3 py-4">
-                      <i className="bx bx-loader-alt animate-spin text-3xl text-primary" />
+                      <Boxicon className="bx bx-loader-alt animate-spin text-3xl text-primary" />
                       <p className="text-xs font-semibold text-muted-foreground text-center">Analyzing result quality…</p>
                       <p className="text-[10px] text-muted-foreground text-center opacity-70">Scanning edges, transparency, and mask quality</p>
                     </div>
@@ -1403,7 +1405,7 @@ export function BgReviewPanel({
                       {/* Header */}
                       <div className="flex items-start gap-2">
                         <div className="p-1.5 bg-primary/10 rounded-lg shrink-0 mt-0.5">
-                          <i className="bx bx-brain text-primary text-sm" />
+                          <Boxicon className="bx bx-brain text-primary text-sm" />
                         </div>
                         <div>
                           <p className="text-xs font-bold text-foreground">Smart Fix Recommendation</p>
@@ -1430,7 +1432,7 @@ export function BgReviewPanel({
                         onClick={() => executeRetry()}
                         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold shadow-md shadow-blue-500/20 hover:shadow-blue-500/35 transition"
                       >
-                        <i className="bx bx-zap text-sm" />
+                        <Boxicon className="bx bx-zap text-sm" />
                         Apply Smart Fix
                       </button>
 
@@ -1447,31 +1449,31 @@ export function BgReviewPanel({
                           onClick={() => executeRetry({ strategy: "alpha_matting_fine", params: { alpha_matting: true, alpha_matting_fg: 200, alpha_matting_bg: 5 }, explanation: "", confidence: 0 })}
                           className="w-full text-left px-2.5 py-2 text-[10px] rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition flex items-center gap-2"
                         >
-                          <i className="bx bx-spa text-xs text-indigo-500" /> Preserve fine hair / clothing
+                          <Boxicon className="bx bx-spa text-xs text-indigo-500" /> Preserve fine hair / clothing
                         </button>
                         <button
                           onClick={() => executeRetry({ strategy: "alpha_matting_aggressive", params: { alpha_matting: true, alpha_matting_fg: 245, alpha_matting_bg: 25 }, explanation: "", confidence: 0 })}
                           className="w-full text-left px-2.5 py-2 text-[10px] rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition flex items-center gap-2"
                         >
-                          <i className="bx bx-exclude text-xs text-rose-500" /> Aggressive background removal
+                          <Boxicon className="bx bx-exclude text-xs text-rose-500" /> Aggressive background removal
                         </button>
                         <button
                           onClick={() => executeRetry({ strategy: "remove_shadow", params: { remove_shadow: true }, explanation: "", confidence: 0 })}
                           className="w-full text-left px-2.5 py-2 text-[10px] rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition flex items-center gap-2"
                         >
-                          <i className="bx bx-sun text-xs text-amber-500" /> Fix heavy shadows / low contrast
+                          <Boxicon className="bx bx-sun text-xs text-amber-500" /> Fix heavy shadows / low contrast
                         </button>
                         <button
                           onClick={() => executeRetry({ strategy: "u2net_upgrade", params: {}, explanation: "", confidence: 0 })}
                           className="w-full text-left px-2.5 py-2 text-[10px] rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition flex items-center gap-2"
                         >
-                          <i className="bx bx-up-arrow-circle text-xs text-violet-500" /> Upgrade to Ultra AI model
+                          <Boxicon className="bx bx-up-arrow-circle text-xs text-violet-500" /> Upgrade to Ultra AI model
                         </button>
                         <button
                           onClick={() => { setShowManualEditor(true); setShowRetryPopover(false); }}
                           className="w-full text-left px-2.5 py-2 text-[10px] rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition flex items-center gap-2"
                         >
-                          <i className="bx bx-brush text-xs text-emerald-500" /> Manual paint / lasso edit
+                          <Boxicon className="bx bx-brush text-xs text-emerald-500" /> Manual paint / lasso edit
                         </button>
                       </div>
                     </div>
@@ -1487,9 +1489,9 @@ export function BgReviewPanel({
               className="flex flex-col items-center justify-center gap-1 rounded-xl border border-violet-500/40 bg-violet-500/5 px-3 py-3 text-xs font-semibold text-violet-600 transition hover:bg-violet-500/10 disabled:opacity-40"
             >
               {action === "upgrading" ? (
-                <i className="bx bx-loader-alt animate-spin text-base" />
+                <Boxicon className="bx bx-loader-alt animate-spin text-base" />
               ) : (
-                <i className="bx bx-up-arrow-circle text-lg" />
+                <Boxicon className="bx bx-up-arrow-circle text-lg" />
               )}
               <span>{model === "u2net_human_seg" ? "Already Ultra" : "Upgrade Ultra"}</span>
             </button>
@@ -1500,7 +1502,7 @@ export function BgReviewPanel({
               disabled={action !== "idle"}
               className="flex flex-col items-center justify-center gap-1 rounded-xl border border-border bg-muted/30 px-3 py-3 text-xs text-foreground hover:bg-accent transition"
             >
-              <i className="bx bx-brush text-lg text-primary" />
+              <Boxicon className="bx bx-brush text-lg text-primary" />
               <span>Manual Edit</span>
             </button>
           </div>

@@ -1,3 +1,4 @@
+import { Boxicon } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AdminPanelClient from "./AdminPanelClient";
@@ -57,7 +58,7 @@ export default async function AdminPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl clay-accent text-white shadow-[var(--glow-primary)]">
-              <i className="bx bx-shield-quarter text-lg"></i>
+              <Boxicon className="bx bx-shield-quarter text-lg" />
             </div>
             <div>
               <h1 className="text-h3 font-display text-gradient">

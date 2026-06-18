@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { PassportConfig } from "../PassportConfig";
@@ -565,7 +567,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
             onClick={resetEnhancements}
             className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground rounded-lg px-2.5 py-1.5 border border-border hover:bg-muted transition"
           >
-            <i className="bx bx-reset text-xs" /> Reset
+            <Boxicon className="bx bx-reset text-xs" /> Reset
           </button>
         )}
       </div>
@@ -600,7 +602,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
             {tab === "presets" && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <i className="bx bx-magic-wand text-primary text-lg" />
+                  <Boxicon className="bx bx-magic-wand text-primary text-lg" />
                   <span className="text-xs font-bold text-foreground uppercase tracking-wider">Enhancement Presets</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -642,7 +644,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
             {tab === "manual" && (
               <div className="space-y-5">
                 <div className="flex items-center gap-2">
-                  <i className="bx bx-slider text-primary text-lg" />
+                  <Boxicon className="bx bx-slider text-primary text-lg" />
                   <span className="text-xs font-bold text-foreground uppercase tracking-wider">Manual Adjustments</span>
                 </div>
                 <div className="space-y-4">
@@ -695,14 +697,14 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
             {tab === "face" && (
               <div className="space-y-5">
                 <div className="flex items-center gap-2">
-                  <i className="bx bx-face text-primary text-lg" />
+                  <Boxicon className="bx bx-face text-primary text-lg" />
                   <span className="text-xs font-bold text-foreground uppercase tracking-wider">Face-Based Retouching</span>
                 </div>
 
                 {faceBox ? (
                   <>
                     <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-2.5 text-xs text-emerald-600">
-                      <i className="bx bx-check-circle text-base shrink-0 text-emerald-500" />
+                      <Boxicon className="bx bx-check-circle text-base shrink-0 text-emerald-500" />
                       <span><strong>Face Detected!</strong> Bounding coordinates mapped successfully.</span>
                     </div>
 
@@ -741,7 +743,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
                       />
 
                       <div className="p-3 bg-muted/40 border border-border rounded-xl flex items-start gap-2 text-[10px] text-muted-foreground leading-relaxed">
-                        <i className="bx bx-info-circle text-sm text-primary shrink-0 mt-0.5" />
+                        <Boxicon className="bx bx-info-circle text-sm text-primary shrink-0 mt-0.5" />
                         <p>
                           Face Skin Smoothing applies soft blur filters <strong>only within the face region</strong>. This leaves clothing textures and hair outlines completely sharp, satisfying biometric passport photo requirements.
                         </p>
@@ -751,7 +753,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
                 ) : (
                   <div className="p-6 rounded-2xl border border-dashed border-border flex flex-col items-center justify-center text-center gap-3 py-12">
                     <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                      <i className="bx bx-user-x text-2xl" />
+                      <Boxicon className="bx bx-user-x text-2xl" />
                     </div>
                     <div className="max-w-[200px]">
                       <span className="text-xs font-bold text-foreground">No Face Bounding Box Found</span>
@@ -768,7 +770,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
             {tab === "ai" && (
               <div className="space-y-5">
                 <div className="flex items-center gap-2">
-                  <i className="bx bx-aperture text-primary text-lg" />
+                  <Boxicon className="bx bx-aperture text-primary text-lg" />
                   <span className="text-xs font-bold text-foreground uppercase tracking-wider">Photo Enhancers</span>
                 </div>
 
@@ -815,7 +817,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
 
                 {aiError && (
                   <div className="p-3.5 rounded-xl bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-center gap-2">
-                    <i className="bx bx-error-circle text-sm shrink-0" />
+                    <Boxicon className="bx bx-error-circle text-sm shrink-0" />
                     <span>{aiError}</span>
                   </div>
                 )}
@@ -827,12 +829,12 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
                 >
                   {aiLoading ? (
                     <>
-                      <i className="bx bx-loader-alt animate-spin text-sm" />
+                      <Boxicon className="bx bx-loader-alt animate-spin text-sm" />
                       Running Enhancers...
                     </>
                   ) : (
                     <>
-                      <i className="bx bx-wand text-sm" />
+                      <Boxicon className="bx bx-wand text-sm" />
                       Apply Enhancements
                     </>
                   )}
@@ -902,7 +904,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
                       : "border-border bg-card text-foreground hover:bg-accent"
                   }`}
                 >
-                  <i className="bx bx-image-add text-sm" />
+                  <Boxicon className="bx bx-image-add text-sm" />
                   {config.bgImageSrc ? "Change BG Image" : "Upload Custom Background"}
                 </button>
                 {config.bgImageSrc && (
@@ -910,7 +912,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
                     onClick={() => onChange({ ...config, bgImageSrc: null })}
                     className="flex items-center gap-1 rounded-xl border border-border px-3.5 py-2 text-xs font-semibold text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
                   >
-                    <i className="bx bx-x text-sm" />
+                    <Boxicon className="bx bx-x text-sm" />
                     Remove
                   </button>
                 )}
@@ -933,7 +935,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
               className="flex items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary px-4 py-2 text-xs font-bold transition shadow-sm"
               title="Save current adjustments into the image and reset sliders to keep editing on top"
             >
-              <i className="bx bx-layer text-sm" />
+              <Boxicon className="bx bx-layer text-sm" />
               Bake &amp; Stack Edits
             </button>
           )}
@@ -944,7 +946,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-md hover:shadow-lg transition"
           >
             Continue to Layout
-            <i className="bx bx-chevron-right text-lg" />
+            <Boxicon className="bx bx-chevron-right text-lg" />
           </button>
         </div>
       </div>
@@ -952,7 +954,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
       {/* Local Toast Notification */}
       {localToast && (
         <div className="absolute bottom-16 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-gray-900 px-4 py-2.5 text-xs font-bold text-white shadow-2xl ring-1 ring-white/10 animate-fade-in flex items-center gap-2">
-          <i className="bx bx-check-circle text-emerald-400 text-sm" />
+          <Boxicon className="bx bx-check-circle text-emerald-400 text-sm" />
           {localToast}
         </div>
       )}

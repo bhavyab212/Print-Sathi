@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { UploadPanel, type AIModel } from "@/components/passport/panels/UploadPanel";
@@ -294,7 +296,7 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
               }}
               className="flex items-center gap-1 rounded-xl neu px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition"
             >
-              <i className="bx bx-chevron-left text-base" /> Back
+              <Boxicon className="bx bx-chevron-left text-base" /> Back
             </button>
           )}
           
@@ -330,7 +332,7 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
                     <div className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold
                       ${isActive ? "bg-white/25" : isDone ? "bg-emerald-500 text-white" : "bg-muted"}`}
                     >
-                      {isDone ? <i className="bx bx-check text-[10px]" /> : <span>{idx + 1}</span>}
+                      {isDone ? <Boxicon className="bx bx-check text-[10px]" /> : <span>{idx + 1}</span>}
                     </div>
                     <i className={`bx ${s.icon} text-sm`} />
                     <span className="hidden sm:inline">{s.label}</span>
@@ -356,7 +358,7 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
               className="flex items-center gap-1.5 rounded-xl neu px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-destructive transition"
               title="Start over"
             >
-              <i className="bx bx-refresh text-base"></i>
+              <Boxicon className="bx bx-refresh text-base" />
               <span className="hidden sm:inline">Reset</span>
             </button>
           )}
@@ -414,7 +416,7 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
           <div className="h-full flex items-center justify-center p-6 overflow-y-auto">
             <div className="w-full max-w-xl glass-strong glass-rim rounded-clay p-8 elev-5 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 glow-success mb-4">
-                <i className="bx bx-check-shield text-3xl" />
+                <Boxicon className="bx bx-check-shield text-3xl" />
               </div>
               <h2 className="text-xl font-bold text-foreground">Background Removed successfully!</h2>
               <p className="text-sm text-muted-foreground mt-1 mb-6">
@@ -446,21 +448,21 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
                   onClick={() => handleDownload(false)}
                   className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 py-3 text-sm font-bold text-white glow-primary hover:shadow-xl hover:shadow-blue-500/35 transition"
                 >
-                  <i className="bx bx-download text-lg" />
+                  <Boxicon className="bx bx-download text-lg" />
                   Download Cutout
                 </button>
                 <button
                   onClick={() => handleDownload(true)}
                   className="flex items-center justify-center gap-2 rounded-xl neu py-3 text-sm font-bold text-foreground hover:text-primary transition"
                 >
-                  <i className="bx bx-download text-lg text-muted-foreground" />
+                  <Boxicon className="bx bx-download text-lg text-muted-foreground" />
                   Force White BG (JPG)
                 </button>
                 <button
                   onClick={copyImageToClipboard}
                   className="sm:col-span-2 flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 py-3 text-sm font-bold text-emerald-500 transition"
                 >
-                  <i className="bx bx-copy text-lg" />
+                  <Boxicon className="bx bx-copy text-lg" />
                   Copy to Clipboard
                 </button>
               </div>

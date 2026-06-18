@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -64,7 +66,7 @@ export default function RegisterPage() {
         {!isPublicSignupEnabled ? (
           <div className="py-4 text-center">
             <div className="clay mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-clay text-[var(--ps-warning)]">
-              <i className="bx bx-lock-alt text-2xl"></i>
+              <Boxicon className="bx bx-lock-alt text-2xl" />
             </div>
             <h2 className="text-h3 font-display mb-1 text-[var(--ps-ink)]">Registration Disabled</h2>
             <p className="text-caption mb-6 text-[var(--ps-ink-muted)]">
@@ -85,7 +87,7 @@ export default function RegisterPage() {
             className="space-y-3 py-4 text-center"
           >
             <div className="clay glow-success mx-auto flex h-14 w-14 animate-bounce items-center justify-center rounded-clay text-[var(--ps-success)]">
-              <i className="bx bx-check-circle text-3xl"></i>
+              <Boxicon className="bx bx-check-circle text-3xl" />
             </div>
             <h2 className="text-h3 font-display text-[var(--ps-ink)]">Account Created!</h2>
             <p className="text-caption text-[var(--ps-ink-muted)]">
@@ -131,7 +133,7 @@ export default function RegisterPage() {
               >
                 {loading ? (
                   <>
-                    <i className="bx bx-loader-alt animate-spin text-base"></i>
+                    <Boxicon className="bx bx-loader-alt animate-spin text-base" />
                     Creating account...
                   </>
                 ) : (

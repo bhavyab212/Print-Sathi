@@ -37,27 +37,32 @@ def main():
     print("\033[95m             Print Sathi Server Launcher\033[0m")
     print("=" * 60)
     print("Select run mode:")
-    print("  [1] Run locally (localhost / 127.0.0.1)")
-    print("  [2] Run on local network (accessible to other devices on WiFi)")
+    print("  [1] Development mode - Localhost (127.0.0.1)")
+    print("  [2] Development mode - Local Network (WiFi)")
+    print("  [3] Production / Pre-compiled mode - Localhost (127.0.0.1)")
+    print("  [4] Production / Pre-compiled mode - Local Network (WiFi)")
     
     try:
-        choice = input("Enter choice [1/2, default: 1]: ").strip()
+        choice = input("Enter choice [1/2/3/4, default: 1]: ").strip()
     except KeyboardInterrupt:
         print("\nExiting.")
         return
 
-    if choice == "2":
+    is_prod = choice in ("3", "4")
+    is_wifi = choice in ("2", "4")
+
+    if is_wifi:
         host = "0.0.0.0"
         display_ip = get_local_ip()
-        print(f"\nMode: \033[93mLocal Network\033[0m")
-        print(f"Frontend: \033[96mhttp://{display_ip}:3000\033[0m")
-        print(f"Backend API:  \033[96mhttp://{display_ip}:8000/docs\033[0m")
+        mode_str = "Local Network (WiFi)"
     else:
         host = "127.0.0.1"
         display_ip = "127.0.0.1"
-        print(f"\nMode: \033[92mLocalhost\033[0m")
-        print(f"Frontend: \033[96mhttp://localhost:3000\033[0m")
-        print(f"Backend API:  \033[96mhttp://localhost:8000/docs\033[0m")
+        mode_str = "Localhost"
+
+    print(f"\nMode: \033[93m{mode_str} - {'Production (Pre-compiled)' if is_prod else 'Development (On-demand)'}\033[0m")
+    print(f"Frontend: \033[96mhttp://{display_ip if is_wifi else 'localhost'}:3000\033[0m")
+    print(f"Backend API:  \033[96mhttp://{display_ip if is_wifi else 'localhost'}:8000/docs\033[0m")
 
     print("\nStarting servers (Ctrl+C to stop)...")
 
@@ -79,13 +84,15 @@ def main():
     backend_cmd = [
         os.path.join(".venv", "bin", "python"),
         "-m", "uvicorn", "main:app",
-        "--reload",
         "--host", host,
         "--port", "8000"
     ]
-    
+    if not is_prod:
+        backend_cmd.append("--reload")
+        
     frontend_cmd = [
-        "npx", "next", "dev",
+        "npx", "next",
+        "start" if is_prod else "dev",
         "--hostname", host,
         "--port", "3000"
     ]

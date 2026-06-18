@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useRef, useEffect } from "react";
 
@@ -225,7 +227,7 @@ export function PassportConfigPanel({ config, onChange }: PassportConfigProps) {
                     : "bg-muted text-muted-foreground border border-border"
                 }`}
               >
-                <i className={`bx ${lockRatio ? "bx-lock-alt" : "bx-lock-open-alt"}`} />
+                <Boxicon className={`bx ${lockRatio ? "bx-lock-alt" : "bx-lock-open-alt"}`} />
                 {lockRatio ? "Locked" : "Unlocked"}
               </button>
             </div>
@@ -291,7 +293,7 @@ export function PassportConfigPanel({ config, onChange }: PassportConfigProps) {
               onClick={handleCreatePreset}
               className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-xs font-bold text-white shadow-md hover:shadow-lg transition duration-200"
             >
-              <i className="bx bx-plus-circle text-sm" />
+              <Boxicon className="bx bx-plus-circle text-sm" />
               Create a Preset
             </button>
           </div>
@@ -344,7 +346,7 @@ export function PassportConfigPanel({ config, onChange }: PassportConfigProps) {
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-foreground transition hover:bg-accent disabled:opacity-40"
               aria-label="Decrease copies"
             >
-              <i className="bx bx-minus text-lg"></i>
+              <Boxicon className="bx bx-minus text-lg" />
             </button>
             <input
               type="number"
@@ -361,7 +363,7 @@ export function PassportConfigPanel({ config, onChange }: PassportConfigProps) {
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-foreground transition hover:bg-accent disabled:opacity-40"
               aria-label="Increase copies"
             >
-              <i className="bx bx-plus text-lg"></i>
+              <Boxicon className="bx bx-plus text-lg" />
             </button>
             <span className="text-sm text-muted-foreground">photos (max 50)</span>
           </div>
@@ -395,7 +397,7 @@ export function PassportConfigPanel({ config, onChange }: PassportConfigProps) {
               aria-label={`Background color: ${c.label}`}
             >
               {(c.value === "custom") && (
-                <i className="bx bx-palette text-white text-sm drop-shadow"></i>
+                <Boxicon className="bx bx-palette text-white text-sm drop-shadow" />
               )}
             </button>
           ))}
@@ -432,7 +434,7 @@ export function PassportConfigPanel({ config, onChange }: PassportConfigProps) {
       <div className="border-t border-border pt-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-            <i className="bx bx-slider-alt text-primary text-base"></i>
+            <Boxicon className="bx bx-slider-alt text-primary text-base" />
             Enhancement
           </h3>
           {hasChanged && (
@@ -441,7 +443,7 @@ export function PassportConfigPanel({ config, onChange }: PassportConfigProps) {
               type="button"
               className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground rounded-lg px-2.5 py-1.5 border border-border hover:bg-muted transition"
             >
-              <i className="bx bx-reset text-xs" /> Reset
+              <Boxicon className="bx bx-reset text-xs" /> Reset
             </button>
           )}
         </div>
@@ -621,7 +623,7 @@ function BackgroundImageUpload({
             : "border-border bg-card text-foreground hover:bg-accent"
         }`}
       >
-        <i className="bx bx-image-add text-sm"></i>
+        <Boxicon className="bx bx-image-add text-sm" />
         {current ? "Change bg image" : "Use background image"}
       </button>
       {current && (
@@ -629,7 +631,7 @@ function BackgroundImageUpload({
           onClick={onClear}
           className="flex items-center gap-1 rounded-xl border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
         >
-          <i className="bx bx-x text-sm"></i>
+          <Boxicon className="bx bx-x text-sm" />
           Remove
         </button>
       )}

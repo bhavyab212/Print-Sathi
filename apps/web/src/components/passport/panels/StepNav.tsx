@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 export type PassportStep =
   | "upload"
@@ -52,7 +54,7 @@ export function StepNav({ current, onStepClick, completedUpTo }: StepNavProps) {
               <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold
                 ${isActive ? "bg-white/25" : isDone ? "bg-emerald-500 text-white" : "bg-muted"}`}
               >
-                {isDone ? <i className="bx bx-check text-[10px]" /> : <span>{idx + 1}</span>}
+                {isDone ? <Boxicon className="bx bx-check text-[10px]" /> : <span>{idx + 1}</span>}
               </div>
               <i className={`bx ${step.icon} text-sm`} />
               <span className="hidden sm:inline">{step.label}</span>

@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -263,7 +265,7 @@ export default function OnboardingPage() {
                 >
                   {loading ? (
                     <>
-                      <i className="bx bx-loader-alt animate-spin"></i>
+                      <Boxicon className="bx bx-loader-alt animate-spin" />
                       Creating...
                     </>
                   ) : (

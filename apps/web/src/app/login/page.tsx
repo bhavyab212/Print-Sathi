@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { Suspense, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -93,7 +95,7 @@ function LoginForm() {
                 className="glass shimmer-border group mb-5 flex w-full items-center gap-3 rounded-xl border border-dashed border-[var(--ps-primary)]/40 px-4 py-3 text-left text-sm transition-all hover:-translate-y-0.5 hover:shadow-glow-primary"
               >
                 <div className="clay-accent flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-                  <i className="bx bx-key text-base text-white"></i>
+                  <Boxicon className="bx bx-key text-base text-white" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-[var(--ps-primary)]">Use test credentials</p>
@@ -101,7 +103,7 @@ function LoginForm() {
                     printsathi.test@gmail.com / PrintSathi@123
                   </p>
                 </div>
-                <i className="bx bx-chevron-right ml-auto text-[var(--ps-ink-muted)] transition-transform group-hover:translate-x-0.5"></i>
+                <Boxicon className="bx bx-chevron-right ml-auto text-[var(--ps-ink-muted)] transition-transform group-hover:translate-x-0.5" />
               </button>
 
               <form onSubmit={handleLogin} className="space-y-4">
@@ -135,7 +137,7 @@ function LoginForm() {
                 >
                   {loading ? (
                     <>
-                      <i className="bx bx-loader-alt animate-spin"></i>
+                      <Boxicon className="bx bx-loader-alt animate-spin" />
                       Signing in...
                     </>
                   ) : (
@@ -218,7 +220,7 @@ export default function LoginPage() {
       <Suspense
         fallback={
           <div className="flex items-center justify-center gap-2 text-[var(--ps-ink-muted)]">
-            <i className="bx bx-loader-alt animate-spin text-xl"></i>
+            <Boxicon className="bx bx-loader-alt animate-spin text-xl" />
             Loading...
           </div>
         }

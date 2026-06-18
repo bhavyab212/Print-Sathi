@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useCallback } from "react";
 import { FileDropzone } from "../FileDropzone";
@@ -54,7 +56,7 @@ export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
       {/* Header */}
       <div className="text-center max-w-md">
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary uppercase tracking-wider mb-3">
-          <i className="bx bx-id-card text-sm" />
+          <Boxicon className="bx bx-id-card text-sm" />
           Step 1 — Upload Photo
         </div>
         <h2 className="text-h2 font-display font-bold text-foreground">Upload a Portrait Photo</h2>
@@ -66,7 +68,7 @@ export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
       {/* Error */}
       {error && (
         <div className="w-full max-w-xl flex items-start gap-3 rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          <i className="bx bx-error-circle mt-0.5 text-base shrink-0" />
+          <Boxicon className="bx bx-error-circle mt-0.5 text-base shrink-0" />
           <div>
             <p className="font-semibold">Processing failed</p>
             <p className="opacity-80">{error}</p>
@@ -124,7 +126,7 @@ export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
 
       {/* Tip */}
       <div className="w-full max-w-xl flex items-start gap-2 rounded-xl bg-muted/50 px-4 py-3 text-xs text-muted-foreground border border-border">
-        <i className="bx bx-bulb text-sm mt-0.5 text-amber-500 shrink-0" />
+        <Boxicon className="bx bx-bulb text-sm mt-0.5 text-amber-500 shrink-0" />
         <span>
           <strong className="text-foreground">Pro tip:</strong> For best passport results use a portrait with the face clearly visible, no sunglasses, and a plain or simple background.
         </span>

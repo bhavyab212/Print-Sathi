@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -242,7 +244,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <i className="bx bx-loader-alt animate-spin text-4xl text-primary"></i>
+        <Boxicon className="bx bx-loader-alt animate-spin text-4xl text-primary" />
       </div>
     );
   }
@@ -250,7 +252,7 @@ export default function SettingsPage() {
   if (error) {
     return (
       <GlassCard className="glow-danger p-8 text-center text-[var(--ps-danger)]">
-        <i className="bx bx-error-circle mb-2 text-4xl"></i>
+        <Boxicon className="bx bx-error-circle mb-2 text-4xl" />
         <h3 className="text-h3 font-display">Error Loading Settings</h3>
         <p className="mt-1 text-body text-[var(--ps-ink-muted)]">{error}</p>
         <Button variant="danger" size="md" onClick={fetchData} className="mt-5">
@@ -282,7 +284,7 @@ export default function SettingsPage() {
               : "text-muted-foreground hover:text-foreground hover:bg-[var(--ps-surface-2)]"
           }`}
         >
-          <i className="bx bx-store-alt text-lg"></i>
+          <Boxicon className="bx bx-store-alt text-lg" />
           Shop Profile
         </button>
         <button
@@ -293,7 +295,7 @@ export default function SettingsPage() {
               : "text-muted-foreground hover:text-foreground hover:bg-[var(--ps-surface-2)]"
           }`}
         >
-          <i className="bx bx-receipt text-lg"></i>
+          <Boxicon className="bx bx-receipt text-lg" />
           Rate Card
         </button>
       </div>
@@ -310,7 +312,7 @@ export default function SettingsPage() {
               </p>
             </div>
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl neu text-primary">
-              <i className="bx bx-store text-2xl"></i>
+              <Boxicon className="bx bx-store text-2xl" />
             </span>
           </div>
 
@@ -389,7 +391,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2">
               {shopSuccess && (
                 <span className="flex items-center gap-1.5 text-sm font-semibold text-[var(--ps-success)] animate-in fade-in slide-in-from-bottom-2 duration-200">
-                  <i className="bx bx-check-circle text-lg"></i>
+                  <Boxicon className="bx bx-check-circle text-lg" />
                   Profile updated successfully!
                 </span>
               )}
@@ -397,7 +399,7 @@ export default function SettingsPage() {
             <Button type="submit" variant="primary" size="md" disabled={shopSaving}>
               {shopSaving ? (
                 <span className="flex items-center gap-2">
-                  <i className="bx bx-loader-alt animate-spin"></i>
+                  <Boxicon className="bx bx-loader-alt animate-spin" />
                   Saving...
                 </span>
               ) : (
@@ -419,14 +421,14 @@ export default function SettingsPage() {
                 </p>
               </div>
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl neu text-primary">
-                <i className="bx bx-purchase-tag text-2xl"></i>
+                <Boxicon className="bx bx-purchase-tag text-2xl" />
               </span>
             </div>
 
             <div className="divide-y divide-[var(--ps-hairline)] max-h-[500px] overflow-y-auto">
               {rates.length === 0 ? (
                 <div className="p-10 text-center text-muted-foreground">
-                  <i className="bx bx-box text-3xl mb-1"></i>
+                  <Boxicon className="bx bx-box text-3xl mb-1" />
                   <p className="text-sm">No pricing items configured. Add one below!</p>
                 </div>
               ) : (
@@ -474,10 +476,10 @@ export default function SettingsPage() {
               </div>
               <Button type="submit" variant="neu" size="md" disabled={addingRate} className="w-full">
                 {addingRate ? (
-                  <i className="bx bx-loader-alt animate-spin text-lg"></i>
+                  <Boxicon className="bx bx-loader-alt animate-spin text-lg" />
                 ) : (
                   <>
-                    <i className="bx bx-plus text-lg"></i>
+                    <Boxicon className="bx bx-plus text-lg" />
                     Add to Rate Card
                   </>
                 )}
@@ -485,7 +487,7 @@ export default function SettingsPage() {
             </div>
             {ratesError && (
               <p className="text-xs text-[var(--ps-danger)] mt-3 font-semibold flex items-center gap-1 animate-in fade-in duration-200">
-                <i className="bx bx-error-circle text-sm"></i>
+                <Boxicon className="bx bx-error-circle text-sm" />
                 {ratesError}
               </p>
             )}
@@ -580,9 +582,9 @@ function RateRow({ rate, isSaving, onUpdate, onDelete }: RateRowProps) {
                 className="rounded-lg bg-[var(--ps-primary)] text-white p-2 hover:bg-[var(--ps-primary-hover)] hover:shadow-[var(--glow-primary)] disabled:opacity-40 transition-all shadow-sm"
               >
                 {isSaving ? (
-                  <i className="bx bx-loader-alt animate-spin text-md"></i>
+                  <Boxicon className="bx bx-loader-alt animate-spin text-md" />
                 ) : (
-                  <i className="bx bx-check text-md"></i>
+                  <Boxicon className="bx bx-check text-md" />
                 )}
               </button>
               <button
@@ -590,7 +592,7 @@ function RateRow({ rate, isSaving, onUpdate, onDelete }: RateRowProps) {
                 disabled={isSaving}
                 className="rounded-lg neu text-muted-foreground p-2 hover:text-foreground transition-colors"
               >
-                <i className="bx bx-x text-md"></i>
+                <Boxicon className="bx bx-x text-md" />
               </button>
             </>
           ) : (
@@ -599,7 +601,7 @@ function RateRow({ rate, isSaving, onUpdate, onDelete }: RateRowProps) {
                 onClick={() => setEditing(true)}
                 className="rounded-lg neu text-muted-foreground px-2.5 py-1.5 hover:text-foreground text-xs font-semibold flex items-center gap-1 transition-all"
               >
-                <i className="bx bx-edit text-sm"></i>
+                <Boxicon className="bx bx-edit text-sm" />
                 Edit
               </button>
               {isCustomItem && (
@@ -608,7 +610,7 @@ function RateRow({ rate, isSaving, onUpdate, onDelete }: RateRowProps) {
                   disabled={isSaving}
                   className="rounded-lg border border-[var(--ps-danger)]/20 text-[var(--ps-danger)] p-1.5 hover:bg-[var(--ps-danger-muted)] transition-colors"
                 >
-                  <i className="bx bx-trash text-sm"></i>
+                  <Boxicon className="bx bx-trash text-sm" />
                 </button>
               )}
             </>

@@ -8,6 +8,7 @@ import {
   ClayCard,
   Reveal,
   buttonVariants,
+  Boxicon,
 } from "@/components/ui";
 import { fadeUp, stagger } from "@/lib/motion";
 import { ProductGlimpse } from "@/components/marketing/ProductGlimpse";
@@ -69,8 +70,8 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 px-4 pt-4">
         <nav className="glass-nav mx-auto flex max-w-6xl items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <span className="clay-accent flex h-10 w-10 items-center justify-center rounded-xl">
-              <i className="bx bx-printer text-xl text-white" />
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 overflow-hidden">
+              <img src="/images/logo.png" alt="Print Sathi" className="w-full h-full object-contain" />
             </span>
             <span className="text-lg font-bold tracking-tight">Print Sathi</span>
           </Link>
@@ -79,7 +80,7 @@ export default function HomePage() {
             className={buttonVariants({ variant: "glass", size: "sm" })}
           >
             Shop Login
-            <i className="bx bx-right-arrow-alt text-base" />
+            <Boxicon className="bx bx-right-arrow-alt ml-1.5 text-base" />
           </Link>
         </nav>
       </header>
@@ -88,6 +89,11 @@ export default function HomePage() {
         {/* Hero */}
         <section className="relative overflow-hidden">
           <AmbientBackground />
+          {/* Custom generated background network lines overlay */}
+          <div
+            className="absolute inset-0 -z-20 opacity-30 mix-blend-screen bg-cover bg-center pointer-events-none"
+            style={{ backgroundImage: "url('/images/hero_bg.png')" }}
+          />
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-24 pt-16 lg:grid-cols-2 lg:gap-8 lg:pb-32 lg:pt-24">
             <motion.div
               variants={stagger}
@@ -97,7 +103,7 @@ export default function HomePage() {
             >
               <motion.div variants={fadeUp} className="mb-6 flex justify-center lg:justify-start">
                 <span className="shimmer-border glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-[var(--ps-ink-muted)]">
-                  <i className="bx bx-rocket text-[var(--ps-primary)]" />
+                  <Boxicon className="bx bx-rocket text-[var(--ps-primary)]" />
                   Smart automation for print shops
                 </span>
               </motion.div>
@@ -127,7 +133,7 @@ export default function HomePage() {
                   className={`${buttonVariants({ variant: "primary", size: "lg" })} animate-glow-pulse`}
                 >
                   Get Started Free
-                  <i className="bx bx-right-arrow-alt text-lg" />
+                  <Boxicon className="bx bx-right-arrow-alt ml-2 text-lg" />
                 </Link>
                 <a
                   href="#features"
@@ -142,11 +148,11 @@ export default function HomePage() {
                 className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[var(--ps-ink-subtle)] lg:justify-start"
               >
                 <span className="inline-flex items-center gap-1.5">
-                  <i className="bx bx-check-circle text-[var(--ps-success)]" />
+                  <Boxicon className="bx bx-check-circle text-[var(--ps-success)]" />
                   No card required
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <i className="bx bx-check-circle text-[var(--ps-success)]" />
+                  <Boxicon className="bx bx-check-circle text-[var(--ps-success)]" />
                   Built for Indian shops
                 </span>
               </motion.div>
@@ -157,9 +163,27 @@ export default function HomePage() {
               variants={stagger}
               initial="hidden"
               animate="show"
-              className="flex justify-center lg:justify-end"
+              className="relative flex flex-col items-center justify-center lg:items-end w-full"
             >
-              <ProductGlimpse />
+              {/* Decorative blur glow behind */}
+              <div className="absolute -inset-4 bg-gradient-to-tr from-[#818cf8] to-[#25d366] rounded-full opacity-15 blur-3xl -z-10 animate-pulse" />
+              
+              <div className="flex flex-col gap-6 sm:flex-row lg:flex-col xl:flex-row items-center w-full justify-center lg:justify-end">
+                {/* Live print queue preview */}
+                <div className="w-full max-w-sm sm:max-w-md">
+                  <ProductGlimpse />
+                </div>
+                
+                {/* AI Printer/Automation graphic panel */}
+                <div className="relative w-64 h-64 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shrink-0 hidden sm:block">
+                  <img src="/images/hero_banner.png" alt="Print Sathi AI Automation" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b141a] via-transparent to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-4 bg-black/45 backdrop-blur-[2px]">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400">AI Layout Engine</span>
+                    <p className="text-xs text-white/80 font-medium mt-0.5">Automates file formats, color, & sizing in seconds</p>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </div>
         </section>
@@ -190,7 +214,7 @@ export default function HomePage() {
                     <div
                       className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${f.gradient} shadow-lg transition-transform duration-300 group-hover:scale-110`}
                     >
-                      <i className={`bx ${f.icon} text-2xl text-white`} />
+                      <Boxicon className={`bx ${f.icon} w-6 h-6 text-white`} />
                     </div>
                     <h3 className={`${f.big ? "text-h3" : "text-lg font-semibold"} mb-2`}>
                       {f.title}
@@ -201,7 +225,7 @@ export default function HomePage() {
                     {f.big && (
                       <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[var(--ps-primary)]">
                         Most loved feature
-                        <i className="bx bx-heart" />
+                        <Boxicon className="bx bx-heart w-4 h-4 ml-1 text-rose-500 fill-rose-500/20" />
                       </div>
                     )}
                   </Card>
@@ -228,7 +252,7 @@ export default function HomePage() {
                     0{i + 1}
                   </span>
                   <span className="clay-accent mb-5 flex h-12 w-12 items-center justify-center rounded-xl">
-                    <i className={`bx ${s.icon} text-2xl text-white`} />
+                    <Boxicon className={`bx ${s.icon} w-6 h-6 text-white`} />
                   </span>
                   <h3 className="text-h3 mb-2">{s.title}</h3>
                   <p className="text-sm leading-relaxed text-[var(--ps-ink-muted)]">
@@ -259,13 +283,13 @@ export default function HomePage() {
                     className={`${buttonVariants({ variant: "primary", size: "lg" })} animate-glow-pulse`}
                   >
                     Get Started Free
-                    <i className="bx bx-right-arrow-alt text-lg" />
+                    <Boxicon className="bx bx-right-arrow-alt ml-2 text-lg" />
                   </Link>
                   <Link
                     href="/download"
                     className={buttonVariants({ variant: "glass", size: "lg" })}
                   >
-                    <i className="bx bxl-windows text-lg" />
+                    <Boxicon className="bx bxl-windows mr-2 text-lg" />
                     Download Desktop
                   </Link>
                 </div>
@@ -279,8 +303,8 @@ export default function HomePage() {
       <footer className="border-t border-[var(--ps-hairline)] px-6 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm text-[var(--ps-ink-subtle)] sm:flex-row">
           <div className="flex items-center gap-3">
-            <span className="clay-accent flex h-8 w-8 items-center justify-center rounded-lg">
-              <i className="bx bx-printer text-white" />
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg shrink-0 overflow-hidden">
+              <img src="/images/logo.png" alt="Print Sathi" className="w-full h-full object-contain" />
             </span>
             <span className="font-semibold text-[var(--ps-ink-muted)]">Print Sathi</span>
           </div>

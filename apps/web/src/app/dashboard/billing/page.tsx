@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -212,7 +214,7 @@ export default function BillingPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <i className="bx bx-loader-alt animate-spin text-4xl text-primary"></i>
+        <Boxicon className="bx bx-loader-alt animate-spin text-4xl text-primary" />
       </div>
     );
   }
@@ -220,7 +222,7 @@ export default function BillingPage() {
   if (error && !shopId) {
     return (
       <GlassCard className="glow-danger p-8 text-center text-[var(--ps-danger)]">
-        <i className="bx bx-error-circle mb-2 text-4xl"></i>
+        <Boxicon className="bx bx-error-circle mb-2 text-4xl" />
         <h3 className="text-h3 font-display">Billing Error</h3>
         <p className="mt-1 text-body text-[var(--ps-ink-muted)]">{error}</p>
         <Button variant="danger" size="md" onClick={fetchData} className="mt-5">
@@ -274,7 +276,7 @@ export default function BillingPage() {
         <div className="p-4 border-b border-[var(--ps-hairline)] flex flex-col sm:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <i className="bx bx-search text-lg"></i>
+              <Boxicon className="bx bx-search text-lg" />
             </span>
             <input
               type="text"
@@ -298,7 +300,7 @@ export default function BillingPage() {
         <div className="flex-1 overflow-y-auto p-6">
           {filteredRates.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-              <i className="bx bx-purchase-tag text-4xl mb-2"></i>
+              <Boxicon className="bx bx-purchase-tag text-4xl mb-2" />
               <p className="text-sm font-semibold">No items match your search</p>
               <a
                 href="/dashboard/settings"
@@ -367,7 +369,7 @@ export default function BillingPage() {
                           disabled={qty === 0}
                           className="w-8 h-8 rounded-lg neu flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30"
                         >
-                          <i className="bx bx-minus"></i>
+                          <Boxicon className="bx bx-minus" />
                         </button>
                         <input
                           type="number"
@@ -381,7 +383,7 @@ export default function BillingPage() {
                           onClick={() => updateQuantity(rate, qty + 1)}
                           className="w-8 h-8 rounded-lg neu flex items-center justify-center text-muted-foreground hover:text-primary"
                         >
-                          <i className="bx bx-plus"></i>
+                          <Boxicon className="bx bx-plus" />
                         </button>
                       </div>
                     </div>
@@ -398,7 +400,7 @@ export default function BillingPage() {
         {/* Header */}
         <div className="px-6 py-4 border-b border-[var(--ps-hairline)] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <i className="bx bx-receipt text-xl text-primary"></i>
+            <Boxicon className="bx bx-receipt text-xl text-primary" />
             <h3 className="text-h3 font-display text-foreground">Selected Items</h3>
           </div>
           {billItems.length > 0 && (
@@ -415,7 +417,7 @@ export default function BillingPage() {
         <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-[var(--ps-hairline)]">
           {billItems.length === 0 ? (
             <div className="h-48 flex flex-col items-center justify-center text-muted-foreground">
-              <i className="bx bx-calculator text-3xl mb-1.5"></i>
+              <Boxicon className="bx bx-calculator text-3xl mb-1.5" />
               <p className="text-sm">Invoice is empty.</p>
               <p className="text-xs mt-0.5">Add quantities on the left panel.</p>
             </div>
@@ -438,7 +440,7 @@ export default function BillingPage() {
                     onClick={() => updateQuantity(item.rateItem, 0)}
                     className="text-muted-foreground hover:text-destructive shrink-0 opacity-40 group-hover:opacity-100 transition-opacity"
                   >
-                    <i className="bx bx-trash text-base"></i>
+                    <Boxicon className="bx bx-trash text-base" />
                   </button>
                 </div>
               </div>
@@ -470,7 +472,7 @@ export default function BillingPage() {
                   : "neu text-muted-foreground hover:text-foreground"
               }`}
             >
-              <i className={`bx ${taxEnabled ? "bx-checkbox-checked" : "bx-checkbox"} text-lg`}></i>
+              <Boxicon className={`bx ${taxEnabled ? "bx-checkbox-checked" : "bx-checkbox"} text-lg`} />
               Add GST 18%
             </button>
           </div>
@@ -538,13 +540,13 @@ export default function BillingPage() {
           <div className="space-y-2 pt-2">
             {error && (
               <div className="rounded-lg bg-[var(--ps-danger-muted)] p-2.5 text-xs text-[var(--ps-danger)] font-semibold">
-                <i className="bx bx-error-circle mr-1"></i>
+                <Boxicon className="bx bx-error-circle mr-1" />
                 {error}
               </div>
             )}
             {saveSuccess && (
               <div className="rounded-lg bg-[var(--ps-success-muted)] p-2.5 text-xs text-[var(--ps-success)] font-semibold flex items-center gap-1">
-                <i className="bx bx-check-circle text-md"></i>
+                <Boxicon className="bx bx-check-circle text-md" />
                 Transaction logged successfully!
               </div>
             )}
@@ -557,7 +559,7 @@ export default function BillingPage() {
                 disabled={billItems.length === 0}
                 className="flex-1 py-3"
               >
-                <i className="bx bx-printer text-lg"></i>
+                <Boxicon className="bx bx-printer text-lg" />
                 Print Receipt
               </Button>
 
@@ -567,10 +569,10 @@ export default function BillingPage() {
                 className="clay-accent flex-1 rounded-xl text-white font-bold py-3 text-sm flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50"
               >
                 {savingTransaction ? (
-                  <i className="bx bx-loader-alt animate-spin text-lg"></i>
+                  <Boxicon className="bx bx-loader-alt animate-spin text-lg" />
                 ) : (
                   <>
-                    <i className="bx bx-save text-lg"></i>
+                    <Boxicon className="bx bx-save text-lg" />
                     Save Only
                   </>
                 )}
@@ -591,7 +593,7 @@ export default function BillingPage() {
                 onClick={() => setShowPrintModal(false)}
                 className="text-muted-foreground hover:text-foreground text-lg"
               >
-                <i className="bx bx-x"></i>
+                <Boxicon className="bx bx-x" />
               </button>
             </div>
 
@@ -688,7 +690,7 @@ export default function BillingPage() {
                 onClick={handlePrintReceipt}
                 className="flex-1 py-2.5"
               >
-                <i className="bx bx-printer text-base"></i>
+                <Boxicon className="bx bx-printer text-base" />
                 Confirm Print
               </Button>
             </div>

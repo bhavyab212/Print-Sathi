@@ -9,9 +9,9 @@
 
 @layer base {
   :root {
-    /* ── Canvas (page floor, light theme) ───────────────────────────── */
-    --ps-canvas:          #f4f5f6;
-    --ps-canvas-soft:     #eaecef;
+    /* ── Canvas (page floor, light theme) ─────────────────── */
+    --ps-canvas:          #edf0f5;
+    --ps-canvas-soft:     #e3e8f0;
 
     /* ── Surface Ladder (4 steps above canvas) ─────────────────────── */
     --ps-surface-1:       #ffffff;
@@ -58,11 +58,19 @@
     --ps-accent-sky:     #38bdf8;
     --ps-accent-rose:    #fb7185;
 
-    /* ── Elevation / Shadows (softened for light mode) ───────────────── */
-    --ps-shadow-soft:   0 1px 2px rgba(0,0,0,0.05);
-    --ps-shadow-raised: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --ps-shadow-float:  0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    --ps-shadow-modal:  0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    /* ── Elevation / Shadows (softened for light mode) ─────────── */
+    --ps-shadow-soft:   0 1px 3px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.05);
+    --ps-shadow-raised: 0 4px 12px rgba(15,23,42,0.10), 0 2px 4px rgba(15,23,42,0.06);
+    --ps-shadow-float:  0 10px 24px rgba(15,23,42,0.12), 0 4px 8px rgba(15,23,42,0.07);
+    --ps-shadow-modal:  0 20px 48px rgba(15,23,42,0.14), 0 8px 16px rgba(15,23,42,0.08);
+    /* Inset depth — makes tool areas feel recessed */
+    --ps-shadow-inset:  inset 0 2px 6px rgba(15,23,42,0.08), inset 0 1px 2px rgba(15,23,42,0.05);
+    /* Top-edge inner highlight — raises panels off canvas */
+    --ps-highlight-top: inset 0 1px 0 rgba(255,255,255,0.90);
+    /* Combined lift: white top highlight + drop shadow */
+    --ps-lift:          0 1px 0 rgba(255,255,255,0.90) inset,
+                        0 4px 16px rgba(15,23,42,0.10),
+                        0 1px 4px rgba(15,23,42,0.06);
 
     /* ── Wallpaper Dot Grid ─────────────────────────────────────────── */
     --ps-wallpaper-dot:   rgba(15, 23, 42, 0.03);
@@ -548,6 +556,7 @@
   50%       { transform: scaleY(1.4) scaleX(0.85); opacity: 0.9; }
 }
 
+
 @keyframes tick-draw {
   0% { stroke-dasharray: 0, 100; opacity: 0; }
   50% { opacity: 1; }
@@ -555,4 +564,614 @@
 }
 .animate-tick-draw {
   animation: tick-draw 0.6s ease-out forwards;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PRINT SATHI — EXTENDED DESIGN SYSTEM
+   Glass · Neumorphism · Clay · Glow · Mesh · Elevation
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens: Light mode extra ────────────────────────────────────────── */
+:root {
+  /* Mesh orb colours */
+  --mesh-1: radial-gradient(circle, rgba(79,70,229,0.18) 0%, transparent 70%);
+  --mesh-2: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+  --mesh-3: radial-gradient(circle, rgba(56,189,248,0.10) 0%, transparent 70%);
+
+  /* Neumorphism */
+  --neu-bg:    #edf0f3;
+  --neu-light: rgba(255,255,255,0.85);
+  --neu-dark:  rgba(163,177,198,0.55);
+
+  /* Glow shadows */
+  --glow-primary: 0 0 18px rgba(79,70,229,0.45);
+  --glow-success: 0 0 18px rgba(22,163,74,0.45);
+  --glow-danger:  0 0 18px rgba(220,38,38,0.45);
+  --glow-warning: 0 0 18px rgba(217,119,6,0.45);
+
+  /* Glass */
+  --glass-bg:        rgba(255,255,255,0.75);
+  --glass-bg-strong: rgba(255,255,255,0.92);
+  --glass-bg-faint:  rgba(255,255,255,0.38);
+  --glass-border:    rgba(180,190,210,0.60);
+  --shadow-glass:    0 8px 32px rgba(15,23,42,0.10), 0 2px 8px rgba(15,23,42,0.06), inset 0 1px 0 rgba(255,255,255,0.90);
+
+  /* Panel gradients — richer, clearly layered */
+  --toolpanel-gradient: linear-gradient(160deg, #f6f8fc 0%, #eef1f9 100%);
+  --header-gradient:    linear-gradient(90deg, rgba(246,248,252,0.97) 0%, rgba(238,241,249,0.94) 100%);
+
+  /* Depth helpers */
+  --depth-inset-bg:  linear-gradient(180deg, #e8ecf4 0%, #edf0f5 100%);
+  --depth-stripe:    linear-gradient(90deg, transparent 0%, rgba(79,70,229,0.04) 50%, transparent 100%);
+  /* Shimmer animation color-stop vars */
+  --shimmer-from:    rgba(255,255,255,0);
+  --shimmer-via:     rgba(255,255,255,0.70);
+  --shimmer-to:      rgba(255,255,255,0);
+
+  /* Elevation */
+  --shadow-elev-1: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-elev-2: 0 4px 12px rgba(15,23,42,0.08), 0 2px 4px rgba(15,23,42,0.05);
+  --shadow-elev-3: 0 8px 24px rgba(15,23,42,0.10), 0 4px 8px rgba(15,23,42,0.06);
+  --shadow-elev-4: 0 16px 40px rgba(15,23,42,0.12), 0 8px 16px rgba(15,23,42,0.07);
+  --shadow-elev-5: 0 24px 64px rgba(15,23,42,0.14), 0 12px 24px rgba(15,23,42,0.08);
+}
+
+.dark {
+  --mesh-1: radial-gradient(circle, rgba(92,107,200,0.22) 0%, transparent 70%);
+  --mesh-2: radial-gradient(circle, rgba(121,134,216,0.14) 0%, transparent 70%);
+  --mesh-3: radial-gradient(circle, rgba(56,189,248,0.10) 0%, transparent 70%);
+
+  --neu-bg:    #1a1a1e;
+  --neu-light: rgba(255,255,255,0.06);
+  --neu-dark:  rgba(0,0,0,0.35);
+
+  --glow-primary: 0 0 18px rgba(92,107,200,0.55);
+  --glow-success: 0 0 18px rgba(39,196,94,0.55);
+  --glow-danger:  0 0 18px rgba(229,83,75,0.55);
+  --glow-warning: 0 0 18px rgba(245,158,11,0.55);
+
+  --glass-bg:        rgba(18,18,22,0.72);
+  --glass-bg-strong: rgba(18,18,22,0.90);
+  --glass-bg-faint:  rgba(18,18,22,0.34);
+  --glass-border:    rgba(255,255,255,0.10);
+  --shadow-glass:    0 8px 32px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+
+  --toolpanel-gradient: linear-gradient(160deg, #111114 0%, #151519 100%);
+  --header-gradient:    linear-gradient(90deg, rgba(17,17,20,0.96) 0%, rgba(21,21,25,0.92) 100%);
+
+  --depth-inset-bg:  linear-gradient(180deg, #0d0d10 0%, #111114 100%);
+  --depth-stripe:    linear-gradient(90deg, transparent 0%, rgba(92,107,200,0.05) 50%, transparent 100%);
+  --shimmer-from:    rgba(255,255,255,0);
+  --shimmer-via:     rgba(255,255,255,0.06);
+  --shimmer-to:      rgba(255,255,255,0);
+
+  --shadow-elev-1: 0 1px 3px rgba(0,0,0,0.30), 0 1px 2px rgba(0,0,0,0.20);
+  --shadow-elev-2: 0 4px 12px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.25);
+  --shadow-elev-3: 0 8px 24px rgba(0,0,0,0.50), 0 4px 8px rgba(0,0,0,0.30);
+  --shadow-elev-4: 0 16px 40px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.35);
+  --shadow-elev-5: 0 24px 64px rgba(0,0,0,0.60), 0 12px 24px rgba(0,0,0,0.40);
+}
+
+/* ── Glass ───────────────────────────────────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.60);
+}
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px) saturate(1.7);
+  -webkit-backdrop-filter: blur(24px) saturate(1.7);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.80);
+}
+.glass-faint {
+  background: var(--glass-bg-faint);
+  backdrop-filter: blur(8px) saturate(1.2);
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+}
+.glass-nav {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70), 0 1px 0 var(--ps-hairline);
+}
+/* Override rim if glass already has border */
+.glass-rim { border: 1px solid var(--glass-border); }
+.dark .glass     { box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+.dark .glass-strong { box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
+.dark .glass-nav { box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 0 var(--ps-hairline); }
+.shadow-glass { box-shadow: var(--shadow-glass); }
+
+/* ── Neumorphism ─────────────────────────────────────────────────────────────── */
+.neu {
+  background: var(--ps-surface-1);
+  box-shadow: 3px 3px 8px var(--neu-dark), -3px -3px 8px var(--neu-light);
+}
+.neu:hover {
+  box-shadow: 4px 4px 10px var(--neu-dark), -4px -4px 10px var(--neu-light);
+}
+.neu-inset {
+  background: var(--ps-surface-1);
+  box-shadow: inset 2px 2px 6px var(--neu-dark), inset -2px -2px 6px var(--neu-light);
+}
+
+/* ── Clay (filled button) ────────────────────────────────────────────────────── */
+.clay-accent {
+  background: linear-gradient(135deg, var(--ps-primary) 0%, var(--ps-primary-hover) 100%);
+  color: var(--ps-on-primary);
+  box-shadow: 0 4px 14px rgba(79,70,229,0.35), inset 0 1px 0 rgba(255,255,255,0.20);
+}
+.clay-accent:hover {
+  box-shadow: 0 6px 20px rgba(79,70,229,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+}
+
+/* ── Rounded Clay border-radius ─────────────────────────────────────────────── */
+.rounded-clay { border-radius: 20px; }
+
+/* ── Glow effects ────────────────────────────────────────────────────────────── */
+.glow-primary { box-shadow: var(--glow-primary); }
+.glow-success { box-shadow: var(--glow-success); }
+.glow-danger  { box-shadow: var(--glow-danger); }
+.glow-warning { box-shadow: var(--glow-warning); }
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(92,107,200,0.3); }
+  50%       { box-shadow: 0 0 22px rgba(92,107,200,0.6); }
+}
+.animate-glow-pulse { animation: glowPulse 2s ease-in-out infinite; }
+
+/* ── Elevation ───────────────────────────────────────────────────────────────── */
+.elev-1 { box-shadow: var(--shadow-elev-1); }
+.elev-2 { box-shadow: var(--shadow-elev-2); }
+.elev-3 { box-shadow: var(--shadow-elev-3); }
+.elev-4 { box-shadow: var(--shadow-elev-4); }
+.elev-5 { box-shadow: var(--shadow-elev-5); }
+.hover\:shadow-elev-3:hover { box-shadow: var(--shadow-elev-3); }
+
+/* ── Depth helpers — panel lift, sink, shimmer ─────────────────── */
+
+/* Raised panel: white top-edge highlight + drop shadow */
+.panel-lift {
+  background: var(--ps-surface-1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.90),
+    0 4px 16px rgba(15,23,42,0.10),
+    0 1px 4px rgba(15,23,42,0.06);
+  border: 1px solid var(--ps-hairline);
+}
+.dark .panel-lift {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 4px 16px rgba(0,0,0,0.45),
+    0 1px 4px rgba(0,0,0,0.28);
+}
+
+/* Sunken tool area: pressed into the canvas */
+.panel-sink {
+  background: var(--depth-inset-bg);
+  box-shadow:
+    inset 0 2px 6px rgba(15,23,42,0.10),
+    inset 0 1px 2px rgba(15,23,42,0.06),
+    inset 0 -1px 0 rgba(255,255,255,0.70);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.dark .panel-sink {
+  box-shadow:
+    inset 0 2px 8px rgba(0,0,0,0.45),
+    inset 0 1px 2px rgba(0,0,0,0.30);
+  border-color: rgba(255,255,255,0.04);
+}
+
+/* Subtle inset card surface */
+.surface-inner {
+  background: var(--ps-surface-2);
+  box-shadow: inset 0 1px 4px rgba(15,23,42,0.07);
+  border: 1px solid var(--ps-hairline-soft);
+}
+.dark .surface-inner {
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.35);
+}
+
+/* Top-highlight border: makes element read as "raised" */
+.border-lift {
+  border: 1px solid var(--ps-hairline);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+}
+.dark .border-lift {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ── Panel backgrounds ───────────────────────────────────────────────────────── */
+.bg-toolpanel-gradient { background: var(--toolpanel-gradient); }
+.bg-header-gradient    { background: var(--header-gradient); }
+
+/* ── Backdrop blur utility ───────────────────────────────────────────────────── */
+.backdrop-blur-glass {
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────────── */
+.font-display {
+  font-family: 'Inter Variable', 'Inter', -apple-system, sans-serif;
+  font-feature-settings: "cv11", "ss01";
+  letter-spacing: -0.02em;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--ps-primary) 0%, var(--ps-primary-hover) 60%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Mesh background ─────────────────────────────────────────────────────────── */
+.mesh-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 10%, rgba(79,70,229,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(99,102,241,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 90%, rgba(56,189,248,0.04) 0%, transparent 60%);
+}
+.dark .mesh-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 10%, rgba(92,107,200,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(121,134,216,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 90%, rgba(56,189,248,0.05) 0%, transparent 60%);
+}
+
+/* ── Ambient orbs ────────────────────────────────────────────────────────────── */
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(18px, -22px) scale(1.04); }
+  66%       { transform: translate(-14px, 12px) scale(0.97); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: orbFloat 18s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orb { display: none; }
+}
+
+/* ── Float micro animation ───────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+/* ── Grain texture ────────────────────────────────────────────────────────────── */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Shimmer border animation ─────────────────────────────────── */
+@keyframes shimmerBorder {
+  0%   { background-position: -400% center; }
+  100% { background-position: 400% center; }
+}
+.shimmer-border {
+  position: relative;
+  isolation: isolate;
+}
+.shimmer-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--ps-hairline) 0%,
+    rgba(79,70,229,0.5) 45%,
+    rgba(99,102,241,0.8) 50%,
+    rgba(79,70,229,0.5) 55%,
+    var(--ps-hairline) 100%
+  );
+  background-size: 400% 100%;
+  animation: shimmerBorder 3s linear infinite;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+/* ── Depth: canvas body background ───────────────────────── */
+body {
+  background: var(--ps-canvas);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 0% 0%, rgba(79,70,229,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 100%, rgba(99,102,241,0.04) 0%, transparent 55%);
+}
+.dark body {
+  background-image:
+    radial-gradient(ellipse 60% 40% at 0% 0%, rgba(92,107,200,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 100%, rgba(121,134,216,0.06) 0%, transparent 55%);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   DEPTH ENHANCEMENT SYSTEM v2
+   Every plane reads as a distinct Z-layer via shadow, tint & highlight.
+   Canvas → Sidebar → Header → Main Pit → Cards → Floating
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Layer 0: Canvas — richer directional gradient ──────────────────────────── */
+body {
+  background-color: var(--ps-canvas);
+  background-image:
+    radial-gradient(ellipse 70% 55% at 0% 0%,   rgba(79, 70,229,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 100% 100%, rgba(99,102,241,0.05) 0%, transparent 60%),
+    linear-gradient(160deg, #f2f4f8 0%, #edf0f5 50%, #f0f3f8 100%);
+}
+.dark body {
+  background-image:
+    radial-gradient(ellipse 70% 55% at 0% 0%,   rgba(92,107,200,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 100% 100%, rgba(56,189,248,0.05) 0%, transparent 60%),
+    linear-gradient(160deg, #09090c 0%, #0b0b0f 50%, #0a0a0e 100%);
+}
+
+/* ── Layer 1: Sidebar — lighter surface + right-edge inner highlight ─────────── */
+.sidebar-depth {
+  background: linear-gradient(160deg, #f8fafd 0%, #f1f4fb 100%);
+  box-shadow:
+    inset -1px 0 0 rgba(255,255,255,0.80),
+    4px 0 24px rgba(15,23,42,0.07);
+}
+.dark .sidebar-depth {
+  background: linear-gradient(160deg, #131317 0%, #111115 100%);
+  box-shadow:
+    inset -1px 0 0 rgba(255,255,255,0.04),
+    4px 0 24px rgba(0,0,0,0.45);
+}
+
+/* ── Layer 2: Top header — floats above content with bottom-drop shadow ──────── */
+.header-depth {
+  background: linear-gradient(90deg,
+    rgba(250,252,255,0.97) 0%,
+    rgba(244,247,254,0.95) 100%);
+  box-shadow:
+    inset 0 -1px 0 var(--ps-hairline),
+    0 2px 12px rgba(15,23,42,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.95);
+}
+.dark .header-depth {
+  background: linear-gradient(90deg,
+    rgba(15,15,20,0.97) 0%,
+    rgba(18,18,24,0.95) 100%);
+  box-shadow:
+    inset 0 -1px 0 var(--ps-hairline),
+    0 2px 12px rgba(0,0,0,0.50),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* ── Layer 3: Main pit — top-fade creates a sunken feel ──────────────────────── */
+.main-depth {
+  background:
+    linear-gradient(180deg, rgba(15,23,42,0.025) 0px, transparent 48px),
+    var(--ps-canvas);
+  background-attachment: local;
+}
+.dark .main-depth {
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.18) 0px, transparent 48px),
+    var(--ps-canvas);
+  background-attachment: local;
+}
+
+/* ── Layer 4: Content cards — float above the main pit ──────────────────────── */
+.card-depth {
+  background: var(--ps-surface-1);
+  border: 1px solid var(--ps-hairline);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 1px 3px rgba(15,23,42,0.06),
+    0 4px 16px rgba(15,23,42,0.08),
+    0 12px 32px rgba(15,23,42,0.05);
+}
+.dark .card-depth {
+  background: var(--ps-surface-1);
+  border: 1px solid var(--ps-hairline);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 1px 4px rgba(0,0,0,0.35),
+    0 6px 20px rgba(0,0,0,0.45),
+    0 16px 40px rgba(0,0,0,0.30);
+}
+
+/* ── Tool tray — sunken list area inside a card ──────────────────────────────── */
+.tray-depth {
+  background: var(--ps-canvas-soft);
+  box-shadow:
+    inset 0 2px 6px rgba(15,23,42,0.07),
+    inset 0 1px 2px rgba(15,23,42,0.04),
+    inset 0 -1px 0 rgba(255,255,255,0.80);
+  border-top: 1px solid var(--ps-hairline-soft);
+  border-bottom: 1px solid var(--ps-hairline-soft);
+}
+.dark .tray-depth {
+  background: rgba(8,8,10,0.60);
+  box-shadow:
+    inset 0 2px 8px rgba(0,0,0,0.40),
+    inset 0 1px 2px rgba(0,0,0,0.25);
+  border-top-color: var(--ps-hairline);
+  border-bottom-color: var(--ps-hairline);
+}
+
+/* ── Floating action tray (bottom button dock) ───────────────────────────────── */
+.action-tray {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.85),
+    0 -4px 24px rgba(15,23,42,0.08),
+    var(--shadow-elev-3);
+}
+.dark .action-tray {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 -4px 24px rgba(0,0,0,0.45),
+    var(--shadow-elev-3);
+}
+
+/* ── Nav chip — inactive state ───────────────────────────────────────────────── */
+.nav-chip {
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.nav-chip:hover {
+  background: rgba(15,23,42,0.045);
+  border-color: rgba(15,23,42,0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.80),
+    0 1px 3px rgba(15,23,42,0.06);
+}
+.dark .nav-chip:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 1px 3px rgba(0,0,0,0.30);
+}
+
+/* ── Nav chip — active state ─────────────────────────────────────────────────── */
+.nav-chip-active {
+  background: rgba(79,70,229,0.10);
+  border: 1px solid rgba(79,70,229,0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.70),
+    0 2px 8px rgba(79,70,229,0.18);
+}
+.dark .nav-chip-active {
+  background: rgba(92,107,200,0.15);
+  border: 1px solid rgba(92,107,200,0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 2px 8px rgba(92,107,200,0.25);
+}
+
+/* ── Groove divider — 1px line + 1px white highlight below = carved groove ───── */
+.divider-depth {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--ps-hairline) 15%, var(--ps-hairline) 85%, transparent 100%);
+  position: relative;
+  margin: 2px 0;
+}
+.divider-depth::after {
+  content: '';
+  position: absolute;
+  top: 1px; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.80) 15%, rgba(255,255,255,0.80) 85%, transparent 100%);
+}
+.dark .divider-depth::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 15%, rgba(255,255,255,0.04) 85%, transparent 100%);
+}
+
+/* ── Brand stripe (2 px accent top of sidebar) ───────────────────────────────── */
+.sidebar-brand-stripe {
+  position: relative;
+}
+.sidebar-brand-stripe::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--ps-primary) 0%, var(--ps-primary-hover) 50%, #818cf8 100%);
+  border-radius: 0 0 2px 2px;
+}
+
+/* ── Stat / info chip ─────────────────────────────────────────────────────────── */
+.stat-chip {
+  background: var(--ps-surface-2);
+  border: 1px solid var(--ps-hairline-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.80),
+    0 1px 3px rgba(15,23,42,0.06);
+  border-radius: 10px;
+  padding: 6px 12px;
+}
+.dark .stat-chip {
+  background: var(--ps-surface-2);
+  border-color: var(--ps-hairline);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 1px 4px rgba(0,0,0,0.35);
+}
+
+/* ── Pill depth (badges, small pills) ────────────────────────────────────────── */
+.pill-depth {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.60), 0 1px 2px rgba(15,23,42,0.08);
+}
+.dark .pill-depth {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 3px rgba(0,0,0,0.35);
+}
+
+/* ── Input — sunken into the surface (override base .input) ──────────────────── */
+.input {
+  background: var(--ps-canvas-soft);
+  box-shadow: inset 0 1px 4px rgba(15,23,42,0.08), inset 0 0 0 1px var(--ps-hairline);
+  border: none;
+}
+.input:focus {
+  background: var(--ps-surface-1);
+  box-shadow: inset 0 1px 2px rgba(15,23,42,0.05), 0 0 0 2px rgba(79,70,229,0.30);
+  border-color: transparent;
+}
+.dark .input {
+  background: rgba(0,0,0,0.25);
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.40), inset 0 0 0 1px var(--ps-hairline);
+  border: none;
+}
+.dark .input:focus {
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.30), 0 0 0 2px rgba(92,107,200,0.40);
+}
+
+/* ── Section label pill (queue section dividers) ─────────────────────────────── */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ps-ink-subtle);
+  background: var(--ps-canvas-soft);
+  padding: 2px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--ps-hairline-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.80),
+    0 1px 2px rgba(15,23,42,0.05);
+}
+.dark .section-label {
+  background: var(--ps-surface-2);
+  border-color: var(--ps-hairline);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ── Badge depth (all status badges get top highlight) ───────────────────────── */
+.badge {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.40);
+}
+.dark .badge {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ── Scroll fade top — masks top of a scrollable list ───────────────────────── */
+.scroll-fade-top {
+  mask-image: linear-gradient(to bottom, transparent 0px, black 28px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 28px);
 }

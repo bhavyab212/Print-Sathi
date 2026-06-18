@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import * as React from "react";
 import { motion } from "motion/react";
@@ -48,9 +50,9 @@ export function AuthBrand({
         variants={scaleIn}
         initial="hidden"
         animate="show"
-        className="clay clay-accent animate-float mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-clay"
+        className="animate-float mx-auto mb-4 flex h-16 w-16 items-center justify-center"
       >
-        <i className={cn("bx text-3xl text-white", icon)} />
+        <img src="/images/logo.png" alt="Print Sathi Logo" className="w-full h-full object-contain drop-shadow-md" />
       </motion.div>
       <h1 className="text-h2 text-gradient font-display">{title}</h1>
       <p className="text-caption mt-1 text-[var(--ps-ink-muted)]">{subtitle}</p>
@@ -122,12 +124,10 @@ export function AuthAlert({
           : "text-[var(--ps-success)] ring-1 ring-[var(--ps-success)]/30"
       )}
     >
-      <i
-        className={cn(
+      <Boxicon className={cn(
           "bx mt-0.5 shrink-0",
           isDanger ? "bx-error-circle" : "bx-check-circle"
-        )}
-      />
+        )} />
       <span>{children}</span>
     </motion.div>
   );

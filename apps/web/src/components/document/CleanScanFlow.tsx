@@ -1,4 +1,6 @@
 "use client";
+import { Boxicon } from "@/components/ui";
+
 
 import { useState, useRef, useEffect } from "react";
 import { DocumentDropzone } from "@/components/document/DocumentDropzone";
@@ -157,7 +159,7 @@ export function CleanScanFlow() {
               onClick={handleReset}
               className="flex items-center gap-2 rounded-xl neu px-4 py-2 text-sm font-medium text-foreground transition hover:text-primary"
             >
-              <i className="bx bx-refresh text-base"></i>
+              <Boxicon className="bx bx-refresh text-base" />
               Start over
             </button>
           )}
@@ -170,7 +172,7 @@ export function CleanScanFlow() {
               <div className="rounded-clay glass elev-2 p-6">
                 {processingError && (
                   <div className="mb-4 flex items-start gap-2 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive border border-destructive/20">
-                    <i className="bx bx-error-circle mt-0.5 text-base"></i>
+                    <Boxicon className="bx bx-error-circle mt-0.5 text-base" />
                     <div>
                       <p className="font-semibold">Upload failed</p>
                       <p className="text-destructive/80">{processingError}</p>
@@ -239,7 +241,7 @@ export function CleanScanFlow() {
           {step === "processing" && (
             <div className="absolute inset-0 overflow-y-auto pr-1 pb-6">
               <div className="flex flex-col items-center justify-center gap-6 rounded-clay glass elev-2 py-20">
-                 <i className="bx bx-loader-alt animate-spin text-4xl text-blue-500"></i>
+                 <Boxicon className="bx bx-loader-alt animate-spin text-4xl text-blue-500" />
                  <p className="text-base font-semibold text-foreground">Cleaning Scan...</p>
               </div>
             </div>
@@ -266,7 +268,7 @@ export function CleanScanFlow() {
                         onClick={handlePrint}
                         className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 text-sm font-semibold text-white glow-primary hover:shadow-xl hover:shadow-blue-500/35 transition-all"
                     >
-                        <i className="bx bx-printer text-lg"></i>
+                        <Boxicon className="bx bx-printer text-lg" />
                         Print
                     </button>
                 </div>
