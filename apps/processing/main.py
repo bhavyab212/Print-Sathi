@@ -46,15 +46,19 @@ app = FastAPI(
 )
 
 # CORS — allow requests from local and production environments
+# NOTE: allow_credentials=True is incompatible with allow_origins=["*"]
+# Using explicit origins list instead.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173",
+        "http://localhost:8000",
+        "https://print-sathi.onrender.com",
         "https://*.vercel.app",
-        "*",
     ],
-    allow_credentials=True,
+    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
