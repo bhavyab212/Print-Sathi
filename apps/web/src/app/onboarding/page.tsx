@@ -15,6 +15,7 @@ import {
   AuthInput,
   AuthAlert,
 } from "@/components/auth/AuthShell";
+import { useNavigationLoading } from "@/components/navigation/NavigationProvider";
 
 const DEFAULT_RATE_ITEMS = [
   { item_type: "bw_single", label: "B&W Single Side", price: "" },
@@ -52,6 +53,7 @@ export default function OnboardingPage() {
   const [rateItems, setRateItems] = useState(DEFAULT_RATE_ITEMS);
 
   const router = useRouter();
+  const { startNavigation } = useNavigationLoading();
   const supabase = createClient();
 
   function updateRate(index: number, price: string) {
@@ -110,6 +112,7 @@ export default function OnboardingPage() {
         if (rateError) throw rateError;
       }
 
+      startNavigation();
       router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
@@ -122,7 +125,6 @@ export default function OnboardingPage() {
   return (
     <AuthShell maxWidth="lg">
       <AuthBrand
-        icon="bx-store"
         title="Set up your shop"
         subtitle={`Step ${step} of 2 — ${step === 1 ? "Shop details" : "Rate card"}`}
       />

@@ -2,7 +2,9 @@
 import { Boxicon } from "@/components/ui";
 
 
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
+import { useInteractionSound } from "@/hooks/useSound";
+import { motion, AnimatePresence } from "motion/react";
 
 interface FileDropzoneProps {
   onFileSelected: (file: File) => void;
@@ -17,6 +19,7 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
   const [dragging, setDragging] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { onClick, onHover, onError } = useInteractionSound();
 
   function validate(file: File): string | null {
     if (!ACCEPTED.includes(file.type) && !file.name.toLowerCase().endsWith(".heic")) {
@@ -32,11 +35,13 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
     const err = validate(file);
     if (err) {
       setError(err);
+      onError();
       return;
     }
     setError(null);
     const url = URL.createObjectURL(file);
     setPreview(url);
+    onClick();
     onFileSelected(file);
   }
 
@@ -52,16 +57,30 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
     if (file) handleFile(file);
   }
 
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    if (!dragging) {
+      setDragging(true);
+    }
+  }, [dragging]);
+
   return (
     <div className="w-full">
-      <div
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      <motion.div
+        whileTap={{ scale: 0.99 }}
+        onDragOver={handleDragOver}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        onClick={() => !disabled && inputRef.current?.click()}
-        className={`relative flex cursor-pointer flex-col items-center justify-center rounded-clay border-2 border-dashed glass-faint p-10 transition-all
+        onClick={() => {
+          if (!disabled) {
+            onClick();
+            inputRef.current?.click();
+          }
+        }}
+        onMouseEnter={onHover}
+        className={`relative flex cursor-pointer flex-col items-center justify-center rounded-clay border-2 border-dashed glass-faint p-10 transition-all duration-200
           ${dragging
-            ? "border-primary bg-primary/10 glow-primary"
+            ? "border-primary bg-primary/10 glow-primary scale-[1.01]"
             : "border-border hover:border-primary/50 hover:bg-primary/5"
           }
           ${disabled ? "pointer-events-none opacity-50" : ""}
@@ -78,7 +97,11 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
         />
 
         {preview ? (
-          <div className="flex flex-col items-center gap-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center gap-4"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={preview}
@@ -88,15 +111,18 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
             <p className="text-sm text-muted-foreground">
               Photo selected — click to change
             </p>
-          </div>
+          </motion.div>
         ) : (
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20 animate-float">
+            <motion.div
+              animate={dragging ? { scale: 1.15 } : { scale: 1 }}
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20"
+            >
               <Boxicon className="bx bx-cloud-upload text-4xl text-primary" />
-            </div>
+            </motion.div>
             <div>
               <p className="text-base font-semibold text-foreground">
-                Drag &amp; drop portrait here
+                {dragging ? "Drop your photo here" : "Drag & drop portrait here"}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
                 or click to browse — JPG, PNG, HEIC · max 10 MB
@@ -104,14 +130,21 @@ export function FileDropzone({ onFileSelected, disabled }: FileDropzoneProps) {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
 
-      {error && (
-        <div className="mt-2 flex items-center gap-2 rounded-lg bg-destructive/10 px-4 py-2.5 text-sm text-destructive">
-          <Boxicon className="bx bx-error-circle text-base" />
-          {error}
-        </div>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -8, height: 0 }}
+            className="mt-2 flex items-center gap-2 rounded-lg bg-destructive/10 px-4 py-2.5 text-sm text-destructive"
+          >
+            <Boxicon className="bx bx-error-circle text-base" />
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

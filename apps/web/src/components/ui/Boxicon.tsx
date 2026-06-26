@@ -6,7 +6,7 @@ import * as Lucide from "lucide-react";
 interface BoxiconProps {
   className?: string;
   style?: React.CSSProperties;
-  onClick?: React.MouseEventHandler<HTMLElement>;
+  onClick?: React.MouseEventHandler<SVGElement>;
 }
 
 /**
@@ -15,7 +15,10 @@ interface BoxiconProps {
  */
 export function Boxicon({ className, style, onClick }: BoxiconProps) {
   const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!className) return null;
 
@@ -26,7 +29,7 @@ export function Boxicon({ className, style, onClick }: BoxiconProps) {
 
   if (!bxClass) return null;
 
-  const iconMap: Record<string, React.ComponentType<any>> = {
+  const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties; onClick?: React.MouseEventHandler<SVGElement> }>> = {
     // General UI
     "bx-printer": Lucide.Printer,
     "bx-x": Lucide.X,
@@ -91,6 +94,69 @@ export function Boxicon({ className, style, onClick }: BoxiconProps) {
     "bx-purchase-tag": Lucide.Tag,
     "bx-list-ol": Lucide.ListOrdered,
     "bx-check-shield": Lucide.ShieldCheck,
+    "bx-chevron-left": Lucide.ChevronLeft,
+    "bx-download": Lucide.Download,
+    "bx-eraser": Lucide.Eraser,
+
+    
+    "bx-adjust": Lucide.Sliders,
+    "bx-aperture": Lucide.Aperture,
+    "bx-bolt-circle": Lucide.Zap,
+    "bx-book": Lucide.Book,
+    "bx-book-open": Lucide.BookOpen,
+    "bx-box": Lucide.Package,
+    "bx-brain": Lucide.Brain,
+    "bx-brush": Lucide.Brush,
+    "bx-brush-alt": Lucide.Brush,
+    "bx-bulb": Lucide.Lightbulb,
+    "bx-calculator": Lucide.Calculator,
+    "bx-circle": Lucide.Circle,
+    "bx-cloud-upload": Lucide.UploadCloud,
+    "bx-crop": Lucide.Crop,
+    "bx-desktop": Lucide.Monitor,
+    "bx-error": Lucide.AlertTriangle,
+    "bx-error-alt": Lucide.AlertOctagon,
+    "bx-exclude": Lucide.CircleSlash,
+    "bx-face": Lucide.Smile,
+    "bx-file": Lucide.File,
+    "bx-file-blank": Lucide.File,
+    "bx-filter-alt": Lucide.Filter,
+    "bx-fullscreen": Lucide.Maximize,
+    "bx-id-card": Lucide.Contact,
+    "bx-image-add": Lucide.ImagePlus,
+    "bx-image-alt": Lucide.Image,
+    "bx-key": Lucide.Key,
+    "bx-lasso": Lucide.MousePointer2,
+    "bx-layout": Lucide.LayoutDashboard,
+    "bx-left-arrow-alt": Lucide.ArrowLeft,
+    "bx-list-check": Lucide.ListChecks,
+    "bx-list-ul": Lucide.List,
+    "bx-lock-alt": Lucide.Lock,
+    "bx-lock-open-alt": Lucide.Unlock,
+    "bx-magic-wand": Lucide.Wand2,
+    "bx-palette": Lucide.Palette,
+    "bx-qr": Lucide.QrCode,
+    "bx-redo": Lucide.Redo2,
+    "bx-reflect-horizontal": Lucide.FlipHorizontal,
+    "bx-reflect-vertical": Lucide.FlipVertical,
+    "bx-reset": Lucide.RotateCcw,
+    "bx-rotate-left": Lucide.RotateCcw,
+    "bx-rotate-right": Lucide.RotateCw,
+    "bx-run": Lucide.PlayCircle,
+    "bx-rupee": Lucide.IndianRupee,
+    "bxs-hand-right": Lucide.Hand,
+    "bx-shield-quarter": Lucide.Shield,
+    "bx-slider": Lucide.SlidersHorizontal,
+    "bx-slider-alt": Lucide.Sliders,
+    "bx-spa": Lucide.Flower2,
+    "bx-undo": Lucide.Undo2,
+    "bx-up-arrow-circle": Lucide.ArrowUpCircle,
+    "bx-user": Lucide.User,
+    "bx-user-pin": Lucide.UserSquare2,
+    "bx-user-x": Lucide.UserX,
+    "bx-wand": Lucide.Wand2,
+    "bx-zap": Lucide.Zap,
+    "bx-zoom-in": Lucide.ZoomIn,
 
     // File Types (Solid/Brands)
     "bxs-file-pdf": Lucide.FileText,
@@ -110,10 +176,8 @@ export function Boxicon({ className, style, onClick }: BoxiconProps) {
     .replace(/bx-[a-z0-9-]+|bxs-[a-z0-9-]+|bxl-[a-z0-9-]+|bx|bxs/g, "")
     .trim();
 
-  // If the icon is spinning (e.g. loader), Lucide React handles this well, but we can pass animate-spin
   if (!mounted) {
-    // Return a dummy SVG of the same size to prevent hydration mismatch and minimize layout shift
-    return <svg className={cleanClassName || undefined} style={style} viewBox="0 0 24 24" width="24" height="24" />;
+    return <span aria-hidden className={cleanClassName || undefined} style={style} />;
   }
 
   return (

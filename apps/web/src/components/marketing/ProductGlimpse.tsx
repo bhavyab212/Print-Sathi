@@ -1,8 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
-import { GlassCard, Badge } from "@/components/ui";
-import { fadeUp } from "@/lib/motion";
+import { GlassCard, Badge, ClientIcon } from "@/components/ui";
 import { TrendingUp } from "lucide-react";
 
 type QueueRow = {
@@ -25,10 +23,7 @@ const rows: QueueRow[] = [
  */
 export function ProductGlimpse() {
   return (
-    <motion.div
-      variants={fadeUp}
-      className="animate-float [transform-style:preserve-3d]"
-    >
+    <div className="animate-float [transform-style:preserve-3d]">
       <GlassCard className="glass-strong w-full max-w-md p-1.5 shadow-elev-5">
         {/* Window chrome */}
         <div className="flex items-center justify-between rounded-t-2xl px-4 py-3">
@@ -76,7 +71,7 @@ export function ProductGlimpse() {
               <span className="text-caption uppercase tracking-wide text-[var(--ps-ink-subtle)]">
                 Today
               </span>
-              <TrendingUp className="w-4 h-4 text-[var(--ps-success)]" />
+              <ClientIcon icon={TrendingUp} className="w-4 h-4 text-[var(--ps-success)]" />
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -95,6 +90,6 @@ export function ProductGlimpse() {
           </div>
         </div>
       </GlassCard>
-    </motion.div>
+    </div>
   );
 }

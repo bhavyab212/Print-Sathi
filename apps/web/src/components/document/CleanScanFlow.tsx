@@ -2,7 +2,7 @@
 import { Boxicon } from "@/components/ui";
 
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { DocumentDropzone } from "@/components/document/DocumentDropzone";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
@@ -130,7 +130,7 @@ export function CleanScanFlow() {
     if (!cleanedImage) return;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-        printWindow.document.write(`<img src="${cleanedImage}" style="width:100%;max-width:210mm;"/>`);
+        printWindow.document.write(`<img /* eslint-disable-next-line @next/next/no-img-element */ src="${cleanedImage}" style="width:100%;max-width:210mm;"/>`);
         printWindow.document.close();
         setTimeout(() => printWindow.print(), 200);
         showToast("Print dialog opened ✓");
@@ -191,7 +191,7 @@ export function CleanScanFlow() {
                     ref={containerRef}
                     className="relative max-h-[70vh] flex-1 w-full max-w-2xl border border-border rounded-lg bg-black/5 overflow-hidden select-none touch-none"
                 >
-                    <img 
+                    <img /* eslint-disable-next-line @next/next/no-img-element */ 
                         ref={imgRef}
                         src={originalImageObjUrl} 
                         className="absolute inset-0 w-full h-full object-contain pointer-events-none"

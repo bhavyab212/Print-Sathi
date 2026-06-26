@@ -1,9 +1,12 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/auth.store';
+import { AppNavLink } from '../navigation/AppNavLink';
+import { useNavigationLoading } from '../navigation/NavigationProvider';
 
 export function Sidebar() {
   const { shop, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { startNavigation } = useNavigationLoading();
 
   const navItems = [
     { name: 'Queue Dashboard', path: '/queue', icon: 'bx-layer' },
@@ -15,6 +18,7 @@ export function Sidebar() {
   ];
 
   const handleLogout = async () => {
+    startNavigation();
     await logout();
     navigate('/login');
   };
@@ -33,7 +37,7 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-3">
         {navItems.map((item) => (
-          <NavLink
+          <AppNavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
@@ -46,7 +50,7 @@ export function Sidebar() {
           >
             <i className={`bx ${item.icon} text-xl`}></i>
             {item.name}
-          </NavLink>
+          </AppNavLink>
         ))}
       </nav>
 

@@ -40,6 +40,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from 'react-hot-toast';
+import { ClientProviders } from "@/components/providers/ClientProviders";
 
 export default function RootLayout({
   children,
@@ -75,7 +76,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen font-sans antialiased">
-        {children}
+        <ClientProviders>
+          {children}
+        </ClientProviders>
         <Toaster position="top-center" toastOptions={{ style: { background: '#1f2c34', color: '#fff', borderRadius: '12px' } }} />
       </body>
     </html>

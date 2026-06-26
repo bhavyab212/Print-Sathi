@@ -16,6 +16,7 @@ import {
   AuthAlert,
   AuthFooter,
 } from "@/components/auth/AuthShell";
+import { useNavigationLoading } from "@/components/navigation/NavigationProvider";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -25,6 +26,7 @@ export default function RegisterPage() {
   const [registered, setRegistered] = useState(false);
 
   const router = useRouter();
+  const { startNavigation } = useNavigationLoading();
   const supabase = createClient();
 
   // Feature Flag: Public signups can be toggled via environment variables.
@@ -48,12 +50,14 @@ export default function RegisterPage() {
         setRegistered(true);
         // Wait 2 seconds, then redirect to dashboard (which redirects to /onboarding)
         setTimeout(() => {
+          startNavigation();
           router.push("/dashboard");
           router.refresh();
         }, 2000);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to register account.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to register account.";
+      setError(message);
       setLoading(false);
     }
   }

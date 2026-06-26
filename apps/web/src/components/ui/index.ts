@@ -4,3 +4,5 @@ export { AmbientBackground } from "./AmbientBackground";
 export { Reveal } from "./Reveal";
 export { Badge, type BadgeProps } from "./Badge";
 export { Boxicon } from "./Boxicon";
+export { ClientIcon } from "./ClientIcon";
+export { EtheralShadow } from "./etheral-shadow";

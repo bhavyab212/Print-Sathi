@@ -2,7 +2,7 @@
 import { Boxicon } from "@/components/ui";
 
 
-import Link from "next/link";
+import { NavLink } from "@/components/navigation/NavLink";
 import { motion } from "motion/react";
 import {
   AmbientBackground,
@@ -42,18 +42,18 @@ export default function DownloadPage() {
       {/* Floating glass nav */}
       <header className="sticky top-0 z-50 px-4 pt-4">
         <nav className="glass-nav mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
-          <Link href="/" className="flex items-center gap-3">
+          <NavLink href="/" className="flex items-center gap-3">
             <span className="clay-accent flex h-9 w-9 items-center justify-center rounded-xl">
               <Boxicon className="bx bx-printer text-lg text-white" />
             </span>
             <span className="text-lg font-bold tracking-tight">Print Sathi</span>
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             href="/login"
             className="text-sm font-medium text-[var(--ps-ink-muted)] transition-colors hover:text-[var(--ps-ink)]"
           >
             Web Login (Backup)
-          </Link>
+          </NavLink>
         </nav>
       </header>
 
@@ -145,13 +145,13 @@ export default function DownloadPage() {
                   Run Print Sathi in your browser — no install needed.
                 </p>
               </div>
-              <Link
+              <NavLink
                 href="/login"
                 className={buttonVariants({ variant: "glass", size: "lg" })}
               >
                 Open Web App
                 <Boxicon className="bx bx-right-arrow-alt text-lg" />
-              </Link>
+              </NavLink>
             </ClayCard>
           </Reveal>
         </section>
@@ -167,7 +167,7 @@ export default function DownloadPage() {
             <span className="font-semibold text-[var(--ps-ink-muted)]">Print Sathi</span>
           </div>
           <p>
-            © {new Date().getFullYear()} Print Sathi — Made for Indian print shops
+            © 2026 Print Sathi — Made for Indian print shops
           </p>
         </div>
       </footer>

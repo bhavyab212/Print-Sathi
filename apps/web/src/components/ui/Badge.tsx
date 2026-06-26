@@ -3,16 +3,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badge = cva(
-  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
+  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide transition-all duration-300",
   {
     variants: {
       tone: {
         neutral: "bg-[var(--ps-surface-3)] text-[var(--ps-ink-muted)]",
-        pending: "bg-[var(--ps-warning-muted)] text-[var(--ps-warning)]",
-        approved: "bg-[var(--ps-info-muted)] text-[var(--ps-info)]",
-        printing: "bg-[rgba(92,107,200,0.15)] text-[var(--ps-primary)]",
-        done: "bg-[var(--ps-success-muted)] text-[var(--ps-success)]",
-        rejected: "bg-[var(--ps-danger-muted)] text-[var(--ps-danger)]",
+        pending: "bg-[var(--ps-warning-muted)] text-[var(--ps-warning)] animate-slide-in-row",
+        approved: "bg-[var(--ps-info-muted)] text-[var(--ps-info)] animate-slide-in-row",
+        printing: "bg-[rgba(92,107,200,0.15)] text-[var(--ps-primary)] badge-printing-live animate-scale-up",
+        done: "bg-[var(--ps-success-muted)] text-[var(--ps-success)] animate-slide-in-row",
+        rejected: "bg-[var(--ps-danger-muted)] text-[var(--ps-danger)] animate-slide-in-row",
         glass: "glass text-[var(--ps-ink)]",
       },
     },

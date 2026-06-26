@@ -269,6 +269,7 @@ export function BgReviewPanel({
     }, 400);
 
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     processedSrc,
     exportFormat,

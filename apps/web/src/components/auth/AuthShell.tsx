@@ -1,6 +1,6 @@
 "use client";
 import { Boxicon } from "@/components/ui";
-
+import { useSound } from "@/hooks/useSound";
 
 import * as React from "react";
 import { motion } from "motion/react";
@@ -36,11 +36,9 @@ export function AuthShell({
 
 /** Brand lockup: clay-accent logo tile + wordmark. */
 export function AuthBrand({
-  icon = "bx-printer",
   title = "Print Sathi",
   subtitle = "Smart Print Shop Manager",
 }: {
-  icon?: string;
   title?: string;
   subtitle?: string;
 }) {
@@ -52,7 +50,7 @@ export function AuthBrand({
         animate="show"
         className="animate-float mx-auto mb-4 flex h-16 w-16 items-center justify-center"
       >
-        <img src="/images/logo.png" alt="Print Sathi Logo" className="w-full h-full object-contain drop-shadow-md" />
+        <img /* eslint-disable-next-line @next/next/no-img-element */ src="/images/logo.png" alt="Print Sathi Logo" className="w-full h-full object-contain drop-shadow-md" />
       </motion.div>
       <h1 className="text-h2 text-gradient font-display">{title}</h1>
       <p className="text-caption mt-1 text-[var(--ps-ink-muted)]">{subtitle}</p>
@@ -77,7 +75,8 @@ export function AuthCard({
 export const AuthInput = React.forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement> & { label?: string }
->(({ label, id, className, ...props }, ref) => {
+>(({ label, id, className, onFocus, onBlur, ...props }, ref) => {
+  const { play } = useSound();
   return (
     <div>
       {label && (
@@ -96,6 +95,8 @@ export const AuthInput = React.forwardRef<
           "focus:shadow-glow-primary focus:ring-1 focus:ring-[var(--ps-primary)]/40",
           className
         )}
+        onFocus={(e) => { play("select"); onFocus?.(e); }}
+        onBlur={(e) => { play("deselect"); onBlur?.(e); }}
         {...props}
       />
     </div>
@@ -112,10 +113,17 @@ export function AuthAlert({
   tone?: "danger" | "success";
 }) {
   const isDanger = tone === "danger";
+  const { play } = useSound();
+  React.useEffect(() => {
+    if (isDanger) play("error");
+    else play("success");
+  }, [isDanger, play]);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: -4 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: -4, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -4, scale: 0.98 }}
       transition={spring}
       className={cn(
         "glass flex items-start gap-2 rounded-xl p-3 text-sm",
@@ -137,7 +145,7 @@ export function AuthAlert({
 export function AuthFooter() {
   return (
     <p className="text-caption mt-6 text-center text-[var(--ps-ink-subtle)]">
-      Print Sathi © {new Date().getFullYear()}
+      Print Sathi © 2026
     </p>
   );
 }

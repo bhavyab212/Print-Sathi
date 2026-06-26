@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { useInteractionSound } from "@/hooks/useSound";
 
 const button = cva(
   "inline-flex items-center justify-center gap-2 font-semibold select-none transition-all duration-200 ease-spring active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ps-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ps-canvas)] disabled:opacity-40 disabled:pointer-events-none",
@@ -37,12 +38,36 @@ const button = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof button> {}
+    VariantProps<typeof button> {
+  sound?: "click" | "success" | "error" | "toggle-on" | "toggle-off" | null;
+}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => (
-    <button ref={ref} className={cn(button({ variant, size }), className)} {...props} />
-  )
+  ({ className, variant, size, sound = "click", onClick, ...props }, ref) => {
+    const { onClick: playClick, onHover, onSuccess, onError, onToggle } = useInteractionSound();
+
+    const handleClick = React.useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (sound === "click") playClick();
+        else if (sound === "success") onSuccess();
+        else if (sound === "error") onError();
+        else if (sound === "toggle-on") onToggle(true);
+        else if (sound === "toggle-off") onToggle(false);
+        onClick?.(e);
+      },
+      [sound, playClick, onSuccess, onError, onToggle, onClick]
+    );
+
+    return (
+      <button
+        ref={ref}
+        className={cn(button({ variant, size }), className)}
+        onMouseEnter={onHover}
+        onClick={handleClick}
+        {...props}
+      />
+    );
+  }
 );
 Button.displayName = "Button";
 

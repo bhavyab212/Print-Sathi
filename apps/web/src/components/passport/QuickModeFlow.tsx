@@ -105,7 +105,7 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
           const file = new File([blob], "passport-photo.jpg", { type: blob.type || "image/jpeg" });
           handleFileSelected(file);
         })
-        .catch(err => {
+        .catch(() => {
           setProcessingError("Could not load initial image from URL");
         });
     }

@@ -2,7 +2,7 @@
 import { Boxicon } from "@/components/ui";
 
 
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { DocumentDropzone } from "@/components/document/DocumentDropzone";
 import { createNUpPdf, createBookletPdf, scalePdf, imagesToPdf } from "@/lib/pdf-utils";
 
@@ -58,7 +58,7 @@ export function FixPrintFlow() {
   };
 
   const updatePreview = (bytes: Uint8Array) => {
-    const blob = new Blob([bytes as any], { type: 'application/pdf' });
+    const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     setPreviewPdfUrl(url);
   };
@@ -244,7 +244,14 @@ export function FixPrintFlow() {
   );
 }
 
-function PresetButton({ active, onClick, title, desc, icon, loading }: any) {
+function PresetButton({ active, onClick, title, desc, icon, loading }: {
+  active: boolean;
+  onClick: () => void;
+  title: string;
+  desc: string;
+  icon: string;
+  loading?: boolean;
+}) {
     return (
         <button
             onClick={onClick}

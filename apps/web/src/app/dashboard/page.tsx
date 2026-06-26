@@ -1,19 +1,113 @@
 "use client";
-import { Boxicon } from "@/components/ui";
-
 
 import { useEffect, useState, useCallback, Suspense, useRef, useMemo } from "react";
+import type { ComponentType, CSSProperties, SVGProps } from "react";
 import { usePresence, PresencePayload } from "@/hooks/usePresence";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { playSound } from "@/lib/audio";
-import { jsPDF } from "jspdf";
+import { useSound } from "@/hooks/useSound";
 import QRCode from "qrcode";
 import AnalyticsTab from "./AnalyticsTab";
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/motion";
 import { Badge } from "@/components/ui";
+import { ClientIcon } from "@/components/ui";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import {
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  Contact,
+  Copy,
+  Crop,
+  Download,
+  Edit2,
+  Eye,
+  File,
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  Filter,
+  Loader2,
+  Maximize,
+  MessageSquare,
+  Minus,
+  Paperclip,
+  Plus,
+  Presentation,
+  Printer,
+  QrCode as LucideQrCode,
+  RefreshCw,
+  Save,
+  Scissors,
+  Search,
+  Settings,
+  SlidersHorizontal,
+  Trash2,
+  Upload,
+  X,
+  Zap,
+} from "lucide-react";
+
+type IconType = ComponentType<SVGProps<SVGSVGElement>>;
+
+const LUCIDE_ICONS: Record<string, IconType> = {
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  Contact,
+  Copy,
+  Crop,
+  Download,
+  Edit2,
+  Eye,
+  File,
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  Filter,
+  Loader2,
+  Maximize,
+  MessageSquare,
+  Minus,
+  Paperclip,
+  Plus,
+  Presentation,
+  Printer,
+  QrCode: LucideQrCode,
+  RefreshCw,
+  Save,
+  Scissors,
+  Search,
+  Settings,
+  SlidersHorizontal,
+  Trash2,
+  Upload,
+  X,
+  Zap,
+};
+
+type IconName = keyof typeof LUCIDE_ICONS;
+
+function LucideIcon({ name, className, style }: { name: IconName; className?: string; style?: CSSProperties }) {
+  const Icon = LUCIDE_ICONS[name];
+  return <ClientIcon icon={Icon} className={className} style={style} />;
+}
+
+interface JobItemSettings {
+  copies?: number;
+  color?: string;
+  action?: string;
+  page_range?: string | null;
+  paper_size?: string;
+  passport_config?: {
+    copiesPerPage?: number;
+    size?: string;
+  };
+  file_type?: string;
+}
 
 interface JobItem {
   id: string;
@@ -21,7 +115,7 @@ interface JobItem {
   file_url: string;
   file_size_bytes: number;
   file_type?: string;
-  settings: any;
+  settings: JobItemSettings;
 }
 
 interface PrintJob {
@@ -43,16 +137,16 @@ interface PreviewModal {
   opensInBrowser: boolean;
 }
 
-function getFileInfo(fileName: string, fileType?: string): { label: string; icon: string; color: string; emoji: string; opensInBrowser: boolean } {
+function getFileInfo(fileName: string, fileType?: string): { label: string; icon: IconName; color: string; emoji: string; opensInBrowser: boolean } {
   const ext = fileName.split('.').pop()?.toLowerCase() ?? '';
   const t = fileType ?? '';
-  if (t === 'pdf' || ext === 'pdf') return { label: 'PDF', icon: 'bxs-file-pdf', color: 'var(--ps-info)', emoji: '📄', opensInBrowser: true };
-  if (t === 'image' || ['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext)) return { label: 'Image', icon: 'bxs-image', color: 'var(--ps-success)', emoji: '🖼️', opensInBrowser: true };
-  if (['docx','doc'].includes(ext) || t.includes('word')) return { label: 'Word', icon: 'bxs-file-doc', color: 'var(--ps-warning)', emoji: '📝', opensInBrowser: false };
-  if (['xlsx','xls'].includes(ext) || t.includes('excel')) return { label: 'Excel', icon: 'bxs-spreadsheet', color: 'var(--ps-accent-emerald)', emoji: '📊', opensInBrowser: false };
-  if (['pptx','ppt'].includes(ext)) return { label: 'PPT', icon: 'bxs-slideshow', color: 'var(--ps-accent-rose)', emoji: '📑', opensInBrowser: false };
-  if (ext === 'txt') return { label: 'Text', icon: 'bxs-file-txt', color: 'var(--ps-ink-muted)', emoji: '📃', opensInBrowser: true };
-  return { label: 'File', icon: 'bxs-file', color: 'var(--ps-ink-muted)', emoji: '📎', opensInBrowser: false };
+  if (t === 'pdf' || ext === 'pdf') return { label: 'PDF', icon: 'FileText', color: 'var(--ps-info)', emoji: '📄', opensInBrowser: true };
+  if (t === 'image' || ['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext)) return { label: 'Image', icon: 'FileImage', color: 'var(--ps-success)', emoji: '🖼️', opensInBrowser: true };
+  if (['docx','doc'].includes(ext) || t.includes('word')) return { label: 'Word', icon: 'FileText', color: 'var(--ps-warning)', emoji: '📝', opensInBrowser: false };
+  if (['xlsx','xls'].includes(ext) || t.includes('excel')) return { label: 'Excel', icon: 'FileSpreadsheet', color: 'var(--ps-accent-emerald)', emoji: '📊', opensInBrowser: false };
+  if (['pptx','ppt'].includes(ext)) return { label: 'PPT', icon: 'Presentation', color: 'var(--ps-accent-rose)', emoji: '📑', opensInBrowser: false };
+  if (ext === 'txt') return { label: 'Text', icon: 'FileText', color: 'var(--ps-ink-muted)', emoji: '📃', opensInBrowser: true };
+  return { label: 'File', icon: 'File', color: 'var(--ps-ink-muted)', emoji: '📎', opensInBrowser: false };
 }
 
 function formatTime(ts: string) {
@@ -115,15 +209,21 @@ function QueueDashboardContent() {
   const [jobs, setJobs] = useState<PrintJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<Record<string, string>>({});
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [shopId, setShopId] = useState<string | null>(null);
   const [shopSlug, setShopSlug] = useState<string | null>(null);
   const [shopName, setShopName] = useState<string | null>(null);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [copied, setCopied] = useState(false);
+  const [shopQrUrl, setShopQrUrl] = useState("");
 
   const presencePayload = useMemo<PresencePayload>(() => ({ id: shopId || Math.random().toString(), role: 'shopkeeper', shopId: shopId || undefined, name: shopName || undefined }), [shopId, shopName]);
+
+  useEffect(() => {
+    if (shopSlug) {
+      setShopQrUrl(`${window.location.origin}/s/${shopSlug}`);
+    }
+  }, [shopSlug]);
   const { onlineUsers } = usePresence('printo_global', presencePayload);
   const onlineCustomers = onlineUsers.filter(u => u.role === 'customer' && u.shopId === shopId).length;
   const [activeTab, setActiveTab] = useState<'queue' | 'analytics'>('queue');
@@ -131,7 +231,7 @@ function QueueDashboardContent() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [preview, setPreview] = useState<PreviewModal | null>(null);
   const [editingItem, setEditingItem] = useState<JobItem | null>(null);
-  const [editSettings, setEditSettings] = useState<any>({});
+  const [editSettings, setEditSettings] = useState<JobItemSettings>({});
   const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
   const [newJobIds, setNewJobIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -161,16 +261,18 @@ function QueueDashboardContent() {
         .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .order('created_at', { ascending: false });
       
-      data = fallback.data;
+      const fallbackData = fallback.data;
       error = fallback.error;
       
-      if (data) {
+      if (fallbackData) {
         // Map updated_at to the expected fields for the timeline rendering
-        data = data.map((job: any) => ({
+        data = fallbackData.map((job) => ({
           ...job,
           approved_at: job.updated_at,
           completed_at: job.updated_at
         }));
+      } else {
+        data = fallbackData;
       }
     }
 
@@ -180,7 +282,6 @@ function QueueDashboardContent() {
     } else if (data) {
       setJobs(data as unknown as PrintJob[]);
     }
-    setIsInitialLoad(false);
     if (manual) setTimeout(() => setIsRefreshing(false), 500);
   }, [supabase]);
 
@@ -211,9 +312,9 @@ function QueueDashboardContent() {
   useEffect(() => {
     if (!shopId) return;
     const channel = supabase.channel('public:jobs')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs', filter: `shop_id=eq.${shopId}` }, (payload: any) => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs', filter: `shop_id=eq.${shopId}` }, (payload: RealtimePostgresChangesPayload<{ id: string }>) => {
         if (payload.eventType === 'INSERT') {
-          const newId = (payload.new as any).id;
+          const newId = payload.new.id;
           playSound('notification');
           setNewJobIds(prev => new Set(Array.from(prev).concat(newId)));
           setTimeout(() => setNewJobIds(prev => { const s = new Set(prev); s.delete(newId); return s; }), 3000);
@@ -229,10 +330,21 @@ function QueueDashboardContent() {
     return () => clearInterval(interval);
   }, [shopId, fetchJobs]);
 
+  const sound = useSound();
+
   // ── Actions ────────────────────────────────────────────────────────────
   const updateStatus = async (jobId: string, newStatus: string) => {
-    playSound('pop');
-    setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: newStatus as any } : j));
+    if (newStatus === "rejected") {
+      playSound('error');
+      sound.play("error");
+    } else if (newStatus === "done") {
+      playSound('success');
+      sound.play("complete");
+    } else {
+      playSound('pop');
+      sound.play("job-status-change");
+    }
+    setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: newStatus as PrintJob['status'] } : j));
     await supabase.from('jobs').update({ status: newStatus }).eq('id', jobId);
   };
 
@@ -291,8 +403,9 @@ function QueueDashboardContent() {
       else if (tool === 'quick') url = `/dashboard/passport?mode=quick&imageUrl=${encodeURIComponent(data.signedUrl)}&jobId=${selectedJob?.id}&itemId=${item.id}`;
       else if (tool === 'custom') url = `/dashboard/passport?mode=custom&imageUrl=${encodeURIComponent(data.signedUrl)}&jobId=${selectedJob?.id}&itemId=${item.id}`;
       window.open(url, '_self');
-    } catch (err: any) {
-      toast.error("Error opening tool: " + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast.error("Error opening tool: " + message);
     }
   };
 
@@ -415,7 +528,7 @@ function QueueDashboardContent() {
       return (
         <div className="flex-1 flex flex-col items-center justify-center text-center p-8 chat-wallpaper animate-fade-in">
           <div className="glass glass-rim animate-float w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <Boxicon className="bx bx-message-dots text-5xl" style={{ color: 'var(--ps-primary)' }} />
+            <LucideIcon name="MessageSquare" className="text-5xl" style={{ color: 'var(--ps-primary)' }} />
           </div>
           <h3 className="font-semibold text-lg font-display" style={{ color: 'var(--ps-ink-muted)' }}>Select a job to review</h3>
           <p className="text-sm mt-2" style={{ color: 'var(--ps-ink-subtle)' }}>Choose any job from the left panel to view its details and take action</p>
@@ -443,7 +556,7 @@ function QueueDashboardContent() {
             style={{ color: 'var(--ps-ink-muted)' }}
             aria-label="Back to list"
           >
-            <Boxicon className="bx bx-arrow-back text-xl" />
+            <LucideIcon name="ArrowLeft" className="text-xl" />
           </button>
 
           {/* Token */}
@@ -481,7 +594,7 @@ function QueueDashboardContent() {
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-danger)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-ink-subtle)'; }}
           >
-            <Boxicon className="bx bx-trash text-lg" />
+            <LucideIcon name="Trash2" className="text-lg" />
           </button>
         </div>
 
@@ -506,7 +619,7 @@ function QueueDashboardContent() {
                   <p className="text-sm">{selectedJob.notes}</p>
                 </div>
                 <p className="text-[10px] text-right mt-1 pr-1" style={{ color: 'var(--ps-ink-subtle)' }}>
-                  {formatTime(selectedJob.created_at)} <Boxicon className="bx bx-check-double" style={{ color: 'var(--ps-primary)' }} />
+                  {formatTime(selectedJob.created_at)} <LucideIcon name="CheckCircle2" style={{ color: 'var(--ps-primary)' }} />
                 </p>
               </div>
             </div>
@@ -535,7 +648,7 @@ function QueueDashboardContent() {
                         className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
                         style={{ background: 'var(--ps-surface-3)', color: fi.color }}
                       >
-                        <i className={`bx ${fi.icon} text-xl`}></i>
+                        <LucideIcon name={fi.icon} className="text-xl" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate" style={{ color: 'var(--ps-ink)' }}>{item.file_name}</p>
@@ -548,10 +661,10 @@ function QueueDashboardContent() {
                           style={{ color: 'var(--ps-ink-muted)', background: 'var(--ps-surface-3)' }}
                           aria-label="Edit settings"
                         >
-                          <Boxicon className="bx bx-cog text-base" />
+                          <LucideIcon name="Settings" className="text-base" />
                         </button>
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: 'var(--ps-ink-muted)', background: 'var(--ps-surface-3)' }}>
-                          <Boxicon className="bx bx-show text-base" />
+                          <LucideIcon name="Eye" className="text-base" />
                         </div>
                       </div>
                     </div>
@@ -594,7 +707,7 @@ function QueueDashboardContent() {
                       >
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--ps-warning)' }}>
-                            <Boxicon className="bx bx-id-card mr-1" />Passport Tools
+                            <LucideIcon name="Contact" className="mr-1" />Passport Tools
                           </p>
                           {item.settings?.passport_config && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'var(--ps-surface-3)', color: 'var(--ps-ink-muted)' }}>
@@ -608,14 +721,14 @@ function QueueDashboardContent() {
                             className="flex-1 py-2 rounded-lg text-[11px] font-bold transition-all duration-150 hover:brightness-110 active:scale-95 flex items-center justify-center gap-1"
                             style={{ background: 'var(--ps-warning)', color: '#000' }}
                           >
-                            <Boxicon className="bx bx-bolt-circle text-sm" /> Quick
+                            <LucideIcon name="Zap" className="text-sm" /> Quick
                           </button>
                           <button
                             onClick={(e) => openPassportTool(e, item, 'custom')}
                             className="flex-1 py-2 rounded-lg text-[11px] font-bold transition-all duration-150 hover:brightness-110 active:scale-95 flex items-center justify-center gap-1"
                             style={{ background: 'var(--ps-primary)', color: 'var(--ps-on-primary)' }}
                           >
-                            <Boxicon className="bx bx-slider text-sm" /> Custom
+                            <LucideIcon name="SlidersHorizontal" className="text-sm" /> Custom
                           </button>
                         </div>
                         <button
@@ -623,7 +736,7 @@ function QueueDashboardContent() {
                           className="w-full py-1.5 rounded-lg text-[10px] font-bold transition-all duration-150 hover:brightness-110 active:scale-95 flex items-center justify-center gap-1"
                           style={{ background: 'var(--ps-surface-3)', color: 'var(--ps-ink-secondary)', border: '1px solid var(--ps-hairline)' }}
                         >
-                          <Boxicon className="bx bx-cut" /> Remove BG (AI)
+                          <LucideIcon name="Scissors" /> Remove BG (AI)
                         </button>
                       </div>
                     )}
@@ -658,67 +771,77 @@ function QueueDashboardContent() {
               <button
                 onClick={() => updateStatus(selectedJob.id, 'rejected')}
                 disabled={actionLoading[selectedJob.id] === 'rejected'}
+                onMouseEnter={() => sound.play("hover")}
                 className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-xl text-white transition-all hover:-translate-y-0.5 hover:[box-shadow:var(--glow-danger)] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: 'var(--ps-danger)' }}
                 aria-label="Reject job"
               >
                 {actionLoading[selectedJob.id] === 'rejected'
-                  ? <Boxicon className="bx bx-loader-alt animate-spin text-xl" />
-                  : <><Boxicon className="bx bx-x text-xl" /> Reject</>
+                  ? <LucideIcon name="Loader2" className="animate-spin text-xl" />
+                  : <><LucideIcon name="X" className="text-xl" /> Reject</>
                 }
               </button>
               <button
                 onClick={() => updateStatus(selectedJob.id, 'approved')}
                 disabled={actionLoading[selectedJob.id] === 'approved'}
+                onMouseEnter={() => sound.play("hover")}
                 className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-xl text-white transition-all hover:-translate-y-0.5 hover:[box-shadow:var(--glow-success)] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: 'var(--ps-success)' }}
                 aria-label="Approve job"
               >
                 {actionLoading[selectedJob.id] === 'approved'
-                  ? <Boxicon className="bx bx-loader-alt animate-spin text-xl" />
-                  : <><Boxicon className="bx bx-check text-xl" /> Approve ✓</>
+                  ? <LucideIcon name="Loader2" className="animate-spin text-xl" />
+                  : <><LucideIcon name="Check" className="text-xl" /> Approve ✓</>
                 }
               </button>
             </>
           )}
           {selectedJob.status === 'approved' && (
             <button
-              onClick={() => handlePrint(selectedJob)}
+              onClick={() => { sound.play("print-start"); handlePrint(selectedJob); }}
               disabled={actionLoading[selectedJob.id] === 'print'}
+              onMouseEnter={() => sound.play("hover")}
               className="clay-accent w-full inline-flex items-center justify-center gap-2 py-4 text-base font-semibold rounded-xl transition-all hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ fontSize: '15px' }}
               aria-label="Print job now"
             >
               {actionLoading[selectedJob.id] === 'print'
-                ? <Boxicon className="bx bx-loader-alt animate-spin text-2xl" />
-                : <><Boxicon className="bx bx-printer text-2xl" /> Send to Printer 🖨️</>
+                ? <LucideIcon name="Loader2" className="animate-spin text-2xl" />
+                : <><LucideIcon name="Printer" className="text-2xl" /> Send to Printer 🖨️</>
               }
             </button>
           )}
           {selectedJob.status === 'printing' && (
             <>
               <button
-                onClick={() => handlePrint(selectedJob)}
+                onClick={() => { sound.play("click"); handlePrint(selectedJob); }}
+                onMouseEnter={() => sound.play("hover")}
                 className="neu flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-xl transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                 style={{ color: 'var(--ps-ink)' }}
                 aria-label="Reprint job"
               >
-                <Boxicon className="bx bx-refresh text-xl" /> Reprint
+                <LucideIcon name="RefreshCw" className="text-xl" /> Reprint
               </button>
               <button
                 onClick={() => updateStatus(selectedJob.id, 'done')}
+                onMouseEnter={() => sound.play("hover")}
                 className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-xl text-white transition-all hover:-translate-y-0.5 hover:[box-shadow:var(--glow-success)] active:scale-[0.98]"
                 style={{ background: 'var(--ps-success)' }}
                 aria-label="Mark job done"
               >
-                <Boxicon className="bx bx-check-double text-xl" /> Done ✅
+                <LucideIcon name="CheckCircle2" className="text-xl" /> Done ✅
               </button>
             </>
           )}
           {(selectedJob.status === 'done' || selectedJob.status === 'rejected') && (
-            <div className="w-full py-3 text-center text-sm font-medium" style={{ color: 'var(--ps-ink-subtle)' }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-full py-3 text-center text-sm font-medium animate-slide-in-bottom"
+              style={{ color: 'var(--ps-ink-subtle)' }}
+            >
               {selectedJob.status === 'done' ? '✅ Job completed' : '❌ Job rejected'}
-            </div>
+            </motion.div>
           )}
           </motion.div>
         </div>
@@ -741,7 +864,7 @@ function QueueDashboardContent() {
         {/* Brand */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="clay-accent w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
-            <Boxicon className="bx bx-printer text-white text-lg" />
+            <LucideIcon name="Printer" className="text-white text-lg" />
           </div>
           <div className="min-w-0">
             <h1 className="font-semibold text-base truncate font-display" style={{ color: 'var(--ps-ink)', letterSpacing: '-0.3px' }}>
@@ -762,7 +885,7 @@ function QueueDashboardContent() {
         {/* Tab switcher */}
         <div className="neu-inset flex items-center rounded-xl p-1 gap-1">
           <button
-            onClick={() => setActiveTab('queue')}
+            onClick={() => { sound.play("select"); setActiveTab('queue'); }}
             className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-150"
             style={{
               background: activeTab === 'queue' ? 'var(--ps-primary)' : 'transparent',
@@ -780,7 +903,7 @@ function QueueDashboardContent() {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('analytics')}
+            onClick={() => { sound.play("select"); setActiveTab('analytics'); }}
             className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-150"
             style={{
               background: activeTab === 'analytics' ? 'var(--ps-primary)' : 'transparent',
@@ -795,22 +918,24 @@ function QueueDashboardContent() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => shopId && fetchJobs(shopId, true)}
+            onClick={() => { sound.play("click"); if (shopId) fetchJobs(shopId, true); }}
+            onMouseEnter={() => sound.play("hover")}
             className="neu w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 hover:-translate-y-0.5 active:scale-95"
             style={{ color: 'var(--ps-ink-muted)' }}
             title="Refresh"
             aria-label="Refresh jobs"
           >
-            <Boxicon className={`bx bx-refresh text-lg ${isRefreshing ? 'animate-spin' : ''}`} />
+            <LucideIcon name="RefreshCw" className={`text-lg ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
           <button
-            onClick={() => setIsQrModalOpen(true)}
+            onClick={() => { sound.play("select"); setIsQrModalOpen(true); }}
+            onMouseEnter={() => sound.play("hover")}
             className="neu w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 hover:-translate-y-0.5 active:scale-95"
             style={{ color: 'var(--ps-primary)' }}
             title="Show QR code"
             aria-label="Show QR code"
           >
-            <Boxicon className="bx bx-qr-scan text-lg" />
+            <LucideIcon name="QrCode" className="text-lg" />
           </button>
         </div>
       </header>
@@ -831,11 +956,12 @@ function QueueDashboardContent() {
             {/* Search bar */}
             <div className="px-3 py-2.5 shrink-0 flex items-center gap-2" style={{ borderBottom: '1px solid var(--ps-hairline-soft)' }}>
               <div className="neu-inset flex-1 flex items-center gap-2 px-3 py-2 rounded-full">
-                <Boxicon className="bx bx-search text-base" style={{ color: 'var(--ps-ink-subtle)' }} />
+                <LucideIcon name="Search" className="text-base" style={{ color: 'var(--ps-ink-subtle)' }} />
                 <span className="text-sm" style={{ color: 'var(--ps-ink-subtle)' }}>Search jobs...</span>
               </div>
               <button
-                onClick={() => setShowPendingOnly(!showPendingOnly)}
+                onClick={() => { sound.play(showPendingOnly ? "toggle-off" : "toggle-on"); setShowPendingOnly(!showPendingOnly); }}
+                onMouseEnter={() => sound.play("hover")}
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-150 hover:-translate-y-0.5 active:scale-95 ${showPendingOnly ? 'glow-warning' : 'neu'}`}
                 style={{
                   background: showPendingOnly ? 'var(--ps-warning-muted)' : undefined,
@@ -846,7 +972,7 @@ function QueueDashboardContent() {
                 aria-label="Filter pending jobs"
                 aria-pressed={showPendingOnly}
               >
-                <Boxicon className="bx bx-filter-alt text-lg" />
+                <LucideIcon name="Filter" className="text-lg" />
               </button>
             </div>
 
@@ -855,7 +981,7 @@ function QueueDashboardContent() {
               {jobs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center p-8 animate-fade-in">
                   <div className="glass glass-rim animate-float w-16 h-16 rounded-2xl flex items-center justify-center mb-4">
-                    <Boxicon className="bx bx-qr-scan text-3xl" style={{ color: 'var(--ps-primary)' }} />
+                    <LucideIcon name="QrCode" className="text-3xl" style={{ color: 'var(--ps-primary)' }} />
                   </div>
                   <p className="font-semibold text-sm" style={{ color: 'var(--ps-ink-muted)' }}>Queue is empty</p>
                   <p className="text-xs mt-1" style={{ color: 'var(--ps-ink-subtle)' }}>Waiting for customers to scan QR code</p>
@@ -920,7 +1046,7 @@ function QueueDashboardContent() {
                 style={{ color: 'var(--ps-ink-muted)' }}
                 aria-label="Close"
               >
-                <Boxicon className="bx bx-x text-xl" />
+                <LucideIcon name="X" className="text-xl" />
               </button>
             </div>
 
@@ -1001,7 +1127,7 @@ function QueueDashboardContent() {
                 onClick={handleSaveSettings}
                 className="clay-accent w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-xl mt-2 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
               >
-                <Boxicon className="bx bx-save text-lg" /> Save Settings
+                <LucideIcon name="Save" className="text-lg" /> Save Settings
               </button>
             </div>
           </motion.div>
@@ -1022,7 +1148,7 @@ function QueueDashboardContent() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 overflow-hidden">
-              <Boxicon className="bx bxs-file-blank text-2xl shrink-0" style={{ color: 'var(--ps-primary)' }} />
+              <LucideIcon name="File" className="text-2xl shrink-0" style={{ color: 'var(--ps-primary)' }} />
               <div className="overflow-hidden">
                 <p className="font-semibold text-sm truncate" style={{ color: 'var(--ps-ink)' }}>{preview.fileName}</p>
                 <p className="text-xs font-mono" style={{ color: 'var(--ps-ink-muted)' }}>
@@ -1039,7 +1165,7 @@ function QueueDashboardContent() {
                   className="neu inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-all hover:-translate-y-0.5 active:scale-95"
                   style={{ color: 'var(--ps-ink)' }}
                 >
-                  <Boxicon className="bx bx-fullscreen" /> Full
+                  <LucideIcon name="Maximize" /> Full
                 </a>
               )}
               <a
@@ -1047,7 +1173,7 @@ function QueueDashboardContent() {
                 download={preview.fileName}
                 className="clay-accent inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-all hover:-translate-y-0.5 active:scale-95"
               >
-                <Boxicon className="bx bx-download" /> Download
+                <LucideIcon name="Download" /> Download
               </a>
               <button
                 onClick={() => setPreview(null)}
@@ -1055,7 +1181,7 @@ function QueueDashboardContent() {
                 style={{ color: 'var(--ps-ink-muted)' }}
                 aria-label="Close preview"
               >
-                <Boxicon className="bx bx-x text-xl" />
+                <LucideIcon name="X" className="text-xl" />
               </button>
             </div>
           </div>
@@ -1066,7 +1192,7 @@ function QueueDashboardContent() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full gap-6 p-8 text-center">
                 <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background: 'var(--ps-warning-muted)' }}>
-                  <Boxicon className="bx bxs-file-doc text-5xl" style={{ color: 'var(--ps-warning)' }} />
+                  <LucideIcon name="FileText" className="text-5xl" style={{ color: 'var(--ps-warning)' }} />
                 </div>
                 <div>
                   <h3 className="font-bold text-xl mb-2" style={{ color: 'var(--ps-ink)' }}>{preview.fileName}</h3>
@@ -1079,7 +1205,7 @@ function QueueDashboardContent() {
                   download={preview.fileName}
                   className="clay-accent inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5 active:scale-95"
                 >
-                  <Boxicon className="bx bx-download text-xl" /> Download &amp; Print
+                  <LucideIcon name="Download" className="text-xl" /> Download &amp; Print
                 </a>
               </div>
             )}
@@ -1112,8 +1238,11 @@ function QueueDashboardContent() {
               <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>Scan to upload documents &amp; photos</p>
               <div className="mt-5 p-4 bg-white rounded-2xl inline-block" style={{ boxShadow: 'var(--ps-shadow-raised)' }}>
                 {qrDataUrl
-                  ? <img src={qrDataUrl} alt="QR Code" className="w-48 h-48 object-contain" />
-                  : <div className="w-48 h-48 flex items-center justify-center"><Boxicon className="bx bx-loader-alt animate-spin text-3xl" style={{ color: 'var(--ps-primary)' }} /></div>
+                  ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={qrDataUrl} alt="QR Code" className="w-48 h-48 object-contain" />
+                  )
+                  : <div className="w-48 h-48 flex items-center justify-center"><LucideIcon name="Loader2" className="animate-spin text-3xl" style={{ color: 'var(--ps-primary)' }} /></div>
                 }
               </div>
             </div>
@@ -1123,14 +1252,14 @@ function QueueDashboardContent() {
               {/* Link row */}
               <div className="neu-inset flex items-center justify-between rounded-xl px-4 py-2.5">
                 <span className="text-xs font-mono truncate mr-2" style={{ color: 'var(--ps-ink-muted)' }}>
-                  {typeof window !== 'undefined' ? `${window.location.origin}/s/${shopSlug}` : ''}
+                  {shopQrUrl}
                 </span>
                 <button
                   onClick={handleCopy}
                   className="text-xs font-semibold shrink-0 transition-all duration-150 hover:scale-110 flex items-center gap-1"
                   style={{ color: copied ? 'var(--ps-success)' : 'var(--ps-primary)' }}
                 >
-                  <Boxicon className={`bx ${copied ? 'bx-check' : 'bx-copy'}`} />
+                  <LucideIcon name={copied ? "Check" : "Copy"} className={copied ? "text-[var(--ps-success)]" : undefined} />
                   {copied ? 'Copied!' : 'Copy'}
                 </button>
               </div>
@@ -1147,7 +1276,7 @@ function QueueDashboardContent() {
                   onClick={handlePrintQr}
                   className="clay-accent py-3 text-sm font-semibold rounded-xl inline-flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                 >
-                  <Boxicon className="bx bx-printer" /> Print Flyer
+                  <LucideIcon name="Printer" /> Print Flyer
                 </button>
               </div>
             </div>

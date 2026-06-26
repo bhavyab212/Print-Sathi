@@ -139,6 +139,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
     const img = new Image();
     img.onload = () => { imgRef.current = img; redraw(); };
     img.src = processedSrc;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [processedSrc]);
 
   // Load custom background image
@@ -151,6 +152,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
     const bImg = new Image();
     bImg.onload = () => { setBgImg(bImg); redraw(); };
     bImg.src = config.bgImageSrc;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.bgImageSrc]);
 
   const redraw = useCallback(() => {

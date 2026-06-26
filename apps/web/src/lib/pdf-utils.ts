@@ -1,4 +1,4 @@
-import { PDFDocument, PageSizes, degrees } from 'pdf-lib';
+import { PDFDocument, PageSizes } from 'pdf-lib';
 
 export async function imagesToPdf(imagesBase64: string[]): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();

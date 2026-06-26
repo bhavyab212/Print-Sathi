@@ -1,12 +1,21 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useSound } from "@/hooks/useSound";
 
 type DivProps = React.HTMLAttributes<HTMLDivElement>;
 
 /** Glassmorphic surface — floating panels, navs, overlays. */
 export function GlassCard({ className, children, ...props }: DivProps) {
+  const { play } = useSound();
   return (
-    <div className={cn("glass glass-rim rounded-2xl", className)} {...props}>
+    <div
+      className={cn(
+        "glass glass-rim rounded-2xl transition-all duration-200 ease-spring hover:-translate-y-0.5",
+        className
+      )}
+      onMouseEnter={() => play("hover")}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -15,7 +24,13 @@ export function GlassCard({ className, children, ...props }: DivProps) {
 /** Strong glass — modals / command palettes that need more opacity. */
 export function GlassPanel({ className, children, ...props }: DivProps) {
   return (
-    <div className={cn("glass-strong glass-rim rounded-3xl", className)} {...props}>
+    <div
+      className={cn(
+        "glass-strong glass-rim rounded-3xl transition-all duration-200 ease-spring",
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -23,8 +38,16 @@ export function GlassPanel({ className, children, ...props }: DivProps) {
 
 /** Neumorphic surface — controls, dashboard tiles, toggles. */
 export function NeuCard({ className, children, ...props }: DivProps) {
+  const { play } = useSound();
   return (
-    <div className={cn("neu", className)} {...props}>
+    <div
+      className={cn(
+        "neu transition-all duration-200 ease-spring",
+        className
+      )}
+      onMouseEnter={() => play("hover")}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -32,8 +55,16 @@ export function NeuCard({ className, children, ...props }: DivProps) {
 
 /** Claymorphic surface — illustrations, feature highlights, onboarding. */
 export function ClayCard({ className, children, ...props }: DivProps) {
+  const { play } = useSound();
   return (
-    <div className={cn("clay", className)} {...props}>
+    <div
+      className={cn(
+        "clay transition-all duration-200 ease-spring hover:-translate-y-0.5",
+        className
+      )}
+      onMouseEnter={() => play("hover")}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -49,7 +80,7 @@ export function Panel({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[var(--ps-hairline)] bg-[var(--ps-surface-1)]",
+        "rounded-2xl border border-[var(--ps-hairline)] bg-[var(--ps-surface-1)] transition-all duration-200",
         `elev-${elevation}`,
         className
       )}

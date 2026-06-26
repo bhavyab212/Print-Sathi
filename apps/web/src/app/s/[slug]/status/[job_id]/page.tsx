@@ -5,14 +5,19 @@ import { Boxicon } from "@/components/ui";
 import { useEffect, useState, useCallback } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { useRouter } from "next/navigation";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { playSound } from "@/lib/audio";
+import { useSound } from "@/hooks/useSound";
 import { AmbientBackground } from "@/components/ui";
+import { useNavigationLoading } from "@/components/navigation/NavigationProvider";
 
 type JobStatus = 'pending' | 'approved' | 'printing' | 'done' | 'rejected';
 
 export default function JobStatusPage({ params }: { params: { slug: string, job_id: string } }) {
   const router = useRouter();
+  const { startNavigation } = useNavigationLoading();
+  const sound = useSound();
   const [status, setStatus] = useState<JobStatus>('pending');
   const [token, setToken] = useState<string>('');
   const [shopId, setShopId] = useState<string>('');
@@ -42,6 +47,7 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
   const handleRefresh = async () => {
     setIsRefreshing(true);
     playSound('pop');
+    sound.play("click");
     await fetchStatus();
     if (shopId && createdAt) {
       const { count } = await supabase
@@ -69,13 +75,22 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
           table: 'jobs',
           filter: `id=eq.${params.job_id}`
         },
-        (payload) => {
-          const newStatus = payload.new.status as JobStatus;
+        (payload: RealtimePostgresChangesPayload<{ status: string }>) => {
+          const newRecord = payload.new as { status?: string } | object;
+          const newStatus = 'status' in newRecord ? newRecord.status as JobStatus : null;
+          if (!newStatus) return;
           setStatus(prev => {
             if (prev !== newStatus) {
-              if (newStatus === 'approved' || newStatus === 'done') playSound('success');
-              else if (newStatus === 'rejected') playSound('error');
-              else if (newStatus === 'printing') playSound('notification');
+              if (newStatus === 'approved' || newStatus === 'done') {
+                playSound('success');
+                sound.play("job-status-change");
+              } else if (newStatus === 'rejected') {
+                playSound('error');
+                sound.play("error");
+              } else if (newStatus === 'printing') {
+                playSound('notification');
+                sound.play("print-start");
+              }
             }
             return newStatus;
           });
@@ -86,6 +101,7 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
     return () => {
       supabase.removeChannel(channel);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.job_id, supabase, fetchStatus]);
 
   // Poll for status and queue position
@@ -143,7 +159,8 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
       <AmbientBackground />
       <Reveal className="relative z-10 w-full max-w-md glass-strong elev-4 rounded-clay p-8">
         <button
-          onClick={() => router.push(`/s/${params.slug}`)}
+          onClick={() => { sound.play("click"); startNavigation(); router.push(`/s/${params.slug}`); }}
+          onMouseEnter={() => sound.play("hover")}
           className="absolute top-4 left-4 w-8 h-8 flex items-center justify-center rounded-full glass-faint text-white/70 hover:text-white transition-colors hover:scale-105 active:scale-95"
           aria-label="Back to Upload"
         >
@@ -152,6 +169,7 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
 
         <button
           onClick={handleRefresh}
+          onMouseEnter={() => sound.play("hover")}
           className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full glass-faint text-white/70 hover:text-white transition-colors hover:scale-105 active:scale-95"
           aria-label="Refresh Status"
           title="Refresh"
@@ -237,14 +255,27 @@ export default function JobStatusPage({ params }: { params: { slug: string, job_
           <div className="mt-8 pt-6 animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             <h3 className="text-lg font-bold text-center text-emerald-400 mb-4">Thank you for using Print Sathi! 🎉</h3>
             <div className="flex flex-col gap-3">
-              <button onClick={() => router.push(`/s/${params.slug}`)} className="w-full py-3 clay-accent text-white font-bold rounded-clay shadow-glow-success transition-all hover:brightness-110 active:scale-95 flex items-center justify-center gap-2">
+              <button
+                onClick={() => { sound.play("click"); startNavigation(); router.push(`/s/${params.slug}`); }}
+                onMouseEnter={() => sound.play("hover")}
+                className="w-full py-3 clay-accent text-white font-bold rounded-clay shadow-glow-success transition-all hover:brightness-110 active:scale-95 flex items-center justify-center gap-2"
+              >
                 <Boxicon className="bx bx-refresh text-xl" /> Start Over
               </button>
               <div className="flex gap-3">
-                <button onClick={() => router.push(`/s/${params.slug}`)} className="flex-1 py-3 glass text-white font-semibold rounded-clay transition-all hover:brightness-125 active:scale-95 flex items-center justify-center gap-2">
+                <button
+                  onClick={() => { sound.play("select"); startNavigation(); router.push(`/s/${params.slug}`); }}
+                  onMouseEnter={() => sound.play("hover")}
+                  className="flex-1 py-3 glass text-white font-semibold rounded-clay transition-all hover:brightness-125 active:scale-95 flex items-center justify-center gap-2"
+                >
                   <Boxicon className="bx bx-message-dots" /> Continue Chat
                 </button>
-                <button onClick={() => alert('Support team has been notified. We will reach out shortly.')} className="flex-1 py-3 text-red-400 font-semibold rounded-clay transition-all hover:bg-red-500/10 active:scale-95 flex items-center justify-center gap-2" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
+                <button
+                  onClick={() => { sound.play("click"); alert('Support team has been notified. We will reach out shortly.'); }}
+                  onMouseEnter={() => sound.play("hover")}
+                  className="flex-1 py-3 text-red-400 font-semibold rounded-clay transition-all hover:bg-red-500/10 active:scale-95 flex items-center justify-center gap-2"
+                  style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}
+                >
                   <Boxicon className="bx bx-error-circle" /> Report Issue
                 </button>
               </div>

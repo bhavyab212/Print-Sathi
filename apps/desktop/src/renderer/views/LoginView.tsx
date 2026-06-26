@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/auth.store';
+import { useNavigationLoading } from '../components/navigation/NavigationProvider';
 
 export default function LoginView() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export default function LoginView() {
 
   const navigate = useNavigate();
   const { session } = useAuthStore();
+  const { startNavigation } = useNavigationLoading();
 
   if (session) {
     return <Navigate to="/queue" replace />;
@@ -30,9 +32,11 @@ export default function LoginView() {
       if (signInError) throw signInError;
       
       // Store will handle the rest via onAuthStateChange
+      startNavigation();
       navigate('/queue');
-    } catch (err: any) {
-      setError(err.message || 'Failed to login');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to login';
+      setError(message);
     } finally {
       setLoading(false);
     }

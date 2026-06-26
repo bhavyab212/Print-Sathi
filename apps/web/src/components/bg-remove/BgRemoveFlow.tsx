@@ -165,7 +165,7 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
           const file = new File([blob], "bg-remove-image.jpg", { type: blob.type || "image/jpeg" });
           handleFileSelected(file);
         })
-        .catch((err) => {
+        .catch(() => {
           setProcessingError("Could not load initial image from URL");
         });
     }

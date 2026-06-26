@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { canvasToBMP, canvasToTIFF, canvasToPDF, padImageBuffer } from "@/lib/imageEncoders";
 import { createBrowserClient } from "@supabase/ssr";
 import toast from "react-hot-toast";
+import { useNavigationLoadingOptional } from "@/components/navigation/NavigationProvider";
 
 // Helper to draw stroke outline around a transparent image
 const drawOutline = (
@@ -80,6 +81,7 @@ export function LayoutPrintPanel({
   const [estimatedSizeKb, setEstimatedSizeKb] = useState<number | null>(null);
   const [jpegQuality, setJpegQuality] = useState<number>(90);
   const [isSaving, setIsSaving] = useState(false);
+  const navigation = useNavigationLoadingOptional();
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -260,6 +262,7 @@ export function LayoutPrintPanel({
     }, 400);
 
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     processedSrc,
     downloadTarget,
@@ -336,9 +339,11 @@ export function LayoutPrintPanel({
       if (updateErr) throw updateErr;
 
       toast.success("Saved successfully!", { id: toastId });
+      navigation?.startNavigation();
       window.location.href = "/dashboard";
-    } catch (err: any) {
-      toast.error("Failed to save: " + err.message, { id: toastId });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to save";
+      toast.error("Failed to save: " + message, { id: toastId });
       console.error(err);
     } finally {
       setIsSaving(false);

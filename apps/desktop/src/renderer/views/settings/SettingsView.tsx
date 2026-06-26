@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { AppNavLink } from '../../components/navigation/AppNavLink';
 
 export default function SettingsView() {
   const settingsLinks = [
@@ -12,7 +12,7 @@ export default function SettingsView() {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
       <div className="grid gap-4 md:grid-cols-2">
         {settingsLinks.map(link => (
-          <NavLink key={link.path} to={link.path} className="flex gap-4 p-5 rounded-2xl border border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm transition-all">
+          <AppNavLink key={link.path} to={link.path} className="flex gap-4 p-5 rounded-2xl border border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm transition-all">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 text-2xl shrink-0">
               <i className={`bx ${link.icon}`}></i>
             </div>
@@ -20,7 +20,7 @@ export default function SettingsView() {
               <h3 className="font-semibold text-gray-900">{link.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{link.desc}</p>
             </div>
-          </NavLink>
+          </AppNavLink>
         ))}
       </div>
     </div>

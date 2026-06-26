@@ -35,10 +35,13 @@ export default function AnalyticsTab({ shopId }: { shopId: string }) {
       if (jobs) {
         let bw = 0;
         let color = 0;
-        
-        jobs.forEach((job: any) => {
+
+        type AnalyticsJobItem = { settings?: { copies?: number; color?: string } };
+        type AnalyticsJob = { job_items?: AnalyticsJobItem[] };
+
+        (jobs as AnalyticsJob[]).forEach((job) => {
           if (job.job_items) {
-            job.job_items.forEach((item: any) => {
+            job.job_items.forEach((item) => {
               const copies = item.settings?.copies || 1;
               if (item.settings?.color === 'color') {
                 color += copies;
@@ -67,7 +70,7 @@ export default function AnalyticsTab({ shopId }: { shopId: string }) {
   }, [shopId, supabase]);
 
   if (loading) {
-    return <div className="p-8 text-center"><i className="bx bx-loader-alt animate-spin text-4xl" style={{ color: "var(--ps-primary)" }}></i></div>;
+    return <div className="p-8 text-center"><Boxicon className="bx bx-loader-alt animate-spin text-4xl" style={{ color: "var(--ps-primary)" }} /></div>;
   }
 
   const statCards = [
@@ -102,7 +105,7 @@ export default function AnalyticsTab({ shopId }: { shopId: string }) {
 
       <div className="glass glass-rim rounded-2xl p-6">
         <h3 className="text-lg font-bold mb-4 flex items-center gap-2 font-display" style={{ color: "var(--ps-ink)" }}>
-            <i className="bx bx-bar-chart-alt-2" style={{ color: "var(--ps-primary)" }}></i> Settings Breakdown
+            <Boxicon className="bx bx-bar-chart-alt-2" style={{ color: "var(--ps-primary)" }} /> Settings Breakdown
         </h3>
         <div className="flex gap-4 items-end h-32 mt-8">
             <div className="flex-1 flex flex-col items-center gap-2">

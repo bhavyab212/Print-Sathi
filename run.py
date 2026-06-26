@@ -44,6 +44,9 @@ def main():
     
     try:
         choice = input("Enter choice [1/2/3/4, default: 1]: ").strip()
+    except EOFError:
+        choice = ""
+        print("\nNo interactive input detected; using default mode 1.")
     except KeyboardInterrupt:
         print("\nExiting.")
         return

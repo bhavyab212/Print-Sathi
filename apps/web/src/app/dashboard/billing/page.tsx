@@ -39,6 +39,11 @@ export default function BillingPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [savingTransaction, setSavingTransaction] = useState(false);
+  const [receiptDate, setReceiptDate] = useState("");
+
+  useEffect(() => {
+    setReceiptDate(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`);
+  }, []);
 
   // Fetch rates & shop details
   const fetchData = useCallback(async () => {
@@ -603,7 +608,7 @@ export default function BillingPage() {
               <div className="text-center text-[10px] mt-0.5 text-slate-600">{shopAddress}</div>
               <div className="text-center text-[10px] text-slate-600">Ph: {shopPhone}</div>
               <div className="text-center text-[9px] mt-1 text-slate-500">
-                Date: {new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}
+                Date: {receiptDate}
               </div>
 
               <div className="border-t border-dashed border-slate-400 my-3"></div>
@@ -710,7 +715,7 @@ export default function BillingPage() {
           Ph: {shopPhone}
         </div>
         <div className="text-center text-[9px] mt-1 text-slate-500" style={{ textAlign: "center", fontSize: "9px" }}>
-          Date: {new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}
+          Date: {receiptDate}
         </div>
 
         <div className="dashed-line"></div>

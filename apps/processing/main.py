@@ -282,9 +282,9 @@ async def process_passport_photo(
 
             # Apply LAB-CLAHE for shadow removal
             lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB)
-            l, a, b = cv2.split(lab)
+            l_channel, a, b = cv2.split(lab)
             clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(8, 8))
-            cl = clahe.apply(l)
+            cl = clahe.apply(l_channel)
             lab = cv2.merge((cl, a, b))
             bgr = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
 
@@ -734,9 +734,9 @@ async def clean_scan_document(
 
     if enhance:
         lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB)
-        l, a, b = cv2.split(lab)
+        l_channel, a, b = cv2.split(lab)
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-        cl = clahe.apply(l)
+        cl = clahe.apply(l_channel)
         
         cl = cv2.normalize(cl, None, 0, 255, cv2.NORM_MINMAX)
         lab = cv2.merge((cl, a, b))

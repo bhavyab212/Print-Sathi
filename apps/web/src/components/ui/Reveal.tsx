@@ -22,11 +22,12 @@ export function Reveal({
   as?: keyof JSX.IntrinsicElements;
 }) {
   const ref = React.useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(true);
 
   React.useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    setVisible(false);
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -42,7 +43,7 @@ export function Reveal({
     return () => io.disconnect();
   }, [once]);
 
-  const Comp = Tag as any;
+  const Comp = Tag as React.ElementType;
   return (
     <Comp
       ref={ref}

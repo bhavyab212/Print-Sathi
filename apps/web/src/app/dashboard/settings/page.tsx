@@ -4,7 +4,7 @@ import { Boxicon } from "@/components/ui";
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Button, GlassCard, Panel, Reveal } from "@/components/ui";
+import { Button, GlassCard, Reveal } from "@/components/ui";
 
 interface Shop {
   id: string;

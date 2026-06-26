@@ -7,10 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import { AmbientBackground } from "@/components/ui";
-import dynamic from "next/dynamic";
-import loadingAnimation from "../../../public/animations/loading.json";
-
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+import { useNavigationLoading } from "@/components/navigation/NavigationProvider";
 
 
 const PROCESSING_URL =
@@ -152,14 +149,10 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
-
-  useEffect(() => {
-    setIsNavigating(false);
-  }, [pathname]);
+  const { startNavigation } = useNavigationLoading();
 
   async function handleLogout() {
-    setIsNavigating(true);
+    startNavigation();
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
@@ -186,7 +179,7 @@ export default function DashboardLayout({
         {/* Brand */}
         <div className="flex h-16 items-center gap-3 px-5" style={{ borderBottom: "1px solid var(--ps-hairline)" }}>
           <div className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 overflow-hidden">
-            <img src="/images/logo.png" alt="Print Sathi" className="w-full h-full object-contain" />
+            <img /* eslint-disable-next-line @next/next/no-img-element */ src="/images/logo.png" alt="Print Sathi" className="w-full h-full object-contain" />
           </div>
           <div className="min-w-0">
             <span className="block text-lg font-bold text-gradient font-display leading-tight">Print Sathi</span>
@@ -204,7 +197,7 @@ export default function DashboardLayout({
                 href={item.href}
                 onClick={() => {
                   if (!isActive) {
-                    setIsNavigating(true);
+                    startNavigation();
                   }
                   setSidebarOpen(false);
                 }}
@@ -279,15 +272,6 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
-
-      {/* Loading Overlay */}
-      {isNavigating && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300">
-          <div className="w-28 h-28">
-            <Lottie animationData={loadingAnimation} loop={true} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

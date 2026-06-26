@@ -1,13 +1,57 @@
 "use client";
-import { Boxicon } from "@/components/ui";
 
-
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import type { ComponentType, CSSProperties, SVGProps } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { createClient } from "@/lib/supabase/client";
 import { usePresence, PresencePayload } from "@/hooks/usePresence";
 import { Button, Badge } from "@/components/ui";
+import { ClientIcon } from "@/components/ui";
 import toast from 'react-hot-toast';
+import {
+  BarChart3,
+  Check,
+  CheckCircle2,
+  Copy,
+  Edit2,
+  Loader2,
+  Map,
+  MapPin,
+  PieChart,
+  PlusCircle,
+  RefreshCw,
+  Store,
+  Table,
+  Trash2,
+  Users,
+} from "lucide-react";
+
+type IconType = ComponentType<SVGProps<SVGSVGElement>>;
+
+const LUCIDE_ICONS: Record<string, IconType> = {
+  BarChart3,
+  Check,
+  CheckCircle2,
+  Copy,
+  Edit2,
+  Loader2,
+  Map,
+  MapPin,
+  PieChart,
+  PlusCircle,
+  RefreshCw,
+  Store,
+  Table,
+  Trash2,
+  Users,
+};
+
+type IconName = keyof typeof LUCIDE_ICONS;
+
+function LucideIcon({ name, className, style }: { name: IconName; className?: string; style?: CSSProperties }) {
+  const Icon = LUCIDE_ICONS[name];
+  return <ClientIcon icon={Icon} className={className} style={style} />;
+}
 
 interface Shop {
   id: string;
@@ -73,7 +117,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
 
   const supabase = createClient();
 
-  const fetchAdminData = async () => {
+  const fetchAdminData = useCallback(async () => {
     setIsRefreshing(true);
     const { data: s } = await supabase.from('shops').select('id, name, slug, phone, area, created_at').order('created_at', { ascending: false });
     const { data: ul } = await supabase.from('usage_logs').select('feature, action, created_at, shop_id');
@@ -82,12 +126,12 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
     if (ul) setUsageLogsData(ul);
     if (j) setJobsData(j);
     setIsRefreshing(false);
-  };
+  }, [supabase]);
 
   useEffect(() => {
     const interval = setInterval(fetchAdminData, 30000);
     return () => clearInterval(interval);
-  }, [supabase]);
+  }, [fetchAdminData]);
 
   useEffect(() => {
     if (!customSlug && shopName) {
@@ -135,7 +179,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
 
       if (rpcError) throw rpcError;
       
-      const result = rpcData as any;
+      const result = rpcData as { success?: boolean; error?: string } | null;
       if (result && !result.success) {
         throw new Error(result.error || "Failed to create shop in DB.");
       }
@@ -158,8 +202,9 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
       if (updatedShops) {
         setShops(updatedShops);
       }
-    } catch (err: any) {
-      toast.error(err.message || "An error occurred during shop creation.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An error occurred during shop creation.";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -203,19 +248,19 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
           onClick={() => setActiveTab('analytics')}
           className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${activeTab === 'analytics' ? 'bg-[var(--ps-primary)] text-white shadow-[var(--glow-primary)]' : 'text-muted-foreground hover:text-foreground hover:bg-[var(--ps-surface-2)]'}`}
         >
-          <Boxicon className="bx bx-bar-chart-alt-2 mr-2" />
+          <LucideIcon name="BarChart3" className="mr-2" />
           Deep Analytics
         </button>
         <button
           onClick={() => setActiveTab('shops')}
           className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${activeTab === 'shops' ? 'bg-[var(--ps-primary)] text-white shadow-[var(--glow-primary)]' : 'text-muted-foreground hover:text-foreground hover:bg-[var(--ps-surface-2)]'}`}
         >
-          <Boxicon className="bx bx-store mr-2" />
+          <LucideIcon name="Store" className="mr-2" />
           Shop Management
         </button>
         </div>
         <Button variant="glass" size="sm" onClick={fetchAdminData} disabled={isRefreshing}>
-          <Boxicon className={`bx bx-refresh text-lg ${isRefreshing ? "animate-spin" : ""}`} /> Refresh Data
+          <LucideIcon name="RefreshCw" className={`text-lg ${isRefreshing ? "animate-spin" : ""}`} /> Refresh Data
         </Button>
       </div>
 
@@ -225,7 +270,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass glass-rim rounded-3xl p-6 shadow-glass flex items-center gap-4 transition-all hover:shadow-[var(--elev-3)] hover:-translate-y-0.5">
               <div className="w-14 h-14 neu text-primary rounded-2xl flex items-center justify-center">
-                <Boxicon className="bx bx-store-alt text-3xl" />
+                <LucideIcon name="Store" className="text-3xl" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-muted-foreground">Total Active Shops</p>
@@ -235,7 +280,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
 
             <div className="glass glass-rim rounded-3xl p-6 shadow-glass flex items-center gap-4 transition-all hover:shadow-[var(--elev-3)] hover:-translate-y-0.5">
               <div className="w-14 h-14 neu text-primary rounded-2xl flex items-center justify-center">
-                <Boxicon className="bx bx-user-voice text-3xl" />
+                <LucideIcon name="Users" className="text-3xl" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-muted-foreground">Live Traffic</p>
@@ -249,7 +294,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
 
             <div className="glass glass-rim rounded-3xl p-6 shadow-glass flex items-center gap-4 transition-all hover:shadow-[var(--elev-3)] hover:-translate-y-0.5">
               <div className="w-14 h-14 neu text-[var(--ps-success)] rounded-2xl flex items-center justify-center">
-                <Boxicon className="bx bx-check-double text-3xl" />
+                <LucideIcon name="CheckCircle2" className="text-3xl" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-muted-foreground">Jobs Completed</p>
@@ -262,7 +307,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
             {/* Service Usage Breakdown */}
             <div className="glass glass-rim rounded-3xl p-6 shadow-glass">
                <h3 className="text-h3 font-display text-foreground mb-4 flex items-center gap-2">
-                 <Boxicon className="bx bx-pie-chart-alt-2 text-primary" /> Service Usage Tracking
+                 <LucideIcon name="PieChart" className="text-primary" /> Service Usage Tracking
                </h3>
                <div className="space-y-4">
                  {Object.entries(analyticsData.featureUsage).sort((a,b) => b[1] - a[1]).map(([feature, count]) => (
@@ -285,7 +330,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
             {/* Geographical Spread */}
             <div className="glass glass-rim rounded-3xl p-6 shadow-glass">
                <h3 className="text-h3 font-display text-foreground mb-4 flex items-center gap-2">
-                 <Boxicon className="bx bx-map-alt text-primary" /> Operations By Area
+                 <LucideIcon name="Map" className="text-primary" /> Operations By Area
                </h3>
                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                  {Object.entries(analyticsData.shopsByArea).sort((a,b) => b[1] - a[1]).map(([area, count]) => (
@@ -305,7 +350,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
           {/* Left Column: Form */}
           <div className="lg:col-span-4 glass glass-rim rounded-3xl p-6 shadow-glass h-fit sticky top-24">
             <h2 className="text-h3 font-display text-foreground mb-1 flex items-center gap-2">
-              <Boxicon className="bx bx-plus-circle text-primary text-xl" />
+              <LucideIcon name="PlusCircle" className="text-primary text-xl" />
               Register New Shop
             </h2>
             <p className="text-xs text-muted-foreground mb-6">
@@ -436,12 +481,12 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
               >
                 {loading ? (
                   <>
-                    <Boxicon className="bx bx-loader-alt animate-spin text-lg" />
+                    <LucideIcon name="Loader2" className="animate-spin text-lg" />
                     Registering...
                   </>
                 ) : (
                   <>
-                    <Boxicon className="bx bx-store-alt text-lg" />
+                    <LucideIcon name="Store" className="text-lg" />
                     Create Shop
                   </>
                 )}
@@ -452,7 +497,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
           {/* Right Column: Existing Shops Data Table */}
           <div className="lg:col-span-8 glass glass-rim rounded-3xl p-6 shadow-glass flex flex-col">
             <h2 className="text-h3 font-display text-foreground mb-1 flex items-center gap-2">
-              <Boxicon className="bx bx-table text-primary text-xl" />
+              <LucideIcon name="Table" className="text-primary text-xl" />
               Manage Shops ({shops.length})
             </h2>
             <p className="text-xs text-muted-foreground mb-6">
@@ -485,7 +530,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
                         </td>
                         <td className="px-4 py-4">
                           <p className="font-medium text-foreground text-xs flex items-center gap-1">
-                            <Boxicon className="bx bx-map-pin text-muted-foreground" /> {shop.area || "N/A"}
+                            <LucideIcon name="MapPin" className="text-muted-foreground" /> {shop.area || "N/A"}
                           </p>
                           <p className="text-[10px] text-muted-foreground mt-0.5">{shop.phone}</p>
                         </td>
@@ -499,7 +544,7 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
                               className="text-muted-foreground hover:text-foreground transition-colors p-1"
                               title="Copy Link"
                             >
-                              <Boxicon className={`bx ${copiedSlug === shop.slug ? "bx-check text-[var(--ps-success)]" : "bx-copy"}`} />
+                              <LucideIcon name={copiedSlug === shop.slug ? "Check" : "Copy"} className={copiedSlug === shop.slug ? "text-[var(--ps-success)]" : undefined} />
                             </button>
                           </div>
                         </td>
@@ -522,10 +567,10 @@ export default function AdminPanelClient({ initialShops, usageLogs, jobs }: Admi
                                 Upload Page
                               </a>
                              <button className="p-1.5 text-muted-foreground hover:text-primary hover:bg-[var(--ps-surface-2)] rounded-lg transition-colors" title="Edit Shop (Coming Soon)">
-                               <Boxicon className="bx bx-edit text-lg" />
+                               <LucideIcon name="Edit2" className="text-lg" />
                              </button>
                              <button className="p-1.5 text-muted-foreground hover:text-[var(--ps-danger)] hover:bg-[var(--ps-danger-muted)] rounded-lg transition-colors" title="Delete Shop (Coming Soon)">
-                               <Boxicon className="bx bx-trash text-lg" />
+                               <LucideIcon name="Trash2" className="text-lg" />
                              </button>
                           </div>
                         </td>

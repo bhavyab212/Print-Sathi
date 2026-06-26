@@ -1,10 +1,11 @@
 export const playSound = (type: 'notification' | 'pop' | 'success' | 'error') => {
   if (typeof window === 'undefined') return;
-  const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+  const AudioContextConstructor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioContextConstructor) return;
   if (!AudioContext) return;
   
   try {
-    const ctx = new AudioContext();
+    const ctx = new AudioContextConstructor();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     

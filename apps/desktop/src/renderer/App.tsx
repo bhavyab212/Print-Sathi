@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from './stores/auth.store';
+import { NavigationProvider } from './components/navigation/NavigationProvider';
 
 // Layouts
 import { AppShell } from './components/layout/AppShell';
@@ -69,7 +70,8 @@ export default function App() {
 
   return (
     <HashRouter>
-      <Routes>
+      <NavigationProvider>
+        <Routes>
         <Route path="/login" element={<LoginView />} />
         
         <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
@@ -90,6 +92,7 @@ export default function App() {
           </Route>
         </Route>
       </Routes>
+      </NavigationProvider>
     </HashRouter>
   );
 }

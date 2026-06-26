@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { useNavigationLoading } from "../components/navigation/NavigationProvider";
 
 const DEFAULT_RATE_ITEMS = [
   { item_type: "bw_single", label: "B&W Single Side", price: "" },
@@ -40,6 +41,7 @@ export default function OnboardingPage() {
   const [rateItems, setRateItems] = useState(DEFAULT_RATE_ITEMS);
 
   const navigate = useNavigate();
+  const { startNavigation } = useNavigationLoading();
 
   function updateRate(index: number, price: string) {
     const updated = [...rateItems];
@@ -97,6 +99,7 @@ export default function OnboardingPage() {
         if (rateError) throw rateError;
       }
 
+      startNavigation();
       navigate("/queue");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Something went wrong";

@@ -1,9 +1,7 @@
 "use client";
-import { Boxicon } from "@/components/ui";
-
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import type { ComponentType, CSSProperties, SVGProps } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { usePresence, PresencePayload } from "@/hooks/usePresence";
 import toast from 'react-hot-toast';
@@ -13,15 +11,105 @@ import type { Area, Point } from "react-easy-crop";
 import { PASSPORT_SIZES } from "@/components/passport/PassportConfig";
 import { motion, AnimatePresence } from "motion/react";
 import { playSound } from "@/lib/audio";
+import { useSound } from "@/hooks/useSound";
+import { ClientIcon } from "@/components/ui";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Contact,
+  Crop,
+  Edit2,
+  FileIcon,
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  Grid,
+  Hand,
+  HelpCircle,
+  Info,
+  Layers,
+  Loader2,
+  MessageSquare,
+  Minus,
+  MinusCircle,
+  MoreVertical,
+  Paperclip,
+  Plus,
+  Presentation,
+  Printer,
+  Send,
+  Store,
+  Upload,
+  X,
+  XCircle,
+} from "lucide-react";
+
+type IconType = ComponentType<SVGProps<SVGSVGElement>>;
+
+const LUCIDE_ICONS: Record<string, IconType> = {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Contact,
+  Crop,
+  Edit2,
+  FileIcon,
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  Grid,
+  Hand,
+  HelpCircle,
+  Info,
+  Layers,
+  Loader2,
+  MessageSquare,
+  Minus,
+  MinusCircle,
+  MoreVertical,
+  Paperclip,
+  Plus,
+  Presentation,
+  Printer,
+  Send,
+  Store,
+  Upload,
+  X,
+  XCircle,
+};
+
+type IconName = keyof typeof LUCIDE_ICONS;
+
+function LucideIcon({ name, className, style }: { name: IconName; className?: string; style?: CSSProperties }) {
+  const Icon = LUCIDE_ICONS[name];
+  return <ClientIcon icon={Icon} className={className} style={style} />;
+}
 
 type PrintAction = 'direct_print' | 'edit' | 'passport_photo';
 type PrintColor = 'bw' | 'color';
 type ChatStep = 'intro' | 'greeting' | 'name' | 'files' | 'notes' | 'confirm' | 'uploading' | 'success';
 
-const BROWSER_DISPLAYABLE = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp', 'image/svg+xml', 'text/plain'];
 const BLOCKED_EXTENSIONS = ['exe', 'bat', 'sh', 'cmd', 'js', 'ts', 'php', 'py', 'rb', 'go', 'c', 'cpp', 'h', 'jar', 'zip', 'rar', '7z', 'tar', 'gz'];
 const MAX_FILE_SIZE_MB = 25;
 const MAX_TOTAL_SIZE_MB = 50;
+
+function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (err && typeof err === "object") {
+    const e = err as { message?: string; details?: string; hint?: string; error_description?: string };
+    return e.message || e.details || e.hint || e.error_description || "Unknown error";
+  }
+  return "Unknown error";
+}
 
 // ── Multi-group PDF combining ──────────────────────────────────────────────
 const GROUP_SLOTS = [
@@ -32,7 +120,7 @@ const GROUP_SLOTS = [
 ] as const;
 type GroupId = typeof GROUP_SLOTS[number]['id'];
 
-interface Toast { id: string; msg: string; icon: string; }
+interface Toast { id: string; msg: string; icon: IconName; }
 
 interface FileWithSettings {
   id: string;
@@ -90,15 +178,15 @@ async function getCroppedImg(imageSrc: string, pixelCrop: { x: number; y: number
   return new Promise((resolve) => { croppedCanvas.toBlob((blob) => { resolve(new File([blob!], 'cropped.jpg', { type: 'image/jpeg' })); }, 'image/jpeg', 0.92); });
 }
 
-function getFileTypeBadge(file: File): { label: string; icon: string; emoji: string } {
+function getFileTypeBadge(file: File): { label: string; icon: IconName; emoji: string } {
   const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
   const type = file.type;
-  if (type === 'application/pdf') return { label: 'PDF', icon: 'bxs-file-pdf', emoji: '📄' };
-  if (type.startsWith('image/')) return { label: 'Image', icon: 'bxs-image', emoji: '🖼️' };
-  if (type.includes('word') || ext === 'docx' || ext === 'doc') return { label: 'Word', icon: 'bxs-file-doc', emoji: '📝' };
-  if (type.includes('spreadsheet') || type.includes('excel') || ext === 'xlsx' || ext === 'xls') return { label: 'Excel', icon: 'bxs-spreadsheet', emoji: '📊' };
-  if (type.includes('presentation') || ext === 'pptx' || ext === 'ppt') return { label: 'PPT', icon: 'bxs-slideshow', emoji: '📑' };
-  return { label: 'File', icon: 'bxs-file', emoji: '📎' };
+  if (type === 'application/pdf') return { label: 'PDF', icon: 'FileText', emoji: '📄' };
+  if (type.startsWith('image/')) return { label: 'Image', icon: 'FileImage', emoji: '🖼️' };
+  if (type.includes('word') || ext === 'docx' || ext === 'doc') return { label: 'Word', icon: 'FileText', emoji: '📝' };
+  if (type.includes('spreadsheet') || type.includes('excel') || ext === 'xlsx' || ext === 'xls') return { label: 'Excel', icon: 'FileSpreadsheet', emoji: '📊' };
+  if (type.includes('presentation') || ext === 'pptx' || ext === 'ppt') return { label: 'PPT', icon: 'Presentation', emoji: '📑' };
+  return { label: 'File', icon: 'FileIcon', emoji: '📎' };
 }
 
 function validateFile(file: File): { ok: boolean; error?: string; warning?: string } {
@@ -118,7 +206,6 @@ function formatSize(bytes: number) {
 }
 
 export default function ShopLandingPage({ params }: { params: { slug: string } }) {
-  const router = useRouter();
   const [step, setStep] = useState<ChatStep>('intro');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -128,13 +215,15 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
   const [shopId, setShopId] = useState<string | null>(null);
   const [shopName, setShopName] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+
+  const sound = useSound();
+
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [uploadProgress, setUploadProgress] = useState('');
   const [tokenNumber, setTokenNumber] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success_tick'>('idle');
-  const [animateRocketFly, setAnimateRocketFly] = useState(false);
   const [rocketPhase, setRocketPhase] = useState<'entering' | 'wobble' | 'thrust' | 'liftoff'>('entering');
   const [uploadPercent, setUploadPercent] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -166,7 +255,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  const addToast = useCallback((msg: string, icon = 'bx-check-circle') => {
+  const addToast = useCallback((msg: string, icon = 'CheckCircle2') => {
     const id = Math.random().toString(36).slice(2);
     setToasts(prev => [...prev, { id, msg, icon }]);
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 2500);
@@ -201,6 +290,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       finally { setIsInitializing(false); }
     };
     fetchShop();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.slug]);
 
   // Start greeting once shop loaded
@@ -211,12 +301,14 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       setStep('files');
     };
     startGreeting();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInitializing, error, shopName, step]);
 
   const handleStartChat = () => {
     const trimmed = name.trim();
     if (!trimmed || trimmed.length < 2) return;
     playSound('pop');
+    sound.play("click");
     setStep('greeting');
   };
 
@@ -226,14 +318,16 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
     setNotes(trimmed);
     setInputValue('');
     playSound('pop');
+    sound.play("select");
     setStep('confirm');
     await botSay(`Got it! Here's a summary of your print job:`);
   };
 
   const addFiles = useCallback(async (newRawFiles: File[]) => {
+    sound.play("swipe");
     if (!shopId) return;
     const errors: string[] = [];
-    let heic2any: any = null;
+    let heic2any: ((options: { blob: Blob; toType?: string }) => Promise<Blob | Blob[]>) | null = null;
     let hasImages = false;
     let isFirstBatch = false;
     let totalImagesUploaded = 0;
@@ -252,7 +346,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       if (isHeic) {
         try {
           if (!heic2any) heic2any = (await import('heic2any')).default;
-          const convertedBlob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 }) as Blob | Blob[];
+          const convertedBlob = await heic2any({ blob: file, toType: "image/jpeg" }) as Blob | Blob[];
           const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
           file = new File([blob], file.name.replace(/\.hei[cf]$/i, '.jpg'), { type: 'image/jpeg' });
           previewUrl = URL.createObjectURL(file);
@@ -270,7 +364,8 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       };
       setFiles(prev => [...prev, newItem]);
       playSound('pop');
-      addToast(`📎 ${file.name.length > 22 ? file.name.slice(0, 20) + '…' : file.name} added`, 'bx-paperclip');
+      sound.play("select");
+      addToast(`📎 ${file.name.length > 22 ? file.name.slice(0, 20) + '…' : file.name} added`, 'Paperclip');
 
       addMessage({ type: 'user', content: `Attached: ${file.name}`, fileItem: newItem });
       setIsBotTyping(true);
@@ -290,7 +385,8 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       }, 900);
     }
 
-    if (errors.length > 0) { playSound('error'); setError(errors.join('\n')); }
+    if (errors.length > 0) { playSound('error'); sound.play("error"); setError(errors.join('\n')); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shopId, addMessage, addToast, scrollToBottom, guideDismissed]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -315,7 +411,8 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       return prev.filter(f => f.id !== id);
     });
     playSound('pop');
-    addToast('File removed', 'bx-x-circle');
+    sound.play("deselect");
+    addToast('File removed', 'XCircle');
   };
 
   const updateFileSetting = (id: string, key: keyof FileWithSettings, value: unknown) => {
@@ -329,13 +426,15 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       return { ...f, groupId: null };
     }));
     playSound('pop');
+    sound.play(groupId ? "toggle-on" : "toggle-off");
     const slot = groupId ? GROUP_SLOTS.find(g => g.id === groupId) : null;
-    addToast(slot ? `Moved to ${slot.label}` : 'Moved to Separate', slot ? 'bx-layer' : 'bx-minus-circle');
+    addToast(slot ? `Moved to ${slot.label}` : 'Moved to Separate', slot ? 'Layers' : 'MinusCircle');
   };
 
   const handleDoneWithFiles = async () => {
-    if (files.length === 0) { playSound('error'); toast.error('Please attach at least one file.'); return; }
+    if (files.length === 0) { playSound('error'); sound.play("error"); toast.error('Please attach at least one file.'); return; }
     playSound('pop');
+    sound.play("select");
     setStep('notes');
     addMessage({ type: 'user', content: `${files.length} file(s) ready to send` });
     await botSay('📝 Any special instructions for the shop?\n\n(e.g. staple, double-sided, only first 3 pages...)\n\nOr tap **Skip** to continue.');
@@ -391,6 +490,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
     const totalMB = files.reduce((acc, f) => acc + f.file.size, 0) / 1024 / 1024;
     if (totalMB > MAX_TOTAL_SIZE_MB) {
       playSound('error');
+      sound.play("error");
       setError(`Total size (${totalMB.toFixed(1)} MB) exceeds ${MAX_TOTAL_SIZE_MB} MB limit.`);
       setIsSubmitting(false);  // fix: was missing — submit stayed permanently disabled
       return;
@@ -398,7 +498,6 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
 
     setStep('uploading');
     setUploadStatus('uploading');
-    setAnimateRocketFly(false);
     setError(null);
     addMessage({ type: 'user', content: '✅ Confirmed! Sending to shop...' });
 
@@ -463,7 +562,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       });
       if (rpcErr || !rpcResult || rpcResult.length === 0) {
         // Extract real message from PostgrestError (not an Error instance)
-        const detail = (rpcErr as any)?.message || (rpcErr as any)?.details || (rpcErr as any)?.hint;
+        const detail = rpcErr ? getErrorMessage(rpcErr) : undefined;
         throw new Error(detail || 'Failed to create job — check RPC permissions (GRANT EXECUTE TO anon)');
       }
       const { id: rpcJobId, word_token: rpcToken } = rpcResult[0];
@@ -490,7 +589,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           settings: { action: item.action, color: item.color, copies: item.copies, page_range: item.pageRange !== 'all' ? item.pageRange : null, paper_size: item.paperSize, passport_config: item.passportConfig },
         });
         if (itemErr) {
-          const detail = (itemErr as any)?.message || (itemErr as any)?.details || (itemErr as any)?.hint;
+          const detail = getErrorMessage(itemErr);
           throw new Error(detail || 'Failed to save file record');
         }
       }
@@ -500,12 +599,13 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       
       // Start rocket fly-away animation
       setRocketPhase('liftoff');
-      setAnimateRocketFly(true);
       await new Promise(r => setTimeout(r, 800)); // wait for rocket to fly away
 
       // Transition to success tick
       setUploadStatus('success_tick');
       playSound('success');
+      sound.play("upload-complete");
+      sound.play("level-up");
 
       // Hold success animation for 1.8s
       await new Promise(r => setTimeout(r, 1800));
@@ -527,9 +627,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         try { await supabase.from('jobs').delete().eq('id', jobData.id); } catch {}
       }
       // PostgrestError is NOT an instanceof Error — extract .message explicitly
-      const msg = err instanceof Error
-        ? err.message
-        : (err as any)?.message || (err as any)?.details || (err as any)?.error_description || "Upload failed. Please try again.";
+      const msg = getErrorMessage(err) || "Upload failed. Please try again.";
       setError(msg);
       setStep('confirm');
       setUploadStatus('idle');
@@ -542,7 +640,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d1117' }}>
         <div className="text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Boxicon className="bx bx-printer text-3xl text-slate-800 dark:text-white" />
+            <LucideIcon name="Printer" className="text-3xl text-slate-800 dark:text-white" />
           </div>
           <p className="text-slate-600 dark:text-white/60 text-sm">Connecting to shop...</p>
         </div>
@@ -554,7 +652,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#0d1117' }}>
         <div className="bg-red-900/30 border border-red-700/50 rounded-2xl p-8 text-center max-w-sm">
-          <Boxicon className="bx bx-error-circle text-5xl text-red-400 mb-4" />
+          <LucideIcon name="AlertCircle" className="text-5xl text-red-400 mb-4" />
           <h2 className="text-slate-800 dark:text-white font-bold text-xl mb-2">Shop Not Found</h2>
           <p className="text-red-300 text-sm">{error}</p>
         </div>
@@ -563,18 +661,6 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
   }
 
   const activeCropFile = files.find(f => f.id === cropFileId);
-
-
-
-  const handleManualRefresh = async () => {
-    if (!jobId) return;
-    const { data } = await supabase.from('jobs').select('status').eq('id', jobId).single();
-    if (data && data.status !== 'pending') {
-      router.push(`/s/${params.slug}/status/${jobId}`);
-    } else {
-      addMessage({ type: 'bot', content: 'Status checked. Still pending shopkeeper approval.' });
-    }
-  };
 
   return (
     <div
@@ -595,7 +681,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
               key={t.id}
               className="glass-strong elev-3 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-slate-800 dark:text-white animate-in fade-in slide-in-from-top-3 duration-200"
             >
-              <i className={`bx ${t.icon} text-sm text-emerald-400`}></i>
+              <LucideIcon name={t.icon} className="text-sm text-emerald-400" />
               {t.msg}
             </div>
           ))}
@@ -617,7 +703,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md border-4 border-dashed border-emerald-500 m-4 rounded-3xl animate-in fade-in zoom-in-95 duration-200"
         >
           <div className="bg-[#1f2c34] p-8 rounded-full shadow-2xl mb-4 animate-bounce">
-            <Boxicon className="bx bx-upload text-5xl text-emerald-400" />
+            <LucideIcon name="Upload" className="text-5xl text-emerald-400" />
           </div>
           <p className="text-slate-800 dark:text-white font-black text-xl">Drop files here to upload</p>
           <p className="text-slate-600 dark:text-white/60 text-sm mt-1">PDF, Word, Excel, Images (Max 25MB)</p>
@@ -629,7 +715,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
           <div className="glass-nav flex items-center justify-between p-4">
             <button onClick={() => setCropFileId(null)} className="text-slate-600 dark:text-white/70 hover:text-slate-800 dark:text-white">
-              <Boxicon className="bx bx-arrow-back text-2xl" />
+              <LucideIcon name="ArrowLeft" className="text-2xl" />
             </button>
             <h3 className="text-slate-800 dark:text-white font-bold">Crop & Rotate</h3>
             <button onClick={() => setCropFileId(null)} className="text-slate-600 dark:text-white/70 hover:text-slate-800 dark:text-white text-sm">Cancel</button>
@@ -678,7 +764,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-slate-800 dark:text-white font-bold text-lg">Passport Photo Setup</h3>
               <button onClick={() => setPassportModalFileId(null)} className="text-slate-500 dark:text-white/50 hover:text-slate-800 dark:text-white">
-                <Boxicon className="bx bx-x text-2xl" />
+                <LucideIcon name="X" className="text-2xl" />
               </button>
             </div>
             
@@ -717,13 +803,15 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {/* Main header row */}
         <div className="flex items-center gap-3 px-4 py-3">
           <div className="w-10 h-10 rounded-full clay-accent flex items-center justify-center shrink-0 shadow-glow-success">
-            <Boxicon className="bx bx-printer text-slate-800 dark:text-white text-lg" />
+            <LucideIcon name="Printer" className="text-slate-800 dark:text-white text-lg" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-slate-800 dark:text-white font-bold text-sm truncate">{shopName || 'Print Shop'}</p>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-slate-500 dark:text-white/50 text-xs">Print Bot · Online</span>
+              <span className={`w-2 h-2 rounded-full ${isShopkeeperOnline ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+              <span className="text-slate-500 dark:text-white/50 text-xs">
+                {isShopkeeperOnline ? 'Shopkeeper online' : 'Print Bot · Online'}
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -734,9 +822,9 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
               style={{ color: 'rgba(255,255,255,0.4)' }}
               title="How to use"
             >
-              <Boxicon className="bx bx-help-circle text-xl" />
+              <LucideIcon name="HelpCircle" className="text-xl" />
             </button>
-            <Boxicon className="bx bx-dots-vertical-rounded text-xl text-slate-500 dark:text-white/40 hover:text-slate-800 dark:text-white cursor-pointer transition" />
+            <LucideIcon name="MoreVertical" className="text-xl text-slate-500 dark:text-white/40 hover:text-slate-800 dark:text-white cursor-pointer transition" />
           </div>
         </div>
 
@@ -744,10 +832,10 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {step !== 'intro' && step !== 'greeting' && (
           <div className="flex items-center px-4 pb-3 gap-0" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
             {[
-              { id: 'files',   label: 'Upload',  icon: 'bx-paperclip',    active: step === 'files'   },
-              { id: 'notes',   label: 'Notes',   icon: 'bx-edit',         active: step === 'notes'   },
-              { id: 'confirm', label: 'Review',  icon: 'bx-check-double', active: step === 'confirm' || step === 'uploading' },
-              { id: 'success', label: 'Done',    icon: 'bx-check-circle', active: step === 'success' },
+              { id: 'files',   label: 'Upload',  icon: 'Paperclip',    active: step === 'files'   },
+              { id: 'notes',   label: 'Notes',   icon: 'Edit2',         active: step === 'notes'   },
+              { id: 'confirm', label: 'Review',  icon: 'CheckCircle2', active: step === 'confirm' || step === 'uploading' },
+              { id: 'success', label: 'Done',    icon: 'CheckCircle2', active: step === 'success' },
             ].map((s, i, arr) => {
               const stepOrder = ['files','notes','confirm','uploading','success'];
               const done = stepOrder.indexOf(step) > stepOrder.indexOf(s.id);
@@ -761,8 +849,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                         border: s.active ? '2px solid #25D366' : done ? '2px solid rgba(37,211,102,0.4)' : '2px solid rgba(255,255,255,0.1)',
                       }}
                     >
-                      <i className={`bx ${done ? 'bx-check' : s.icon} text-xs`}
-                        style={{ color: s.active ? '#fff' : done ? '#25D366' : 'rgba(255,255,255,0.25)' }}></i>
+                      <LucideIcon name={done ? "Check" : s.icon} className="text-xs" style={{ color: s.active ? '#fff' : done ? '#25D366' : 'rgba(255,255,255,0.25)' }} />
                     </div>
                     <span className="text-[9px] mt-0.5 font-semibold" style={{ color: s.active ? '#25D366' : done ? 'rgba(37,211,102,0.6)' : 'rgba(255,255,255,0.2)' }}>
                       {s.label}
@@ -784,7 +871,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         <div className="absolute inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
           <div className="glass-strong elev-5 w-full rounded-clay p-6 animate-in slide-in-from-bottom-8 duration-500 max-w-sm mb-20 sm:mb-0">
             <div className="w-16 h-16 rounded-full clay-accent flex items-center justify-center mb-6 mx-auto shadow-glow-success animate-float">
-              <Boxicon className="bx bx-store text-4xl text-slate-800 dark:text-white" />
+              <LucideIcon name="Store" className="text-4xl text-slate-800 dark:text-white" />
             </div>
             <h2 className="text-h2 font-black text-slate-800 dark:text-white text-center mb-2">Welcome to {shopName || 'Print Shop'}</h2>
             <p className="text-slate-600 dark:text-white/60 text-center text-sm mb-6">Enter your name to start your print order</p>
@@ -797,7 +884,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
               <button type="submit" disabled={name.length < 2}
                 className="clay-accent w-full py-4 disabled:opacity-50 text-slate-800 dark:text-white font-black rounded-clay transition active:scale-95 flex items-center justify-center gap-2 shadow-glow-success hover:brightness-110"
               >
-                Start <Boxicon className="bx bx-right-arrow-alt text-xl" />
+                Start <LucideIcon name="ArrowRight" className="text-xl" />
               </button>
             </form>
           </div>
@@ -829,7 +916,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {isBotTyping && (
           <div className="flex items-end gap-2 mb-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
             <div className="w-7 h-7 rounded-full bg-emerald-700 flex items-center justify-center shrink-0">
-              <Boxicon className="bx bx-printer text-slate-800 dark:text-white text-xs" />
+              <LucideIcon name="Printer" className="text-slate-800 dark:text-white text-xs" />
             </div>
             <div className="glass px-4 py-3 rounded-2xl rounded-bl-sm shadow-elev-1" style={{ maxWidth: '60px' }}>
               <div className="flex gap-1 items-center">
@@ -845,7 +932,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {step === 'uploading' && uploadProgress && (
           <div className="flex justify-center my-3">
             <div className="bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-white/70 text-xs px-4 py-2 rounded-full flex items-center gap-2">
-              <Boxicon className="bx bx-loader-alt animate-spin text-sm" />
+              <LucideIcon name="Loader2" className="animate-spin text-sm" />
               {uploadProgress}
             </div>
           </div>
@@ -855,11 +942,11 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
         {step === 'confirm' && (
           <div className="flex items-end gap-2 mb-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="w-7 h-7 rounded-full bg-emerald-700 flex items-center justify-center shrink-0">
-              <Boxicon className="bx bx-printer text-slate-800 dark:text-white text-xs" />
+              <LucideIcon name="Printer" className="text-slate-800 dark:text-white text-xs" />
             </div>
             <div className="glass-strong elev-3 rounded-2xl rounded-bl-sm overflow-hidden" style={{ maxWidth: '85%' }}>
               <div className="p-3 border-b border-slate-300 dark:border-white/10 flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #075E54, #128C7E)' }}>
-                <Boxicon className="bx bx-receipt text-slate-800 dark:text-white text-lg" />
+                <LucideIcon name="FileText" className="text-slate-800 dark:text-white text-lg" />
                 <span className="text-slate-800 dark:text-white font-bold text-sm">Print Job Summary</span>
               </div>
               <div className="p-3 space-y-2">
@@ -877,7 +964,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                   return (
                     <div key={g.id} className="rounded-xl p-2.5 text-xs" style={{ background: g.bg, border: `1px solid ${g.border}` }}>
                       <p className="font-bold mb-1.5 flex items-center gap-1" style={{ color: g.color }}>
-                        <Boxicon className="bx bxs-file-pdf text-sm" /> {g.label} → PDF ({gFiles.length} files)
+                        <LucideIcon name="FileText" className="text-sm" /> {g.label} → PDF ({gFiles.length} files)
                       </p>
                       <ul className="list-disc pl-4 space-y-0.5 text-slate-600 dark:text-white/60">
                         {gFiles.map(f => <li key={f.id} className="truncate">{f.file.name}</li>)}
@@ -904,9 +991,10 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                 )}
                 <button
                   onClick={handleSubmit}
-                  className="clay-accent w-full py-3 font-bold text-sm text-slate-800 dark:text-white rounded-clay flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 shadow-glow-success"
+                  disabled={isSubmitting}
+                  className="clay-accent w-full py-3 font-bold text-sm text-slate-800 dark:text-white rounded-clay flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 shadow-glow-success disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Boxicon className="bx bx-paper-plane text-lg" />
+                  <LucideIcon name="Send" className="text-lg" />
                   Submit Print Order
                 </button>
                 <button
@@ -926,7 +1014,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                 <div className="w-16 h-16 bg-slate-300 dark:bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 animate-float">
                   <span className="text-3xl">🎉</span>
                 </div>
-                <h3 className="text-slate-800 dark:text-white font-black text-xl">You're in queue!</h3>
+                <h3 className="text-slate-800 dark:text-white font-black text-xl">You&apos;re in queue!</h3>
                 <p className="text-slate-600 dark:text-white/70 text-sm mt-1">Show this to the shopkeeper</p>
                 <div className="mt-4 bg-slate-300 dark:bg-white/15 rounded-2xl py-4 shimmer-border">
                   <p className="text-slate-600 dark:text-white/60 text-xs uppercase tracking-widest">Your Token</p>
@@ -981,7 +1069,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                       className="hover:text-red-400 transition ml-0.5 opacity-50 hover:opacity-100"
                       aria-label="Remove file"
                     >
-                      <Boxicon className="bx bx-x text-sm" />
+                      <LucideIcon name="X" className="text-sm" />
                     </button>
                   </div>
                 );
@@ -992,7 +1080,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
           {/* ── Group Summary Bar ─────────────────────────────────────── */}
           {step === 'files' && GROUP_SLOTS.some(g => files.some(f => f.groupId === g.id)) && (
             <div className="flex items-center gap-2 px-3 py-1.5 overflow-x-auto" style={{ background: '#111b21', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <Boxicon className="bx bxs-file-pdf text-xs text-slate-400 dark:text-white/30 shrink-0" />
+              <LucideIcon name="FileText" className="text-xs text-slate-400 dark:text-white/30 shrink-0" />
               {GROUP_SLOTS.filter(g => files.some(f => f.groupId === g.id)).map(g => {
                 const n = files.filter(f => f.groupId === g.id).length;
                 return (
@@ -1022,7 +1110,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                 className="w-11 h-11 rounded-full flex items-center justify-center text-slate-600 dark:text-white/60 hover:text-slate-800 dark:text-white hover:bg-slate-200 dark:bg-white/10 transition-all shrink-0"
                 aria-label="Attach files"
               >
-                <Boxicon className="bx bx-paperclip text-2xl rotate-[-45deg]" />
+                <LucideIcon name="Paperclip" className="text-2xl rotate-[-45deg]" />
               </button>
             )}
 
@@ -1052,7 +1140,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                   onClick={handleSendNotes}
                   className="clay-accent w-11 h-11 rounded-full flex items-center justify-center text-slate-800 dark:text-white transition-all active:scale-90 shrink-0 shadow-glow-success hover:brightness-110"
                 >
-                  <Boxicon className="bx bx-send text-lg" />
+                  <LucideIcon name="FileIcon" className="text-lg" />
                 </button>
               </>
             )}
@@ -1074,7 +1162,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                         className="shrink-0 flex items-center gap-1 px-3 py-3 rounded-full text-sm font-bold text-slate-600 dark:text-white/60 hover:text-slate-800 dark:text-white transition-all active:scale-95"
                         style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
                       >
-                        <Boxicon className="bx bx-plus text-lg" />
+                        <LucideIcon name="Plus" className="text-lg" />
                       </button>
                     </Tooltip>
 
@@ -1089,7 +1177,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                           className="flex items-center gap-1.5 px-4 py-3 rounded-full text-sm font-bold transition-all active:scale-95"
                           style={{ background: 'rgba(129,140,248,0.15)', color: '#818cf8', border: '1px solid rgba(129,140,248,0.35)' }}
                         >
-                          <Boxicon className="bx bx-layer text-lg" />
+                          <LucideIcon name="Layers" className="text-lg" />
                           Organise
                         </button>
                       </Tooltip>
@@ -1104,7 +1192,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
                         onClick={() => { handleDoneWithFiles(); markSeen('done'); }}
                         className="clay-accent w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-bold text-slate-800 dark:text-white transition-all active:scale-95 hover:brightness-110 shadow-glow-success"
                       >
-                        <Boxicon className="bx bx-check-circle text-lg" />
+                        <LucideIcon name="CheckCircle2" className="text-lg" />
                         Done ({files.length})
                       </button>
                     </div>
@@ -1144,7 +1232,7 @@ export default function ShopLandingPage({ params }: { params: { slug: string } }
             style={{ background: 'rgba(129,140,248,0.92)', color: 'white', border: '2px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)', boxShadow: '0 8px 24px rgba(129,140,248,0.5)' }}
             aria-label="How to use groups"
           >
-            <Boxicon className="bx bx-help-circle text-2xl" />
+            <LucideIcon name="HelpCircle" className="text-2xl" />
           </button>
         </div>
       )}
@@ -1281,7 +1369,7 @@ function CoachMark({ text, direction = 'up', color = '#25D366', onDismiss }: {
         <span className="w-2 h-2 rounded-full bg-white/50 animate-ping absolute left-2.5"></span>
         <span className="w-2 h-2 rounded-full bg-white shrink-0 relative"></span>
         {text}
-        {onDismiss && <button onClick={onDismiss} className="ml-1 opacity-60 hover:opacity-100"><Boxicon className="bx bx-x text-sm" /></button>}
+        {onDismiss && <button onClick={onDismiss} className="ml-1 opacity-60 hover:opacity-100"><LucideIcon name="X" className="text-sm" /></button>}
       </div>
       {direction === 'up' && <div className="flex justify-center"><div className="w-0 h-0" style={{ borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: `6px solid ${color}` }}></div></div>}
     </div>
@@ -1307,7 +1395,7 @@ function Tooltip({ text, children }: { text: string; children: React.ReactNode }
 // ── GUIDE STEPS ─────────────────────────────────────────────────────────────
 const GUIDE_STEPS = [
   {
-    icon: 'bx-layer',
+    icon: 'Layers',
     iconColor: '#818cf8',
     title: 'Combine photos into PDFs',
     body: 'You can group multiple photos together and they\'ll be merged into a single PDF — great for printing 3 photos as one document.',
@@ -1316,13 +1404,13 @@ const GUIDE_STEPS = [
         {['📷','📷','📷'].map((e,i) => (
           <div key={i} className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{ background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.4)' }}>{e}</div>
         ))}
-        <div className="flex items-center text-slate-500 dark:text-white/40"><Boxicon className="bx bx-right-arrow-alt text-2xl" /></div>
+        <div className="flex items-center text-slate-500 dark:text-white/40"><LucideIcon name="ArrowRight" className="text-2xl" /></div>
         <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{ background: 'rgba(129,140,248,0.2)', border: '1px solid rgba(129,140,248,0.5)' }}>📄</div>
       </div>
     ),
   },
   {
-    icon: 'bx-grid-alt',
+    icon: 'Grid',
     iconColor: '#34d399',
     title: 'Multiple groups at once',
     body: 'You can have up to 4 separate groups. Group A → one PDF, Group B → another PDF. Perfect for sending "3 passport photos + 4 other photos" in one order.',
@@ -1344,14 +1432,14 @@ const GUIDE_STEPS = [
     ),
   },
   {
-    icon: 'bxs-hand-right',
+    icon: 'Hand',
     iconColor: '#f59e0b',
     title: 'Tap Organise to manage groups',
     body: 'Tap the **Organise** button at the bottom to open the group manager. Drag or tap files into groups — or leave them in "Print Separately" to print individually.',
     visual: (
       <div className="my-3 flex justify-center">
         <div className="flex items-center gap-2 px-5 py-3 rounded-full font-bold text-sm" style={{ background: 'rgba(129,140,248,0.2)', color: '#818cf8', border: '1px solid rgba(129,140,248,0.4)' }}>
-          <Boxicon className="bx bx-layer text-lg" /> Organise
+          <LucideIcon name="Layers" className="text-lg" /> Organise
         </div>
       </div>
     ),
@@ -1396,7 +1484,7 @@ function FloatingGuide({ step, onNext, onClose, onOpenOrganiser }: {
           {/* Icon */}
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 mx-auto"
             style={{ background: `${s.iconColor}20`, border: `1.5px solid ${s.iconColor}50` }}>
-            <i className={`bx ${s.icon} text-2xl`} style={{ color: s.iconColor }}></i>
+            <LucideIcon name={s.icon} className="text-2xl" style={{ color: s.iconColor }} />
           </div>
 
           <h3 className="text-slate-800 dark:text-white font-black text-lg text-center leading-snug mb-2">{s.title}</h3>
@@ -1417,13 +1505,13 @@ function FloatingGuide({ step, onNext, onClose, onOpenOrganiser }: {
             <button onClick={onOpenOrganiser}
               className="flex-2 flex-[2] py-3 px-6 rounded-2xl text-sm font-black transition-all hover:brightness-110 active:scale-95 flex items-center justify-center gap-2"
               style={{ background: s.iconColor, color: '#fff' }}>
-              <Boxicon className="bx bx-layer text-lg" /> Open Organiser
+              <LucideIcon name="Layers" className="text-lg" /> Open Organiser
             </button>
           ) : (
             <button onClick={onNext}
               className="flex-2 flex-[2] py-3 px-6 rounded-2xl text-sm font-black transition-all hover:brightness-110 active:scale-95 flex items-center justify-center gap-2"
               style={{ background: s.iconColor, color: '#fff' }}>
-              Next <Boxicon className="bx bx-right-arrow-alt text-lg" />
+              Next <LucideIcon name="ArrowRight" className="text-lg" />
             </button>
           )}
         </div>
@@ -1443,8 +1531,8 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
 
   const containers: { id: GroupId | null; label: string; color: string; bg: string; border: string; icon: string }[] = [
-    ...GROUP_SLOTS.map(g => ({ ...g, icon: 'bxs-file-pdf' })),
-    { id: null, label: 'Print Separately', color: 'rgba(255,255,255,0.5)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)', icon: 'bx-printer' },
+    ...GROUP_SLOTS.map(g => ({ ...g, icon: 'FileText' })),
+    { id: null, label: 'Print Separately', color: 'rgba(255,255,255,0.5)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)', icon: 'Printer' },
   ];
 
   const FileThumbnail = ({ f, compact = false }: { f: FileWithSettings; compact?: boolean }) => {
@@ -1458,10 +1546,10 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
         style={{ border: `1.5px solid ${grp ? grp.border : 'rgba(255,255,255,0.1)'}`, background: '#1a2733', flexShrink: 0 }}
       >
         {f.previewUrl ? (
-          <img src={f.previewUrl} alt={f.file.name} className="w-full h-full object-cover" />
+          <img /* eslint-disable-next-line @next/next/no-img-element */ src={f.previewUrl} alt={f.file.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-            <i className={`bx ${getFileTypeBadge(f.file).icon} text-2xl text-slate-500 dark:text-white/40`}></i>
+            <LucideIcon name={getFileTypeBadge(f.file).icon} className="text-2xl text-slate-500 dark:text-white/40" />
             <span className="text-[8px] text-slate-400 dark:text-white/30 text-center px-1 leading-tight truncate w-full text-center">{f.file.name.split('.').pop()?.toUpperCase()}</span>
           </div>
         )}
@@ -1471,7 +1559,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
           className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/70 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity group-hover:opacity-100"
           style={{ zIndex: 10 }}
         >
-          <Boxicon className="bx bx-x text-xs text-slate-600 dark:text-white/70" />
+          <LucideIcon name="X" className="text-xs text-slate-600 dark:text-white/70" />
         </button>
         {/* File name tooltip on hover */}
         <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-0.5 text-[8px] text-slate-600 dark:text-white/60 text-center truncate px-1">
@@ -1508,13 +1596,13 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
               <p className="text-slate-500 dark:text-white/40 text-xs mt-0.5">Files in the same group get combined into 1 PDF</p>
             </div>
             <button onClick={onClose} className="w-9 h-9 rounded-xl flex items-center justify-center transition hover:bg-slate-200 dark:bg-white/10" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              <Boxicon className="bx bx-x text-2xl" />
+              <LucideIcon name="X" className="text-2xl" />
             </button>
           </div>
 
           {/* How-to callout inside the sheet */}
           <div className="mt-3 flex items-start gap-3 px-4 py-3 rounded-2xl" style={{ background: 'rgba(129,140,248,0.08)', border: '1px solid rgba(129,140,248,0.2)' }}>
-            <i className="bx bx-info-circle text-lg shrink-0 mt-0.5" style={{ color: '#818cf8' }}></i>
+            <LucideIcon name="Info" className="text-lg shrink-0 mt-0.5" style={{ color: '#818cf8' }} />
             <div className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
               <strong className="text-slate-700 dark:text-white/80">How to use:</strong> Tap the <strong className="text-slate-600 dark:text-white/70">[A] [B] [C] [D]</strong> buttons on any file to assign it to a group. Files in the same group will be merged into <strong className="text-slate-600 dark:text-white/70">one PDF</strong>. Unassigned files print separately.
             </div>
@@ -1528,7 +1616,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
             return (
               <div key={g.id} className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold"
                 style={{ background: g.bg, color: g.color, border: `1px solid ${g.border}` }}>
-                <Boxicon className="bx bxs-file-pdf text-xs" />
+                <LucideIcon name="FileText" className="text-xs" />
                 {g.label}: {n} file{n !== 1 ? 's' : ''}
               </div>
             );
@@ -1547,7 +1635,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
                 onDrop={() => {
                   if (dragFileId) { onAssign(dragFileId, c.id as GroupId | null); setDragFileId(null); }
                 }}
-                className="rounded-2xl overflow-hidden transition-all"
+                className={`rounded-2xl overflow-hidden transition-all ${isExpanded ? 'shadow-md' : ''}`}
                 style={{
                   background: containerFiles.length > 0 ? c.bg : 'rgba(255,255,255,0.03)',
                   border: `1.5px solid ${containerFiles.length > 0 ? c.border : 'rgba(255,255,255,0.08)'}`,
@@ -1560,7 +1648,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
                 >
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: `${c.color}20`, border: `1.5px solid ${c.border || c.color}` }}>
-                    <i className={`bx ${c.icon} text-sm`} style={{ color: c.color }}></i>
+                    <LucideIcon name={c.icon} className="text-sm" style={{ color: c.color }} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="font-bold text-sm" style={{ color: c.color }}>{c.label}</p>
@@ -1573,7 +1661,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
                   {containerFiles.length === 0 ? (
                     <div className="w-6 h-6 rounded-full border-2 border-dashed flex items-center justify-center"
                       style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
-                      <Boxicon className="bx bx-plus text-xs text-white/25" />
+                      <LucideIcon name="Plus" className="text-xs text-white/25" />
                     </div>
                   ) : (
                     <span className="text-xs font-black rounded-full px-2 py-0.5"
@@ -1584,7 +1672,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
                 </button>
 
                 {/* Files inside container */}
-                {containerFiles.length > 0 && (
+                {isExpanded && containerFiles.length > 0 && (
                   <div className="px-4 pb-4">
                     <div className="flex flex-wrap gap-2">
                       {containerFiles.map(f => <FileThumbnail key={f.id} f={f} />)}
@@ -1608,8 +1696,8 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
                     <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
                       style={{ background: '#1a2733' }}>
                       {f.previewUrl
-                        ? <img src={f.previewUrl} alt="" className="w-full h-full object-cover" />
-                        : <i className={`bx ${getFileTypeBadge(f.file).icon} text-xl text-slate-500 dark:text-white/40`}></i>
+                        ? <img /* eslint-disable-next-line @next/next/no-img-element */ src={f.previewUrl} alt="" className="w-full h-full object-cover" />
+                        : <LucideIcon name={getFileTypeBadge(f.file).icon} className="text-xl text-slate-500 dark:text-white/40" />
                       }
                     </div>
                     <div className="flex-1 min-w-0">
@@ -1637,7 +1725,7 @@ function GroupOrganiserSheet({ files, onAssign, onClose, onRemove }: {
                           className="w-6 h-6 rounded-md text-[10px] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"
                           style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)', border: '1.5px solid transparent' }}
                           title="Remove from group"
-                        ><Boxicon className="bx bx-x text-xs" /></button>
+                        ><LucideIcon name="X" className="text-xs" /></button>
                       )}
                     </div>
                   </div>
@@ -1679,9 +1767,9 @@ function GroupPicker({ currentGroupId, onChange }: {
           : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)' }
         }
       >
-        <Boxicon className="bx bx-layer text-sm" />
+        <LucideIcon name="Layers" className="text-sm" />
         {current ? `${current.label} → PDF` : 'Group (combine to PDF)'}
-        <Boxicon className={`bx bx-chevron-${open ? 'up' : 'down'} text-sm ml-auto`} />
+        <LucideIcon name={open ? "ChevronUp" : "ChevronDown"} className="text-sm ml-auto" />
       </button>
 
       {open && (
@@ -1699,7 +1787,7 @@ function GroupPicker({ currentGroupId, onChange }: {
               >
                 <span className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black" style={{ background: g.bg, border: `1px solid ${g.border}` }}>{g.id}</span>
                 {g.label}
-                {currentGroupId === g.id && <Boxicon className="bx bx-check ml-auto text-sm" />}
+                {currentGroupId === g.id && <LucideIcon name="Check" className="ml-auto text-sm" />}
               </button>
             ))}
             <button
@@ -1708,10 +1796,10 @@ function GroupPicker({ currentGroupId, onChange }: {
               style={{ border: '1px solid transparent' }}
             >
               <span className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                <Boxicon className="bx bx-minus text-xs" />
+                <LucideIcon name="Minus" className="text-xs" />
               </span>
               Print separately
-              {!currentGroupId && <Boxicon className="bx bx-check ml-auto text-sm text-slate-500 dark:text-white/40" />}
+              {!currentGroupId && <LucideIcon name="Check" className="ml-auto text-sm text-slate-500 dark:text-white/40" />}
             </button>
           </div>
         </div>
@@ -1741,7 +1829,7 @@ function MessageBubble({
     <div className={`flex items-end gap-2 mb-1 animate-in fade-in slide-in-from-bottom-2 duration-300 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
       {isBot && (
         <div className="w-7 h-7 rounded-full bg-emerald-700 flex items-center justify-center shrink-0 mb-1">
-          <Boxicon className="bx bx-printer text-slate-800 dark:text-white text-xs" />
+          <LucideIcon name="Printer" className="text-slate-800 dark:text-white text-xs" />
         </div>
       )}
       {isUser && <div className="w-7 shrink-0"></div>}
@@ -1752,14 +1840,14 @@ function MessageBubble({
           <div className={`rounded-2xl overflow-hidden w-full ${isBot ? 'glass elev-2' : 'shadow-md'}`} style={{ background: isBot ? undefined : '#128C7E', maxWidth: '290px' }}>
             {fileItem.previewUrl && (
               <div className="relative">
-                <img src={fileItem.previewUrl} alt="preview" className="w-full max-h-40 object-cover" />
+                <img /* eslint-disable-next-line @next/next/no-img-element */ src={fileItem.previewUrl} alt="preview" className="w-full max-h-40 object-cover" />
                 {/* Group badge overlay */}
                 {fileItem.groupId && (() => {
                   const g = GROUP_SLOTS.find(x => x.id === fileItem.groupId);
                   return g ? (
                     <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1"
                       style={{ background: g.bg, color: g.color, border: `1px solid ${g.border}`, backdropFilter: 'blur(4px)' }}>
-                      <Boxicon className="bx bxs-file-pdf text-[10px]" />{g.label}
+                      <LucideIcon name="FileText" className="text-[10px]" />{g.label}
                     </div>
                   ) : null;
                 })()}
@@ -1769,7 +1857,7 @@ function MessageBubble({
             <div className={`p-3 ${fileItem.previewUrl ? '' : 'pt-3'}`}>
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/10 flex items-center justify-center shrink-0">
-                  <i className={`bx ${getFileTypeBadge(fileItem.file).icon} text-slate-800 dark:text-white text-lg`}></i>
+                  <LucideIcon name={getFileTypeBadge(fileItem.file).icon} className="text-slate-800 dark:text-white text-lg" />
                 </div>
                 <div className="overflow-hidden">
                   <p className="text-slate-800 dark:text-white text-xs font-semibold truncate">{fileItem.file.name}</p>
@@ -1791,9 +1879,9 @@ function MessageBubble({
                           updateFileSetting(fileItem.id, 'action', 'direct_print');
                           updateFileSetting(fileItem.id, 'passportConfig', undefined);
                           const slot = GROUP_SLOTS.find(g => g.id === gid);
-                          addToast(`Added to ${slot?.label}`, 'bx-layer');
+                          addToast(`Added to ${slot?.label}`, 'Layers');
                         } else {
-                          addToast('Set to print separately', 'bx-minus-circle');
+                          addToast('Set to print separately', 'MinusCircle');
                         }
                       }}
                     />
@@ -1867,7 +1955,7 @@ function MessageBubble({
                     <button onClick={() => setCropFileId(fileItem.id)}
                       className="w-full py-1.5 rounded-lg text-[11px] font-bold bg-purple-600/30 text-purple-300 hover:bg-purple-600/50 transition border border-purple-500/30 flex items-center justify-center gap-1.5"
                     >
-                      <Boxicon className="bx bx-crop text-sm" /> ✂️ Crop / Rotate
+                      <LucideIcon name="Crop" className="text-sm" /> ✂️ Crop / Rotate
                     </button>
                   )}
 
@@ -1883,7 +1971,7 @@ function MessageBubble({
                       }}
                       className={`w-full py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 border ${fileItem.action === 'passport_photo' ? 'bg-amber-500 text-slate-800 dark:text-white border-amber-400' : 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20'}`}
                     >
-                      <Boxicon className="bx bx-id-card text-lg" />
+                      <LucideIcon name="Contact" className="text-lg" />
                       {fileItem.action === 'passport_photo' ? '🛂 Passport Photo (Selected)' : 'Make Passport Photo'}
                     </button>
                   )}
@@ -1919,7 +2007,7 @@ function MessageBubble({
         {/* Timestamp + read receipt */}
         <div className={`flex items-center gap-1 px-1 ${isUser ? 'flex-row-reverse' : ''}`}>
           <span className="text-white/25 text-[10px]">{formatTime(msg.timestamp)}</span>
-          {isUser && <i className="bx bx-check-double text-[10px]" style={{ color: '#34B7F1' }}></i>}
+          {isUser && <LucideIcon name="CheckCircle2" className="text-[10px]" style={{ color: '#34B7F1' }} />}
         </div>
       </div>
     </div>
