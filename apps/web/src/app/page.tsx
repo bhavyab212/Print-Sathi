@@ -14,7 +14,6 @@ import {
   Calculator,
   CheckCircle2,
   Contact,
-  Download,
   FileText,
   Heart,
   ListChecks,
@@ -289,13 +288,6 @@ export default function HomePage() {
                   >
                     Get Started Free
                     <ClientIcon icon={ArrowRight} className="ml-2 h-5 w-5" />
-                  </NavLink>
-                  <NavLink
-                    href="/download"
-                    className={buttonVariants({ variant: "glass", size: "lg" })}
-                  >
-                    <ClientIcon icon={Download} className="mr-2 h-5 w-5" />
-                    Download Desktop
                   </NavLink>
                 </div>
               </GlassCard>
