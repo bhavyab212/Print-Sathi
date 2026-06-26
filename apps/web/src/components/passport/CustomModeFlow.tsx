@@ -13,7 +13,7 @@ import { EnhancePanel } from "@/components/passport/panels/EnhancePanel";
 import { LayoutPrintPanel } from "@/components/passport/panels/LayoutPrintPanel";
 
 const PROCESSING_URL =
-  process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000";
+  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 const DEFAULT_CONFIG: PassportConfig = {
   size: PASSPORT_SIZES[0],

@@ -11,7 +11,7 @@ import { useNavigationLoading } from "@/components/navigation/NavigationProvider
 
 
 const PROCESSING_URL =
-  process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000";
+  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 interface HealthInfo {
   status: string;

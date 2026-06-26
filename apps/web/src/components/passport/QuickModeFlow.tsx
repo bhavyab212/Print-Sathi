@@ -13,7 +13,7 @@ import { CropAdjustPanel, type CropBox } from "@/components/passport/panels/Crop
 
 // Python processing service base URL
 const PROCESSING_URL =
-  process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000";
+  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 type Step = "upload" | "processing" | "configure" | "done";
 

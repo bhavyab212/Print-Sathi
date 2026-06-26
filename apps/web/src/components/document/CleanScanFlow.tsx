@@ -8,7 +8,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 
 // Python processing service base URL
 const PROCESSING_URL =
-  process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000";
+  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 type Step = "upload" | "crop" | "processing" | "compare";
 

@@ -9,7 +9,7 @@ import { BgReviewPanel } from "@/components/passport/panels/BgReviewPanel";
 import { CropAdjustPanel } from "@/components/passport/panels/CropAdjustPanel";
 
 const PROCESSING_URL =
-  process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000";
+  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 type BgStep = "upload" | "processing" | "review" | "crop" | "done";
 

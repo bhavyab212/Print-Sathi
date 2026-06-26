@@ -555,7 +555,8 @@ export function BgReviewPanel({
     try {
       const formData = new FormData();
       formData.append("processed_image", processedSrc);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000"}/passport/retry-analyze`, {
+      const processingUrl = (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+      const res = await fetch(`${processingUrl}/passport/retry-analyze`, {
         method: "POST",
         body: formData,
       });
