@@ -69,11 +69,6 @@ function LoginForm() {
     setLoading(false);
   }
 
-  function fillTestCredentials() {
-    sound.play("select");
-    setEmail("printsathi.test@gmail.com");
-    setPassword("PrintSathi@123");
-  }
 
   return (
     <>
@@ -94,24 +89,6 @@ function LoginForm() {
                 Sign in to your shopkeeper account.
               </p>
 
-              {/* Test credentials chip */}
-              <button
-                type="button"
-                onClick={fillTestCredentials}
-                onMouseEnter={() => sound.play("hover")}
-                className="glass shimmer-border group mb-5 flex w-full items-center gap-3 rounded-xl border border-dashed border-[var(--ps-primary)]/40 px-4 py-3 text-left text-sm transition-all hover:-translate-y-0.5 hover:shadow-glow-primary"
-              >
-                <div className="clay-accent flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-                  <Boxicon className="bx bx-key text-base text-white" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-[var(--ps-primary)]">Use test credentials</p>
-                  <p className="text-caption truncate text-[var(--ps-ink-subtle)]">
-                    printsathi.test@gmail.com / PrintSathi@123
-                  </p>
-                </div>
-                <Boxicon className="bx bx-chevron-right ml-auto text-[var(--ps-ink-muted)] transition-transform group-hover:translate-x-0.5" />
-              </button>
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <AuthInput
