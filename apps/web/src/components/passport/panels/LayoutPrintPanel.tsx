@@ -79,7 +79,7 @@ export function LayoutPrintPanel({
   const [limitFileSize, setLimitFileSize] = useState<boolean>(false);
   const [targetSizeKb, setTargetSizeKb] = useState<number>(50);
   const [estimatedSizeKb, setEstimatedSizeKb] = useState<number | null>(null);
-  const [jpegQuality, setJpegQuality] = useState<number>(90);
+  const [jpegQuality, setJpegQuality] = useState<number>(100);
   const [isSaving, setIsSaving] = useState(false);
   const navigation = useNavigationLoadingOptional();
 
@@ -117,7 +117,7 @@ export function LayoutPrintPanel({
     if (limitFileSize && currentSizeKb > targetKb) {
       if (format === "jpeg" || format === "webp" || format === "pdf") {
         let low = 0.1;
-        let high = 0.95;
+        let high = 1;
         for (let i = 0; i < 6; i++) {
           const midQuality = (low + high) / 2;
           let tempBlob: Blob;
@@ -317,7 +317,7 @@ export function LayoutPrintPanel({
       if (!c) throw new Error("A4 Canvas not found");
 
       // Always save as a high-quality PDF for the dashboard
-      const pdfBlob = canvasToPDF(c, 0.9);
+      const pdfBlob = canvasToPDF(c, 1);
       const file = new File([pdfBlob], "passport_sheet.pdf", { type: "application/pdf" });
 
       const filePath = `edited/${jobId}_${itemId}.pdf`;

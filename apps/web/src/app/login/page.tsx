@@ -17,7 +17,6 @@ import {
   AuthFooter,
 } from "@/components/auth/AuthShell";
 import { useNavigationLoading } from "@/components/navigation/NavigationProvider";
-import { useSound } from "@/hooks/useSound";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -31,7 +30,6 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
   const { startNavigation } = useNavigationLoading();
-  const sound = useSound();
 
   const supabase = createClient();
 

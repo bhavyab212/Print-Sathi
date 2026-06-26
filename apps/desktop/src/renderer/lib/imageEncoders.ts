@@ -136,7 +136,7 @@ export function canvasToTIFF(canvas: HTMLCanvasElement): Blob {
   return new Blob([buffer], { type: "image/tiff" });
 }
 
-export function canvasToPDF(canvas: HTMLCanvasElement, quality: number = 0.9): Blob {
+export function canvasToPDF(canvas: HTMLCanvasElement, quality: number = 1): Blob {
   const jpegUrl = canvas.toDataURL("image/jpeg", quality);
   const b64Data = jpegUrl.split(",")[1];
   const jpegBytes = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));

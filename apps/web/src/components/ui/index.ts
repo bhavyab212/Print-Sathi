@@ -5,4 +5,5 @@ export { Reveal } from "./Reveal";
 export { Badge, type BadgeProps } from "./Badge";
 export { Boxicon } from "./Boxicon";
 export { ClientIcon } from "./ClientIcon";
+export { LoadingOverlay, MIN_LOADING_MS } from "./LoadingOverlay";
 export { EtheralShadow } from "./etheral-shadow";

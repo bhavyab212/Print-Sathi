@@ -266,7 +266,7 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
       ctx.fillStyle = "#FFFFFF";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
-      link.href = canvas.toDataURL("image/jpeg", 0.95);
+      link.href = canvas.toDataURL("image/jpeg", 1);
       link.click();
     };
     img.src = finalImage;

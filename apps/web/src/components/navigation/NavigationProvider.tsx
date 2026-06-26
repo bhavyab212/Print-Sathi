@@ -5,12 +5,13 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ProgressBar } from "./ProgressBar";
 import { useSound } from "@/hooks/useSound";
+import { LoadingOverlay, MIN_LOADING_MS } from "@/components/ui/LoadingOverlay";
 
 interface NavigationContextValue {
   startNavigation: () => void;
@@ -32,19 +33,23 @@ export function useNavigationLoadingOptional() {
 }
 
 export function NavigationProvider({ children }: { children: React.ReactNode }) {
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(true);
+  const [showOverlay, setShowOverlay] = useState(true);
+  const navigationStartedAt = useRef(Date.now());
   const pathname = usePathname();
   const { play } = useSound();
 
   useEffect(() => {
     if (isNavigating) {
       play("navigate-start");
-      const timer = setTimeout(() => setShowOverlay(true), 400);
-      return () => clearTimeout(timer);
+      setShowOverlay(true);
     } else {
-      setShowOverlay(false);
-      const timer = setTimeout(() => play("navigate-end"), 100);
+      const elapsed = Date.now() - navigationStartedAt.current;
+      const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+      const timer = setTimeout(() => {
+        setShowOverlay(false);
+        play("navigate-end");
+      }, remaining);
       return () => clearTimeout(timer);
     }
   }, [isNavigating, play]);
@@ -54,19 +59,14 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
   }, [pathname]);
 
   const startNavigation = useCallback(() => {
+    navigationStartedAt.current = Date.now();
     setIsNavigating(true);
   }, []);
 
   return (
     <NavigationContext.Provider value={{ startNavigation, isNavigating }}>
       <ProgressBar isAnimating={isNavigating} />
-      {showOverlay && (
-        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300 animate-fade-in">
-          <div className="relative h-28 w-28 animate-[spin_1.2s_linear_infinite]">
-            <Image src="/images/logo.png" alt="Loading" fill className="object-contain" />
-          </div>
-        </div>
-      )}
+      {showOverlay && <LoadingOverlay className="animate-fade-in bg-black/45 backdrop-blur-md" />}
       {children}
     </NavigationContext.Provider>
   );

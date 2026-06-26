@@ -103,7 +103,7 @@ export default function BgRemoveView() {
   const [subjectScale, setSubjectScale] = useState<number>(100);
   const [subjectOffsetX, setSubjectOffsetX] = useState<number>(0);
   const [subjectOffsetY, setSubjectOffsetY] = useState<number>(0);
-  const [jpegQuality, setJpegQuality] = useState<number>(90);
+  const [jpegQuality, setJpegQuality] = useState<number>(100);
   const [limitFileSize, setLimitFileSize] = useState<boolean>(false);
   const [targetSizeKb, setTargetSizeKb] = useState<number>(50);
   const [estimatedSizeKb, setEstimatedSizeKb] = useState<number | null>(null);
@@ -193,7 +193,7 @@ export default function BgRemoveView() {
     if (limitFileSize && currentSizeKb > targetKb) {
       if (format === "jpeg" || format === "webp" || format === "pdf") {
         let low = 0.1;
-        let high = 0.95;
+        let high = 1;
         for (let i = 0; i < 6; i++) {
           const midQuality = (low + high) / 2;
           let tempBlob: Blob;
