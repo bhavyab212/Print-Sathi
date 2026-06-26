@@ -159,9 +159,9 @@ def _image_to_base64(pil_img: Image.Image, fmt: str = "PNG") -> str:
 # Routes
 # ---------------------------------------------------------------------------
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health_check():
-    """Health check endpoint returning status, task counts, and active sessions."""
+    """Health check endpoint — accepts GET and HEAD (for UptimeRobot free plan)."""
     active_sessions = [k for k, v in _sessions.items() if v is not None]
     return {
         "status": "ok",
