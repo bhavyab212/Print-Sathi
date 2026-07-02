@@ -5,6 +5,7 @@ import subprocess
 import urllib.request
 import zipfile
 import json
+import time
 from pathlib import Path
 
 import customtkinter as ctk
@@ -20,7 +21,7 @@ class PrintSathiServerApp(ctk.CTk):
         super().__init__()
 
         self.title("Print-Sathi AI Server Manager")
-        self.geometry("500x420")
+        self.geometry("600x500")
         self.resizable(False, False)
 
         # Paths
@@ -29,16 +30,41 @@ class PrintSathiServerApp(ctk.CTk):
         self.env_dir = self.app_data_dir / "env"
         self.backend_dir = self.app_data_dir / "backend"
         self.uv_exe = self.app_data_dir / "uv.exe"
+        
+        self.bundle_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+        if hasattr(sys, '_MEIPASS'):
+            self.assets_dir = Path(self.bundle_dir) / "assets"
+        else:
+            self.assets_dir = Path(self.bundle_dir).parent / "assets"
+            
+        self.logo_path = self.assets_dir / "logo.png"
 
         self.server_process = None
         self.tray_icon = None
+
+        # Settings
+        self.server_host = "0.0.0.0"
+        self.server_port = 8000
 
         # Bind close window protocol to hide instead of destroy
         self.protocol("WM_DELETE_WINDOW", self.hide_window)
 
         self.setup_ui()
-        self.check_status()
         self.setup_tray()
+        
+    def get_logo_image(self, size=(64, 64)):
+        if self.logo_path.exists():
+            return ctk.CTkImage(light_image=Image.open(self.logo_path), dark_image=Image.open(self.logo_path), size=size)
+        return None
+        
+    def get_pil_logo(self):
+        if self.logo_path.exists():
+            return Image.open(self.logo_path)
+        # fallback
+        image = Image.new('RGB', (64, 64), color='#1a1a1e')
+        dc = ImageDraw.Draw(image)
+        dc.ellipse((12, 12, 52, 52), fill='#0078D4')
+        return image
 
     def setup_ui(self):
         self.grid_columnconfigure(0, weight=1)
@@ -47,87 +73,159 @@ class PrintSathiServerApp(ctk.CTk):
         self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.main_frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
         self.main_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(1, weight=1)
 
-        # Header
+        # Header with Logo
+        self.header_frame = ctk.CTkFrame(self.main_frame, fg_color="transparent")
+        self.header_frame.grid(row=0, column=0, pady=(0, 20))
+        
+        logo_img = self.get_logo_image(size=(48, 48))
+        if logo_img:
+            self.logo_label = ctk.CTkLabel(self.header_frame, image=logo_img, text="")
+            self.logo_label.pack(side="left", padx=10)
+            
         self.title_label = ctk.CTkLabel(
-            self.main_frame, text="Print-Sathi AI Engine", font=ctk.CTkFont(size=24, weight="bold")
+            self.header_frame, text="Print-Sathi AI Engine", font=ctk.CTkFont(size=24, weight="bold")
         )
-        self.title_label.grid(row=0, column=0, pady=(10, 5))
+        self.title_label.pack(side="left")
 
-        self.subtitle_label = ctk.CTkLabel(
-            self.main_frame, text="Local Processing Server", font=ctk.CTkFont(size=14), text_color="gray"
-        )
-        self.subtitle_label.grid(row=1, column=0, pady=(0, 20))
+        # Content Frame
+        self.content_frame = ctk.CTkFrame(self.main_frame)
+        self.content_frame.grid(row=1, column=0, sticky="nsew")
+        self.content_frame.grid_columnconfigure(0, weight=1)
+        
+        # Start at Welcome Page
+        self.show_welcome_page()
 
-        # Status
-        self.status_frame = ctk.CTkFrame(self.main_frame)
-        self.status_frame.grid(row=2, column=0, sticky="ew", pady=10, ipadx=10, ipady=10)
-        self.status_frame.grid_columnconfigure(0, weight=1)
+    def clear_content(self):
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
 
-        self.status_label = ctk.CTkLabel(
-            self.status_frame, text="Checking requirements...", font=ctk.CTkFont(size=14)
-        )
-        self.status_label.grid(row=0, column=0, pady=10)
+    def show_welcome_page(self):
+        self.clear_content()
+        
+        lbl = ctk.CTkLabel(self.content_frame, text="Welcome to Print-Sathi Local AI Setup", font=ctk.CTkFont(size=18, weight="bold"))
+        lbl.pack(pady=(40, 20))
+        
+        desc = ctk.CTkLabel(self.content_frame, text="To process files locally and securely, we need to verify\nyour system environment and AI models.", text_color="gray")
+        desc.pack(pady=(0, 40))
+        
+        btn = ctk.CTkButton(self.content_frame, text="Check My System", font=ctk.CTkFont(weight="bold", size=14), height=40, command=self.run_system_check)
+        btn.pack()
 
-        self.progress_bar = ctk.CTkProgressBar(self.status_frame)
-        self.progress_bar.grid(row=1, column=0, sticky="ew", padx=20, pady=(0, 10))
-        self.progress_bar.set(0)
-        self.progress_bar.grid_remove()
+    def run_system_check(self):
+        self.clear_content()
+        
+        lbl = ctk.CTkLabel(self.content_frame, text="Checking System...", font=ctk.CTkFont(size=18, weight="bold"))
+        lbl.pack(pady=(50, 20))
+        
+        progress = ctk.CTkProgressBar(self.content_frame, mode="indeterminate", width=300)
+        progress.pack(pady=20)
+        progress.start()
+        
+        self.check_log = ctk.CTkLabel(self.content_frame, text="Scanning for Python Virtual Environment...", text_color="gray")
+        self.check_log.pack()
 
-        # Actions
-        self.action_btn = ctk.CTkButton(
-            self.main_frame, text="Install AI Engine (~2.5 GB)", command=self.start_install, font=ctk.CTkFont(weight="bold")
-        )
-        self.action_btn.grid(row=3, column=0, pady=20)
-        self.action_btn.configure(state="disabled")
+        # Run check in thread to simulate animation
+        threading.Thread(target=self._check_logic, args=(progress,), daemon=True).start()
 
-        self.open_dashboard_btn = ctk.CTkButton(
-            self.main_frame, text="Open Web Dashboard", command=self.open_dashboard, fg_color="transparent", border_width=1
-        )
-        self.open_dashboard_btn.grid(row=4, column=0, pady=5)
-        self.open_dashboard_btn.grid_remove()
-
-    def check_status(self):
-        # Check if venv exists and is valid
+    def _check_logic(self, progress):
+        time.sleep(1.5)
+        
         python_exe = self.env_dir / "Scripts" / "python.exe"
         if python_exe.exists() and self.backend_dir.exists():
-            self.status_label.configure(text="Ready to Start Server", text_color="green")
-            self.action_btn.configure(text="Start Server", command=self.toggle_server, state="normal")
-            self.open_dashboard_btn.grid()
+            self.after(0, progress.stop)
+            self.after(0, self.show_dashboard_page)
         else:
-            self.status_label.configure(text="Required AI Models & Packages missing.", text_color="orange")
-            self.action_btn.configure(text="Download & Install (~2.5 GB)", command=self.start_install, state="normal")
+            self.check_log.configure(text="Missing Requirements Found.")
+            time.sleep(1.0)
+            self.after(0, progress.stop)
+            self.after(0, self.show_prereq_page)
+
+    def show_prereq_page(self):
+        self.clear_content()
+        
+        lbl = ctk.CTkLabel(self.content_frame, text="Missing Requirements", font=ctk.CTkFont(size=18, weight="bold"), text_color="orange")
+        lbl.pack(pady=(20, 10))
+        
+        list_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+        list_frame.pack(pady=10)
+        
+        reqs = [
+            "1. Python Virtual Environment (3.11)",
+            "2. Local Backend Engine Code",
+            "3. AI Core Dependencies (~2.5 GB)"
+        ]
+        
+        for r in reqs:
+            r_lbl = ctk.CTkLabel(list_frame, text=f"• {r}", font=ctk.CTkFont(size=14))
+            r_lbl.pack(anchor="w", pady=2)
+            
+        desc = ctk.CTkLabel(self.content_frame, text="These packages will be downloaded and installed automatically.", text_color="gray")
+        desc.pack(pady=(20, 20))
+        
+        self.dl_btn = ctk.CTkButton(self.content_frame, text="Download & Install", font=ctk.CTkFont(weight="bold", size=14), height=40, command=self.start_install)
+        self.dl_btn.pack()
 
     def start_install(self):
-        self.action_btn.configure(state="disabled")
-        self.progress_bar.grid()
-        self.progress_bar.set(0)
+        self.clear_content()
+        
+        lbl = ctk.CTkLabel(self.content_frame, text="Downloading & Installing", font=ctk.CTkFont(size=18, weight="bold"))
+        lbl.pack(pady=(20, 10))
+        
+        self.install_status = ctk.CTkLabel(self.content_frame, text="Initializing...", text_color="gray", font=ctk.CTkFont(size=12))
+        self.install_status.pack(pady=5)
+        
+        self.install_progress = ctk.CTkProgressBar(self.content_frame, width=350)
+        self.install_progress.pack(pady=15)
+        self.install_progress.set(0)
+        
+        self.install_metrics = ctk.CTkLabel(self.content_frame, text="Size: 0 MB / ~2.5 GB", text_color="gray", font=ctk.CTkFont(size=11))
+        self.install_metrics.pack()
+        
+        # We simulate pause functionality for UV download, but for PIP install we can't pause natively.
+        self.pause_btn = ctk.CTkButton(self.content_frame, text="Pause (Unavailable)", state="disabled", fg_color="gray")
+        self.pause_btn.pack(pady=20)
+        
         threading.Thread(target=self.install_process, daemon=True).start()
 
-    def update_status(self, text, progress=None):
-        self.status_label.configure(text=text)
+    def update_install_ui(self, status=None, progress=None, metrics=None):
+        if status:
+            self.install_status.configure(text=status)
         if progress is not None:
-            self.progress_bar.set(progress)
+            if progress == "indeterminate":
+                self.install_progress.configure(mode="indeterminate")
+                self.install_progress.start()
+            elif progress == "stop":
+                self.install_progress.stop()
+                self.install_progress.configure(mode="determinate")
+            else:
+                self.install_progress.configure(mode="determinate")
+                self.install_progress.set(progress)
+        if metrics:
+            self.install_metrics.configure(text=metrics)
 
     def install_process(self):
         try:
-            self.update_status("Downloading UV Package Manager...", 0.1)
+            self.update_install_ui("Downloading UV Package Manager...", 0.05, "Size: 0 MB / 18 MB")
             self.download_uv()
 
-            self.update_status("Setting up Python Environment...", 0.3)
+            self.update_install_ui("Setting up Python Environment...", 0.15, "Configuring VENV...")
             self.setup_python_env()
 
-            self.update_status("Installing AI Dependencies (This takes a while)...", 0.5)
+            self.update_install_ui("Installing AI Dependencies...", "indeterminate", "Size: ~2.5 GB")
             self.install_dependencies()
 
-            self.update_status("Extracting backend code...", 0.9)
+            self.update_install_ui("Extracting backend code...", "stop", "Unpacking...")
+            self.install_progress.set(0.9)
             self.extract_backend()
 
-            self.update_status("Installation Complete!", 1.0)
-            self.after(1000, self.check_status)
+            self.update_install_ui("Installation Complete!", 1.0, "Ready to launch")
+            time.sleep(1.5)
+            self.after(0, self.show_dashboard_page)
         except Exception as e:
-            self.update_status(f"Error: {e}", 0)
-            self.action_btn.configure(state="normal")
+            self.update_install_ui(f"Error: {e}", "stop")
+            self.after(0, lambda: self.pause_btn.configure(text="Retry", state="normal", fg_color="#D32F2F", command=self.start_install))
 
     def download_uv(self):
         if not self.uv_exe.exists():
@@ -137,7 +235,6 @@ class PrintSathiServerApp(ctk.CTk):
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 zip_ref.extractall(self.app_data_dir)
             
-            # The executable is likely inside a folder like uv-x86_64-pc-windows-msvc/uv.exe
             extracted_uv = list(self.app_data_dir.glob("**/uv.exe"))
             if extracted_uv:
                 if extracted_uv[0] != self.uv_exe:
@@ -153,7 +250,6 @@ class PrintSathiServerApp(ctk.CTk):
         )
 
     def install_dependencies(self):
-        # We write a requirements.txt to disk
         reqs = """fastapi==0.109.2
 uvicorn==0.27.0.post1
 python-multipart==0.0.9
@@ -165,23 +261,32 @@ opencv-python-headless==4.9.0.80
         req_path = self.app_data_dir / "backend_requirements.txt"
         req_path.write_text(reqs)
 
-        subprocess.run(
+        # Run with stderr pipe to capture progress text
+        process = subprocess.Popen(
             [str(self.uv_exe), "pip", "install", "-r", str(req_path)],
             env={**os.environ, "VIRTUAL_ENV": str(self.env_dir)},
-            check=True,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
         )
+        
+        while True:
+            line = process.stderr.readline()
+            if not line and process.poll() is not None:
+                break
+            if line:
+                # Clean up uv's output which contains ANSI escape sequences
+                clean_line = line.strip()
+                if "Fetching" in clean_line or "Installing" in clean_line:
+                    # Update status but limit string length
+                    self.after(0, self.update_install_ui, f"Processing: {clean_line[:60]}...")
+        
+        if process.returncode != 0:
+            raise Exception("Failed to install dependencies.")
 
     def extract_backend(self):
-        bundle_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-        
-        # If running from source during dev, the zip is at ../assets/backend.zip
-        # If packed with PyInstaller, it's at _MEIPASS/assets/backend.zip
-        if hasattr(sys, '_MEIPASS'):
-            zip_path = Path(bundle_dir) / "assets" / "backend.zip"
-        else:
-            zip_path = Path(bundle_dir).parent / "assets" / "backend.zip"
-        
+        zip_path = self.assets_dir / "backend.zip"
         self.backend_dir.mkdir(parents=True, exist_ok=True)
         
         if zip_path.exists():
@@ -201,6 +306,28 @@ def health(): return {"status": "ok", "total_tasks_processed": 0, "active_model_
 '''
         (self.backend_dir / "main.py").write_text(code)
 
+    def show_dashboard_page(self):
+        self.clear_content()
+        
+        self.dash_status = ctk.CTkLabel(self.content_frame, text="Server Stopped", font=ctk.CTkFont(size=20, weight="bold"), text_color="gray")
+        self.dash_status.pack(pady=(30, 20))
+        
+        btn_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+        btn_frame.pack(pady=10)
+        
+        self.toggle_btn = ctk.CTkButton(btn_frame, text="Start Server", font=ctk.CTkFont(weight="bold"), fg_color="green", hover_color="darkgreen", command=self.toggle_server, width=150)
+        self.toggle_btn.grid(row=0, column=0, padx=10)
+        
+        self.test_btn = ctk.CTkButton(btn_frame, text="Test Server", command=self.test_server, width=150)
+        self.test_btn.grid(row=0, column=1, padx=10)
+        
+        self.custom_btn = ctk.CTkButton(self.content_frame, text="Custom Settings", fg_color="transparent", border_width=1, command=self.show_custom_settings)
+        self.custom_btn.pack(pady=(20, 0))
+        
+        if self.server_process:
+            self.dash_status.configure(text=f"Running on {self.server_host}:{self.server_port}", text_color="green")
+            self.toggle_btn.configure(text="Stop Server", fg_color="#D32F2F", hover_color="#B71C1C")
+
     def toggle_server(self):
         if self.server_process is None:
             self.start_server()
@@ -208,38 +335,84 @@ def health(): return {"status": "ok", "total_tasks_processed": 0, "active_model_
             self.stop_server()
 
     def start_server(self):
-        self.action_btn.configure(state="disabled", text="Starting...")
+        self.toggle_btn.configure(state="disabled", text="Starting...")
         python_exe = self.env_dir / "Scripts" / "python.exe"
         
-        # Start uvicorn subprocess
         self.server_process = subprocess.Popen(
-            [str(python_exe), "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+            [str(python_exe), "-m", "uvicorn", "main:app", "--host", self.server_host, "--port", str(self.server_port)],
             cwd=str(self.backend_dir),
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
         )
         
-        self.status_label.configure(text="Server Running on port 8000", text_color="green")
-        self.action_btn.configure(state="normal", text="Stop Server")
+        time.sleep(1) # wait for uvicorn to boot up
+        self.show_dashboard_page()
 
     def stop_server(self):
         if self.server_process:
             self.server_process.terminate()
             self.server_process.wait()
             self.server_process = None
+        self.show_dashboard_page()
+
+    def test_server(self):
+        if not self.server_process:
+            self.show_alert("Error", "Start the server first before testing.")
+            return
+            
+        def _ping():
+            try:
+                url = f"http://{'127.0.0.1' if self.server_host == '0.0.0.0' else self.server_host}:{self.server_port}/health"
+                req = urllib.request.Request(url, method="GET")
+                with urllib.request.urlopen(req, timeout=3) as res:
+                    data = json.loads(res.read().decode())
+                    self.after(0, lambda: self.show_alert("Success", f"Server is Healthy!\n\nDetails: {json.dumps(data, indent=2)}"))
+            except Exception as e:
+                self.after(0, lambda: self.show_alert("Failed", f"Server test failed:\n{str(e)}"))
         
-        self.status_label.configure(text="Server Stopped", text_color="gray")
-        self.action_btn.configure(text="Start Server")
+        threading.Thread(target=_ping, daemon=True).start()
 
-    def open_dashboard(self):
-        import webbrowser
-        webbrowser.open("https://print-sathi.onrender.com")
+    def show_alert(self, title, message):
+        top = ctk.CTkToplevel(self)
+        top.title(title)
+        top.geometry("300x200")
+        top.resizable(False, False)
+        # Make modal
+        top.transient(self)
+        top.grab_set()
+        
+        lbl = ctk.CTkLabel(top, text=message, wraplength=260)
+        lbl.pack(pady=30, padx=20)
+        
+        btn = ctk.CTkButton(top, text="OK", command=top.destroy)
+        btn.pack(side="bottom", pady=20)
 
-    def create_tray_image(self):
-        # Generate simple blue circular icon
-        image = Image.new('RGB', (64, 64), color='#1a1a1e')
-        dc = ImageDraw.Draw(image)
-        dc.ellipse((12, 12, 52, 52), fill='#0078D4')
-        return image
+    def show_custom_settings(self):
+        top = ctk.CTkToplevel(self)
+        top.title("Custom Settings")
+        top.geometry("300x250")
+        top.resizable(False, False)
+        top.transient(self)
+        top.grab_set()
+        
+        ctk.CTkLabel(top, text="Host:").pack(pady=(20, 5))
+        host_entry = ctk.CTkEntry(top)
+        host_entry.insert(0, self.server_host)
+        host_entry.pack()
+        
+        ctk.CTkLabel(top, text="Port:").pack(pady=(10, 5))
+        port_entry = ctk.CTkEntry(top)
+        port_entry.insert(0, str(self.server_port))
+        port_entry.pack()
+        
+        def save():
+            self.server_host = host_entry.get()
+            self.server_port = int(port_entry.get())
+            top.destroy()
+            if self.server_process:
+                self.stop_server()
+                self.start_server()
+                
+        ctk.CTkButton(top, text="Save & Restart", command=save).pack(pady=30)
 
     def setup_tray(self):
         def on_clicked(icon, item):
@@ -260,7 +433,7 @@ def health(): return {"status": "ok", "total_tasks_processed": 0, "active_model_
             pystray.MenuItem("Exit", on_clicked)
         )
 
-        self.tray_icon = pystray.Icon("PrintSathi", self.create_tray_image(), "Print-Sathi AI Engine", menu)
+        self.tray_icon = pystray.Icon("PrintSathi", self.get_pil_logo(), "Print-Sathi AI Engine", menu)
         threading.Thread(target=self.tray_icon.run, daemon=True).start()
 
     def hide_window(self):

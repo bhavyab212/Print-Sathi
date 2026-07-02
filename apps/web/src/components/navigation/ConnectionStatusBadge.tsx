@@ -10,8 +10,8 @@ interface HealthInfo {
 }
 
 export function ConnectionStatusBadge() {
-  const { url: processingUrl, saveUrl } = useProcessingUrl();
-  const [connectionState, setConnectionState] = useState<"connected" | "connecting" | "disconnected">("connecting");
+  const { url: processingUrl, saveUrl, autoDetectUrl } = useProcessingUrl();
+  const [connectionState, setConnectionState] = useState<"connected" | "connecting" | "disconnected" | "scanning">("connecting");
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
   
   const [isOpen, setIsOpen] = useState(false);
@@ -62,11 +62,21 @@ export function ConnectionStatusBadge() {
 
   const dotColor =
     connectionState === "connected" ? "var(--ps-success)" :
+    connectionState === "scanning" ? "var(--ps-info, #3b82f6)" :
     connectionState === "connecting" ? "var(--ps-warning)" : "var(--ps-danger)";
   
   const label =
     connectionState === "connected" ? "AI Connected" :
+    connectionState === "scanning" ? "Scanning..." :
     connectionState === "connecting" ? "Connecting..." : "AI Offline";
+
+  const handleAutoDetect = async () => {
+    setConnectionState("scanning");
+    const found = await autoDetectUrl();
+    if (!found) {
+      setConnectionState("disconnected");
+    }
+  };
 
   const handleSaveUrl = () => {
     saveUrl(inputUrl);
@@ -153,10 +163,11 @@ export function ConnectionStatusBadge() {
                   </div>
                 )}
                 <button 
-                  onClick={checkHealth}
-                  className="w-full mt-4 bg-white dark:bg-[#323236] hover:bg-gray-100 dark:hover:bg-[#3f3f46] text-foreground border border-border/80 py-2 rounded-xl text-xs font-bold shadow-sm transition-all"
+                  onClick={handleAutoDetect}
+                  disabled={connectionState === "scanning"}
+                  className="w-full mt-4 bg-white dark:bg-[#323236] hover:bg-gray-100 dark:hover:bg-[#3f3f46] text-foreground border border-border/80 py-2 rounded-xl text-xs font-bold shadow-sm transition-all disabled:opacity-50"
                 >
-                  Retry Connection
+                  {connectionState === "scanning" ? "Scanning Ports..." : "Auto-Detect Server"}
                 </button>
               </div>
             </div>
