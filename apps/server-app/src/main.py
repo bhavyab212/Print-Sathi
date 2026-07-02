@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 
 import customtkinter as ctk
+import pystray
+from PIL import Image, ImageDraw
 
 # Configure CustomTkinter appearance
 ctk.set_appearance_mode("Dark")
@@ -18,7 +20,7 @@ class PrintSathiServerApp(ctk.CTk):
         super().__init__()
 
         self.title("Print-Sathi AI Server Manager")
-        self.geometry("500x400")
+        self.geometry("500x420")
         self.resizable(False, False)
 
         # Paths
@@ -29,9 +31,14 @@ class PrintSathiServerApp(ctk.CTk):
         self.uv_exe = self.app_data_dir / "uv.exe"
 
         self.server_process = None
+        self.tray_icon = None
+
+        # Bind close window protocol to hide instead of destroy
+        self.protocol("WM_DELETE_WINDOW", self.hide_window)
 
         self.setup_ui()
         self.check_status()
+        self.setup_tray()
 
     def setup_ui(self):
         self.grid_columnconfigure(0, weight=1)
@@ -226,6 +233,55 @@ def health(): return {"status": "ok", "total_tasks_processed": 0, "active_model_
     def open_dashboard(self):
         import webbrowser
         webbrowser.open("https://print-sathi.onrender.com")
+
+    def create_tray_image(self):
+        # Generate simple blue circular icon
+        image = Image.new('RGB', (64, 64), color='#1a1a1e')
+        dc = ImageDraw.Draw(image)
+        dc.ellipse((12, 12, 52, 52), fill='#0078D4')
+        return image
+
+    def setup_tray(self):
+        def on_clicked(icon, item):
+            action = str(item)
+            if action == "Show App":
+                self.show_window()
+            elif action == "Start Server":
+                self.start_server()
+            elif action == "Stop Server":
+                self.stop_server()
+            elif action == "Exit":
+                self.quit_app()
+
+        menu = pystray.Menu(
+            pystray.MenuItem("Show App", on_clicked, default=True),
+            pystray.MenuItem("Start Server", on_clicked, visible=lambda item: self.server_process is None),
+            pystray.MenuItem("Stop Server", on_clicked, visible=lambda item: self.server_process is not None),
+            pystray.MenuItem("Exit", on_clicked)
+        )
+
+        self.tray_icon = pystray.Icon("PrintSathi", self.create_tray_image(), "Print-Sathi AI Engine", menu)
+        threading.Thread(target=self.tray_icon.run, daemon=True).start()
+
+    def hide_window(self):
+        self.withdraw()
+        if not hasattr(self, 'first_hide'):
+            self.first_hide = True
+            try:
+                self.tray_icon.notify("Print-Sathi AI Engine is running in the system tray.", "Minimized to Tray")
+            except Exception:
+                pass
+
+    def show_window(self):
+        self.deiconify()
+        self.focus_force()
+
+    def quit_app(self):
+        self.stop_server()
+        if self.tray_icon:
+            self.tray_icon.stop()
+        self.destroy()
+        sys.exit(0)
 
 if __name__ == "__main__":
     app = PrintSathiServerApp()
