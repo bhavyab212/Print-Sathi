@@ -74,8 +74,8 @@ export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
             <p className="font-semibold">Processing failed</p>
             <p className="opacity-80">{error}</p>
             <p className="mt-1 text-xs opacity-60">
-              Make sure the Python service is running:{" "}
-              <code className="rounded bg-destructive/10 px-1">npm run dev:processing</code>
+              Make sure the AI Server is running:{" "}
+              <strong className="text-foreground">Start the Print-Sathi Server Manager app</strong>
             </p>
           </div>
         </div>
