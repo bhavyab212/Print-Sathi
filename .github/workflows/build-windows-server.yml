@@ -1,0 +1,45 @@
+name: Build Windows Server Manager
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller customtkinter
+          pip install -r apps/server-app/requirements.txt
+        shell: bash
+      - name: Build executable with PyInstaller
+        run: |
+          cd apps/server-app
+          pyinstaller --clean build.spec
+        shell: bash
+      - name: Build installer with NSIS
+        run: |
+          cd apps/server-app
+          makensis installer.nsi
+        shell: bash
+      - name: Upload Release Asset
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/server-app/Print-Sathi-Server-Setup.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Artifact (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Print-Sathi-Server-Setup
+          path: apps/server-app/Print-Sathi-Server-Setup.exe
