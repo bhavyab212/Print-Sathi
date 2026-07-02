@@ -36,13 +36,16 @@ jobs:
           makensis installer.nsi
         shell: bash
       - name: Upload Release Asset
-        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: apps/server-app/Print-Sathi-Server-Setup.exe
+          tag_name: v1.0.0
+          name: "v1.0.0 (Local AI Server Manager)"
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload Artifact (manual run)
+      - name: Upload Artifact (manual run backup)
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
