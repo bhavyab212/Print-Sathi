@@ -6,15 +6,14 @@ import { useState, useRef } from "react";
 import { DocumentDropzone } from "@/components/document/DocumentDropzone";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
-// Python processing service base URL
-const PROCESSING_URL =
-  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+import { useProcessingUrl } from "@/hooks/useProcessingUrl";
 
 type Step = "upload" | "crop" | "processing" | "compare";
 
 interface Point { x: number; y: number }
 
 export function CleanScanFlow() {
+  const { url: processingUrl } = useProcessingUrl();
   const [step, setStep] = useState<Step>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [originalImageObjUrl, setOriginalImageObjUrl] = useState<string | null>(null);
@@ -100,7 +99,7 @@ export function CleanScanFlow() {
       formData.append("points", JSON.stringify(pixelPoints));
       formData.append("enhance", "true");
 
-      const res = await fetch(`${PROCESSING_URL}/document/clean-scan`, {
+      const res = await fetch(`${processingUrl}/document/clean-scan`, {
         method: "POST",
         body: formData,
       });

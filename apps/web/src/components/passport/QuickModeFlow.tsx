@@ -11,9 +11,7 @@ import {
 import { LayoutPrintPanel } from "@/components/passport/panels/LayoutPrintPanel";
 import { CropAdjustPanel, type CropBox } from "@/components/passport/panels/CropAdjustPanel";
 
-// Python processing service base URL
-const PROCESSING_URL =
-  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+import { useProcessingUrl } from "@/hooks/useProcessingUrl";
 
 type Step = "upload" | "processing" | "configure" | "done";
 
@@ -42,6 +40,7 @@ interface QuickModeFlowProps {
 }
 
 export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, itemId }: QuickModeFlowProps) {
+  const { url: processingUrl } = useProcessingUrl();
   const [step, setStep] = useState<Step>("upload");
 
   useEffect(() => {
@@ -73,7 +72,7 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
       formData.append("file", file);
 
       // crop=false so we get the full BG-removed image; user can crop manually in the editor
-      const res = await fetch(`${PROCESSING_URL}/passport/process?crop=false`, {
+      const res = await fetch(`${processingUrl}/passport/process?crop=false`, {
         method: "POST",
         body: formData,
       });

@@ -1,5 +1,6 @@
 "use client";
 import { Boxicon } from "@/components/ui";
+import { ConnectionStatusBadge } from "@/components/navigation/ConnectionStatusBadge";
 
 
 import Link from "next/link";
@@ -10,88 +11,7 @@ import { AmbientBackground } from "@/components/ui";
 import { useNavigationLoading } from "@/components/navigation/NavigationProvider";
 
 
-const PROCESSING_URL =
-  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
-
-interface HealthInfo {
-  status: string;
-  total_tasks_processed: number;
-  active_model_sessions: string[];
-}
-
-function ConnectionStatusBadge() {
-  const [connectionState, setConnectionState] = useState<"connected" | "connecting" | "disconnected">("connecting");
-  const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    const checkHealth = async () => {
-      try {
-        const res = await fetch(`${PROCESSING_URL}/health`);
-        if (!res.ok) throw new Error("Offline");
-        const data = await res.json();
-        if (active) {
-          setHealthInfo(data);
-          setConnectionState("connected");
-        }
-      } catch {
-        if (active) {
-          setConnectionState("disconnected");
-          setHealthInfo(null);
-        }
-      }
-    };
-
-    checkHealth();
-    const interval = setInterval(checkHealth, 5000);
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, []);
-
-  const dotColor =
-    connectionState === "connected" ? "var(--ps-success)" :
-    connectionState === "connecting" ? "var(--ps-warning)" : "var(--ps-danger)";
-  const label =
-    connectionState === "connected" ? "AI Connected" :
-    connectionState === "connecting" ? "Connecting..." : "AI Offline";
-
-  return (
-    <div className="relative group glass glass-rim flex items-center gap-2 rounded-full px-3 py-1.5 text-xs cursor-default transition-all hover:-translate-y-0.5">
-      {/* Live pulse */}
-      <span className="relative flex h-2.5 w-2.5 items-center justify-center">
-        <span
-          className="absolute inline-flex h-full w-full rounded-full opacity-60 animate-ping"
-          style={{ background: dotColor }}
-        />
-        <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: dotColor }} />
-      </span>
-      <span className="font-semibold text-[11px] font-mono tracking-tight" style={{ color: "var(--ps-ink)" }}>
-        {label}
-      </span>
-
-      {/* Details Tooltip */}
-      {connectionState === "connected" && healthInfo && (
-        <div className="absolute right-0 top-full mt-2 z-50 hidden group-hover:block w-56 glass-strong glass-rim rounded-2xl p-3.5 shadow-glass text-left">
-          <p className="text-[10px] uppercase font-bold mb-2 tracking-wider" style={{ color: "var(--ps-ink-muted)" }}>Server Health Metrics</p>
-          <div className="space-y-2 text-xs" style={{ color: "var(--ps-ink)" }}>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--ps-ink-muted)" }}>Total Tasks:</span>
-              <span className="font-mono font-semibold text-gradient">{healthInfo.total_tasks_processed}</span>
-            </div>
-            <div className="flex flex-col">
-              <span style={{ color: "var(--ps-ink-muted)" }}>Active Model Sessions:</span>
-              <span className="font-mono text-[10px] mt-1 truncate rounded-lg px-2 py-1" style={{ background: "var(--ps-surface-2)", color: "var(--ps-primary)" }}>
-                {healthInfo.active_model_sessions.join(", ") || "none"}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+// ConnectionStatusBadge moved to @/components/navigation/ConnectionStatusBadge
 
 function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("dark");

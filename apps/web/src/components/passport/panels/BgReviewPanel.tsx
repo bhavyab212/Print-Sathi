@@ -3,6 +3,7 @@ import { Boxicon } from "@/components/ui";
 
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useProcessingUrl } from "@/hooks/useProcessingUrl";
 import { ManualMaskEditor } from "./ManualMaskEditor";
 import { canvasToBMP, canvasToTIFF, canvasToPDF, padImageBuffer } from "@/lib/imageEncoders";
 
@@ -84,6 +85,7 @@ export function BgReviewPanel({
   onManualApply,
   standalone = false,
 }: BgReviewPanelProps) {
+  const { url: processingUrl } = useProcessingUrl();
   const [comparePos, setComparePos] = useState(50); // 0–100 %
   const [isDragging, setIsDragging] = useState(false);
   const [action, setAction] = useState<Action>("idle");
@@ -555,7 +557,6 @@ export function BgReviewPanel({
     try {
       const formData = new FormData();
       formData.append("processed_image", processedSrc);
-      const processingUrl = (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
       const res = await fetch(`${processingUrl}/passport/retry-analyze`, {
         method: "POST",
         body: formData,

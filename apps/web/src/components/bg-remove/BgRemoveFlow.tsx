@@ -8,8 +8,7 @@ import { ProcessingPanel } from "@/components/passport/panels/ProcessingPanel";
 import { BgReviewPanel } from "@/components/passport/panels/BgReviewPanel";
 import { CropAdjustPanel } from "@/components/passport/panels/CropAdjustPanel";
 
-const PROCESSING_URL =
-  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+import { useProcessingUrl } from "@/hooks/useProcessingUrl";
 
 type BgStep = "upload" | "processing" | "review" | "crop" | "done";
 
@@ -28,6 +27,7 @@ interface BgRemoveFlowProps {
 }
 
 export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
+  const { url: processingUrl } = useProcessingUrl();
   const [step, setStep] = useState<BgStep>("upload");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [model, setModel] = useState<AIModel>("u2net");
@@ -108,7 +108,7 @@ export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
         form.append("file", file);
 
         // Call background removal with crop=false
-        let url = `${PROCESSING_URL}/passport/process?model=${mdl}&crop=false`;
+        let url = `${processingUrl}/passport/process?model=${mdl}&crop=false`;
         if (feedback?.alpha_matting) {
           url += `&alpha_matting=true&alpha_matting_fg=${feedback.fg ?? 240}&alpha_matting_bg=${feedback.bg ?? 10}`;
         }

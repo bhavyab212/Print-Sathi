@@ -12,8 +12,7 @@ import { CropAdjustPanel, type CropBox } from "@/components/passport/panels/Crop
 import { EnhancePanel } from "@/components/passport/panels/EnhancePanel";
 import { LayoutPrintPanel } from "@/components/passport/panels/LayoutPrintPanel";
 
-const PROCESSING_URL =
-  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+import { useProcessingUrl } from "@/hooks/useProcessingUrl";
 
 const DEFAULT_CONFIG: PassportConfig = {
   size: PASSPORT_SIZES[0],
@@ -51,6 +50,7 @@ interface CustomModeFlowProps {
 }
 
 export function CustomModeFlow({ onWorkStatusChange, initialImageUrl, jobId, itemId }: CustomModeFlowProps) {
+  const { url: processingUrl } = useProcessingUrl();
   const [step, setStep]                     = useState<PassportStep>("upload");
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export function CustomModeFlow({ onWorkStatusChange, initialImageUrl, jobId, ite
       form.append("file", file);
 
       // Pass crop=false to the backend so we get the full uncropped image for background removal review.
-      let url = `${PROCESSING_URL}/passport/process?model=${mdl}&crop=false`;
+      let url = `${processingUrl}/passport/process?model=${mdl}&crop=false`;
       if (feedback?.alpha_matting) {
         url += `&alpha_matting=true&alpha_matting_fg=${feedback.fg ?? 240}&alpha_matting_bg=${feedback.bg ?? 10}`;
       }

@@ -14,8 +14,7 @@ interface EnhancePanelProps {
   faceBox?: number[] | null;
 }
 
-const PROCESSING_URL =
-  (process.env.NEXT_PUBLIC_PROCESSING_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+import { useProcessingUrl } from "@/hooks/useProcessingUrl";
 
 // Helper to draw outline (silhouette stroke)
 function drawOutline(
@@ -113,6 +112,7 @@ function Slider({ label, value, min, max, step = 1, unit, onChange }: {
 }
 
 export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageChange, faceBox }: EnhancePanelProps) {
+  const { url: processingUrl } = useProcessingUrl();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef    = useRef<HTMLImageElement | null>(null);
   const bgFileRef = useRef<HTMLInputElement>(null);
@@ -445,7 +445,7 @@ export function EnhancePanel({ processedSrc, config, onChange, onNext, onImageCh
       const formData = new FormData();
       formData.append("file", file);
 
-      const url = `${PROCESSING_URL}/passport/enhance?skin_softening=${aiSkinSoft}&studio_lighting=${aiStudioLight}&sharpness=${aiSharp}`;
+      const url = `${processingUrl}/passport/enhance?skin_softening=${aiSkinSoft}&studio_lighting=${aiStudioLight}&sharpness=${aiSharp}`;
       const res = await fetch(url, {
         method: "POST",
         body: formData,
