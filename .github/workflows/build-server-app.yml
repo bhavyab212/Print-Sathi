@@ -1,0 +1,75 @@
+name: Build Windows Server Manager
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/server-app/**'
+      - 'apps/python-backend/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'apps/server-app/**'
+      - 'apps/python-backend/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller customtkinter pystray psutil Pillow requests uvicorn fastapi
+
+    - name: Create Backend Asset Zip
+      run: |
+        python -c "
+        import os
+        import zipfile
+        from pathlib import Path
+
+        backend_dir = Path('apps/python-backend')
+        assets_dir = Path('apps/server-app/assets')
+        assets_dir.mkdir(parents=True, exist_ok=True)
+        zip_path = assets_dir / 'backend.zip'
+
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for root, dirs, files in os.walk(backend_dir):
+                dirs[:] = [d for d in dirs if d not in ('.venv', '__pycache__', '.git', 'model_cache')]
+                for f in files:
+                    file_path = Path(root) / f
+                    arcname = file_path.relative_to(backend_dir)
+                    zf.write(file_path, arcname)
+        print(f'Created {zip_path}')
+        "
+
+    - name: Build with PyInstaller
+      working-directory: apps/server-app
+      run: |
+        pyinstaller build.spec
+
+    - name: Build NSIS Installer
+      uses: joncloud/makensis-action@v4
+      with:
+        script-file: apps/server-app/installer.nsi
+
+    - name: Create Release and Upload Asset
+      uses: softprops/action-gh-release@v1
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      with:
+        tag_name: latest
+        name: Print-Sathi AI Engine (Latest)
+        files: apps/server-app/PrintSathi_AI_Server_Setup.exe
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
