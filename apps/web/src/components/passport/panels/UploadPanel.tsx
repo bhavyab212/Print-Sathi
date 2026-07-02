@@ -1,9 +1,9 @@
 "use client";
 import { Boxicon } from "@/components/ui";
 
-
 import { useState, useCallback } from "react";
 import { FileDropzone } from "../FileDropzone";
+import { useServerHealth } from "@/hooks/useServerHealth";
 
 export type AIModel = "u2net" | "u2net_human_seg";
 
@@ -42,6 +42,7 @@ const MODEL_OPTIONS: {
 ];
 
 export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
+  const isOnline = useServerHealth();
   const [model, setModel] = useState<AIModel>("u2net");
 
   const handleFile = useCallback(
@@ -80,9 +81,23 @@ export function UploadPanel({ onFileSelected, error }: UploadPanelProps) {
         </div>
       )}
 
-      {/* Dropzone */}
+      {/* Dropzone / Offline State */}
       <div className="w-full max-w-xl">
-        <FileDropzone onFileSelected={handleFile} />
+        {!isOnline ? (
+          <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border bg-muted/20 py-12 text-center shadow-sm">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <Boxicon className="bx bx-wifi-off text-2xl" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">AI Server Offline</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Please connect to the AI Server from the top-right menu to proceed.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <FileDropzone onFileSelected={handleFile} />
+        )}
       </div>
 
       {/* AI Model picker */}

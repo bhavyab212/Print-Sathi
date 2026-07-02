@@ -245,11 +245,48 @@ export function CustomModeFlow({ onWorkStatusChange, initialImageUrl, jobId, ite
   // Print
   async function handlePrint() {
     setPrinting(true);
-    setTimeout(() => {
-      window.print();
+
+    const canvas = document.getElementById("passport-a4-canvas") as HTMLCanvasElement;
+    if (!canvas) {
       setPrinting(false);
-      showToast("Print dialog opened ✓");
-    }, 300);
+      return;
+    }
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const onMessage = (e: MessageEvent) => {
+      if (e.data === "printed") {
+        document.body.removeChild(iframe);
+        setPrinting(false);
+        setStep("done");
+        window.removeEventListener("message", onMessage);
+      }
+    };
+    window.addEventListener("message", onMessage);
+
+    iframe.contentWindow?.document.write(`
+      <html>
+        <head>
+          <style>
+            @page { size: A4 portrait; margin: 0; }
+            body { margin: 0; background: white; }
+            img { width: 210mm; height: 297mm; display: block; }
+          </style>
+        </head>
+        <body>
+          <img src="${dataUrl}" onload="window.print(); setTimeout(() => window.parent.postMessage('printed', '*'), 500);" />
+        </body>
+      </html>
+    `);
+    iframe.contentWindow?.document.close();
   }
 
   // Hard reset

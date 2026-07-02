@@ -9,6 +9,7 @@ import { BgReviewPanel } from "@/components/passport/panels/BgReviewPanel";
 import { CropAdjustPanel } from "@/components/passport/panels/CropAdjustPanel";
 
 import { useProcessingUrl } from "@/hooks/useProcessingUrl";
+import { useServerHealth } from "@/hooks/useServerHealth";
 
 type BgStep = "upload" | "processing" | "review" | "crop" | "done";
 
@@ -28,6 +29,7 @@ interface BgRemoveFlowProps {
 
 export function BgRemoveFlow({ initialImageUrl }: BgRemoveFlowProps) {
   const { url: processingUrl } = useProcessingUrl();
+  const isOnline = useServerHealth();
   const [step, setStep] = useState<BgStep>("upload");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [model, setModel] = useState<AIModel>("u2net");

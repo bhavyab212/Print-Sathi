@@ -12,6 +12,7 @@ import { LayoutPrintPanel } from "@/components/passport/panels/LayoutPrintPanel"
 import { CropAdjustPanel, type CropBox } from "@/components/passport/panels/CropAdjustPanel";
 
 import { useProcessingUrl } from "@/hooks/useProcessingUrl";
+import { useServerHealth } from "@/hooks/useServerHealth";
 
 type Step = "upload" | "processing" | "configure" | "done";
 
@@ -41,6 +42,7 @@ interface QuickModeFlowProps {
 
 export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, itemId }: QuickModeFlowProps) {
   const { url: processingUrl } = useProcessingUrl();
+  const isOnline = useServerHealth();
   const [step, setStep] = useState<Step>("upload");
 
   useEffect(() => {
@@ -158,13 +160,48 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
       }),
     }).catch(() => {/* non-fatal */});
 
-    // Give the canvas a moment to fully render, then print
-    setTimeout(() => {
-      window.print();
+    const canvas = document.getElementById("passport-a4-canvas") as HTMLCanvasElement;
+    if (!canvas) {
       setPrinting(false);
-      setStep("done");
-      showToast("Print dialog opened ✓");
-    }, 300);
+      return;
+    }
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const onMessage = (e: MessageEvent) => {
+      if (e.data === "printed") {
+        document.body.removeChild(iframe);
+        setPrinting(false);
+        setStep("done");
+        showToast("Print dialog opened ✓");
+        window.removeEventListener("message", onMessage);
+      }
+    };
+    window.addEventListener("message", onMessage);
+
+    iframe.contentWindow?.document.write(`
+      <html>
+        <head>
+          <style>
+            @page { size: A4 portrait; margin: 0; }
+            body { margin: 0; background: white; }
+            img { width: 210mm; height: 297mm; display: block; }
+          </style>
+        </head>
+        <body>
+          <img src="${dataUrl}" onload="window.print(); setTimeout(() => window.parent.postMessage('printed', '*'), 500);" />
+        </body>
+      </html>
+    `);
+    iframe.contentWindow?.document.close();
   }
 
   // ── Reset ─────────────────────────────────────────────────────────────
@@ -278,16 +315,27 @@ export function QuickModeFlow({ onWorkStatusChange, initialImageUrl, jobId, item
                       <p className="font-semibold">Processing failed</p>
                       <p className="text-destructive/80">{processingError}</p>
                       <p className="mt-1 text-xs text-destructive/60">
-                        Make sure the Python service is running:{" "}
-                        <code className="rounded bg-destructive/20 px-1 font-mono text-[11px]">
-                          uvicorn main:app --reload --port 8000
-                        </code>
+                        Make sure the AI server is running and connected.
                       </p>
                     </div>
                   </div>
                 )}
 
-                <FileDropzone onFileSelected={handleFileSelected} />
+                {!isOnline ? (
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border bg-muted/20 py-12 text-center shadow-sm">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                      <Boxicon className="bx bx-wifi-off text-2xl" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-foreground">AI Server Offline</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Please connect to the AI Server from the top-right menu to use Passport Mode.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <FileDropzone onFileSelected={handleFileSelected} />
+                )}
 
                 <div className="mt-4 flex items-start gap-2 rounded-xl bg-primary/10 px-4 py-3 text-xs text-primary border border-primary/20">
                   <Boxicon className="bx bx-info-circle mt-0.5 text-sm" />

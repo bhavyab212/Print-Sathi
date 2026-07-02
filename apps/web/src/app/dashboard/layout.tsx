@@ -85,13 +85,13 @@ export default function DashboardLayout({
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       <aside
-        className={`sidebar-brand-stripe sidebar-depth fixed inset-y-0 left-0 z-40 flex w-64 flex-col glass-nav bg-toolpanel-gradient transition-transform duration-300 lg:static lg:translate-x-0 ${
+        className={`sidebar-brand-stripe sidebar-depth fixed inset-y-0 left-0 z-50 flex w-64 flex-col glass-nav bg-toolpanel-gradient transition-transform duration-300 lg:static lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ borderRight: "1px solid var(--ps-hairline)" }}
@@ -166,7 +166,7 @@ export default function DashboardLayout({
       {/* Main content */}
       <div className="relative flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="header-depth relative z-20 flex h-16 items-center justify-between glass-nav bg-header-gradient px-6" style={{ borderBottom: "1px solid var(--ps-hairline)" }}>
+        <header className="header-depth relative z-30 flex h-16 items-center justify-between glass-nav bg-header-gradient px-6" style={{ borderBottom: "1px solid var(--ps-hairline)" }}>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}

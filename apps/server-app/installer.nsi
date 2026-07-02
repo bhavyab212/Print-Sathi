@@ -1,7 +1,7 @@
 !include "MUI2.nsh"
 
 Name "Print-Sathi AI Engine"
-OutFile "PrintSathi_AI_Server_Setup.exe"
+OutFile "Print-Sathi-Server-Setup.exe"
 InstallDir "$PROGRAMFILES\PrintSathi Server"
 InstallDirRegKey HKCU "Software\PrintSathiServer" ""
 RequestExecutionLevel admin

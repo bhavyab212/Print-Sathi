@@ -94,19 +94,19 @@ export function ConnectionStatusBadge() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-3 w-80 panel-lift rounded-2xl p-4 shadow-modal z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 top-full mt-3 w-80 bg-white dark:bg-[#202024] border border-border/80 rounded-2xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
           
           {/* Tabs */}
-          <div className="flex surface-inner rounded-lg p-1 mb-4">
+          <div className="flex bg-gray-100 dark:bg-[#151518] rounded-xl p-1.5 mb-5">
             <button
               onClick={() => setActiveTab("connect")}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${activeTab === "connect" ? "bg-white dark:bg-[#252528] shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-all ${activeTab === "connect" ? "bg-white dark:bg-[#323236] shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
               Connect
             </button>
             <button
               onClick={() => setActiveTab("download")}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${activeTab === "download" ? "bg-white dark:bg-[#252528] shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-all ${activeTab === "download" ? "bg-white dark:bg-[#323236] shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
               Download App
             </button>
@@ -122,19 +122,19 @@ export function ConnectionStatusBadge() {
                     type="text" 
                     value={inputUrl}
                     onChange={(e) => setInputUrl(e.target.value)}
-                    className="flex-1 bg-white dark:bg-[#1a1a1e] border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground outline-none focus:border-primary"
+                    className="flex-1 bg-white dark:bg-[#151518] border border-border/80 rounded-xl px-3 py-2 text-xs text-foreground outline-none focus:border-primary shadow-inner"
                   />
                   <button 
                     onClick={handleSaveUrl}
-                    className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors"
+                    className="bg-primary text-primary-foreground px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-md hover:bg-primary/90 transition-all"
                   >
                     Save
                   </button>
                 </div>
               </div>
 
-              <div className="surface-inner rounded-xl p-3">
-                <div className="flex items-center justify-between mb-2">
+              <div className="bg-gray-50 dark:bg-[#28282c] border border-border/50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-medium text-foreground">Status</span>
                   <span className="text-xs font-mono font-semibold" style={{ color: dotColor }}>{label}</span>
                 </div>
@@ -154,7 +154,7 @@ export function ConnectionStatusBadge() {
                 )}
                 <button 
                   onClick={checkHealth}
-                  className="w-full mt-3 bg-surface hover:bg-surface-2 text-foreground border border-border py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  className="w-full mt-4 bg-white dark:bg-[#323236] hover:bg-gray-100 dark:hover:bg-[#3f3f46] text-foreground border border-border/80 py-2 rounded-xl text-xs font-bold shadow-sm transition-all"
                 >
                   Retry Connection
                 </button>
@@ -170,23 +170,23 @@ export function ConnectionStatusBadge() {
               </p>
               
               {/* Windows Card */}
-              <div className="surface-inner hover:border-primary/50 transition-colors rounded-xl p-3 cursor-pointer">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-[#0078D4]/10 rounded-lg text-[#0078D4]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.951-1.801"/></svg>
+              <div className="bg-gray-50 dark:bg-[#28282c] border border-border/50 hover:border-primary/50 transition-colors rounded-xl p-4 cursor-pointer shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2.5 bg-[#0078D4]/15 rounded-xl text-[#0078D4]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.951-1.801"/></svg>
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-foreground">Windows 10/11</h4>
-                    <p className="text-[10px] text-muted-foreground">~18 MB Installer</p>
+                    <h4 className="text-sm font-bold text-foreground">Windows 10/11</h4>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">~18 MB Installer</p>
                   </div>
                 </div>
                 <a 
                   href="https://github.com/bhavyab212/Print-Sathi/releases/latest/download/Print-Sathi-Server-Setup.exe"
                   target="_blank"
-                  className="mt-2 w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-md hover:bg-primary/90 transition-all"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                  Download .exe
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                  Go to Releases
                 </a>
               </div>
 

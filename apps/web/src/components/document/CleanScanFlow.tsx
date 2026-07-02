@@ -7,6 +7,7 @@ import { DocumentDropzone } from "@/components/document/DocumentDropzone";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
 import { useProcessingUrl } from "@/hooks/useProcessingUrl";
+import { useServerHealth } from "@/hooks/useServerHealth";
 
 type Step = "upload" | "crop" | "processing" | "compare";
 
@@ -14,6 +15,7 @@ interface Point { x: number; y: number }
 
 export function CleanScanFlow() {
   const { url: processingUrl } = useProcessingUrl();
+  const isOnline = useServerHealth();
   const [step, setStep] = useState<Step>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [originalImageObjUrl, setOriginalImageObjUrl] = useState<string | null>(null);
@@ -178,7 +180,21 @@ export function CleanScanFlow() {
                     </div>
                   </div>
                 )}
-                <DocumentDropzone onFileSelected={handleFilesSelected} />
+                {!isOnline ? (
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border bg-muted/20 py-12 text-center shadow-sm">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                      <Boxicon className="bx bx-wifi-off text-2xl" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-foreground">AI Server Offline</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Please connect to the AI Server from the top-right menu to use Clean Scan.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <DocumentDropzone onFileSelected={handleFilesSelected} />
+                )}
               </div>
             </div>
           )}
