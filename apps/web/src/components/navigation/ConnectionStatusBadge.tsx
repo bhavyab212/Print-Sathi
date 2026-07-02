@@ -181,12 +181,12 @@ export function ConnectionStatusBadge() {
                   </div>
                 </div>
                 <a 
-                  href="https://github.com/bhavyab212/Print-Sathi/releases/latest/download/Print-Sathi-Server-Setup.exe"
+                  href="https://github.com/bhavyab212/Print-Sathi/releases/download/v1.0.0/Print-Sathi-Server-Setup.exe"
                   target="_blank"
                   className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-md hover:bg-primary/90 transition-all"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                  Go to Releases
+                  Download .exe
                 </a>
               </div>
 
