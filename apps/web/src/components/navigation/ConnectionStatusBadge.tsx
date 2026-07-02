@@ -17,6 +17,7 @@ export function ConnectionStatusBadge() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"connect" | "download">("connect");
   const [inputUrl, setInputUrl] = useState(processingUrl);
+  const [isManualMode, setIsManualMode] = useState(false);
   
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -125,23 +126,43 @@ export function ConnectionStatusBadge() {
           {/* Connect Tab */}
           {activeTab === "connect" && (
             <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Server URL</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="text" 
-                    value={inputUrl}
-                    onChange={(e) => setInputUrl(e.target.value)}
-                    className="flex-1 bg-white dark:bg-[#151518] border border-border/80 rounded-xl px-3 py-2 text-xs text-foreground outline-none focus:border-primary shadow-inner"
-                  />
-                  <button 
-                    onClick={handleSaveUrl}
-                    className="bg-primary text-primary-foreground px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-md hover:bg-primary/90 transition-all"
-                  >
-                    Save
-                  </button>
+              {!isManualMode ? (
+                <button 
+                  onClick={() => setIsManualMode(true)}
+                  className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground text-center mb-2 underline underline-offset-4"
+                >
+                  Configure Manually
+                </button>
+              ) : (
+                <div className="space-y-1.5 mb-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Server URL</label>
+                    <button 
+                      onClick={() => setIsManualMode(false)}
+                      className="text-[10px] text-muted-foreground hover:text-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={inputUrl}
+                      onChange={(e) => setInputUrl(e.target.value)}
+                      className="flex-1 bg-white dark:bg-[#151518] border border-border/80 rounded-xl px-3 py-2 text-xs text-foreground outline-none focus:border-primary shadow-inner"
+                    />
+                    <button 
+                      onClick={() => {
+                        handleSaveUrl();
+                        setIsManualMode(false);
+                      }}
+                      className="bg-primary text-primary-foreground px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-md hover:bg-primary/90 transition-all"
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="bg-gray-50 dark:bg-[#28282c] border border-border/50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
