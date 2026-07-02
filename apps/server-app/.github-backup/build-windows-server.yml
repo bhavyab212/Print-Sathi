@@ -32,6 +32,12 @@ jobs:
           pyinstaller --clean build.spec
         shell: bash
 
+      - name: Install NSIS
+        run: |
+          choco install nsis -y
+          echo "C:\Program Files (x86)\NSIS" >> $GITHUB_PATH
+        shell: bash
+
       - name: Build installer with NSIS
         run: |
           cd apps/server-app
